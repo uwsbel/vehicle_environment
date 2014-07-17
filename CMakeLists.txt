@@ -21,6 +21,6 @@ include_directories(
     "${CHRONO_INC}/collision" 
     "${CHRONO_INC}/collision/bullet" 
     )
-	SET(SOURCES source/main.cpp )
+	SET(SOURCES source/main.cpp source/ECApplication.cpp source/ECApplication.h )
 	ADD_EXECUTABLE(vehicle_environment ${SOURCES} )
 	TARGET_LINK_LIBRARIES(vehicle_environment	${LIBRARIES})
