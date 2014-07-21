@@ -5,9 +5,6 @@
 #include "windows.h"
 #endif
 
-int Loop() {
-	return 0;
-}
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
@@ -19,8 +16,25 @@ int main(int argc, char *argv[])
 		EnvironmentCore::EnvironmentCoreApplication app;
 		app.createWindow("Test", 800, 600, 0, false, false);
 
+		EnvironmentCore::ECCamera* DebugCamera = app.getCameraManager()->createCamera("DebugCamera");
+
+		DebugCamera->setPosition(Ogre::Vector3(0, 10, 500));
+		DebugCamera->lookAt(Ogre::Vector3(0, 0, 0), Ogre::Node::TS_PARENT);
+		app.setCamera(DebugCamera);
+
+		std::function<int()> Loop = [&]() {
+			if (app.getKeyboard()->isKeyDown(OIS::KC_ESCAPE)) {
+				return 0;
+			}
+
+			app.logMessage("Frame");
+
+			return 0;
+		};
+
 		app.startLoop(Loop);
-		Ogre::LogManager::getSingleton().logMessage("end of the program");
+		app.logMessage("end of the program");
+		Ogre::LogManager::getSingleton().logMessage("Haw");
 	}
 	catch (Ogre::Exception &e) {
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
