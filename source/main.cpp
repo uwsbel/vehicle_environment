@@ -57,7 +57,8 @@ int main(int argc, char *argv[])
 
 			app.logMessage("r: " + std::to_string(_l_r) + " g: " + std::to_string(_l_g) + " b: " + std::to_string(_l_b));
 
-			//app.getScene()->setAmbientLight(_l_r, _l_g, _l_b);
+			yeh->setDiffuseColour(_l_r, _l_g, _l_b);
+			yeh->setSpecularColour(_l_r, _l_g, _l_b);
 
 			app.logMessage("Frame");
 
