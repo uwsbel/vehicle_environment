@@ -1,22 +1,30 @@
+/*
+Author: Charles Ricchio
+
+All the defines for the ECCameraManager
+*/
+
 #include "ECCameraManager.h"
 
 namespace EnvironmentCore {
 
 	unsigned int ECCameraManager::g_CameraCount = 0;
 
-	ECCameraManager::ECCameraManager(Ogre::SceneManager* SceneManager) {
-		m_pSceneManager = SceneManager;
+	ECCameraManager::ECCameraManager() {
 	}
 
 
 	ECCameraManager::~ECCameraManager() {
 		for (unsigned int i = 0; i < m_CameraList.size(); i++) {
-			m_pSceneManager->getRootSceneNode()->removeAndDestroyChild(m_CameraList[i]->getName());
+			if (m_CameraList[i]) {
+				delete m_CameraList[i];
+			}
 		}
 	}
 
-	ECCamera* ECCameraManager::createCamera(Ogre::String Name) {
-		ECCamera* l_pCamera = m_pSceneManager->getRootSceneNode()->createChildSceneNode(Name);
+	ECCamera* ECCameraManager::createCamera(std::string Name) {
+		ECCamera* l_pCamera = new ECCamera;
+		l_pCamera->name = Name;
 		m_CameraList.push_back(l_pCamera);
 
 		g_CameraCount = m_CameraList.size();
@@ -28,9 +36,9 @@ namespace EnvironmentCore {
 		return m_CameraList[iterator];
 	}
 
-	ECCamera* ECCameraManager::getCamera(Ogre::String Name) {
+	ECCamera* ECCameraManager::getCamera(std::string Name) {
 		for (unsigned int i = 0; i < m_CameraList.size(); i++) {
-			if (m_CameraList[i]->getName() == Name) {
+			if (m_CameraList[i]->name == Name) {
 				return m_CameraList[i];
 			}
 		}
@@ -41,7 +49,7 @@ namespace EnvironmentCore {
 		return getCamera(iterator);
 	}
 
-	ECCamera* ECCameraManager::operator[] (Ogre::String Name) {
+	ECCamera* ECCameraManager::operator[] (std::string Name) {
 		return getCamera(Name);
 	}
 

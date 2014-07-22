@@ -1,3 +1,10 @@
+/*
+Author: Charles Ricchio
+
+Contains a managment class for easy manipulation of the camera. ECCameraManager doesn't actually manage any Ogre camera objects, 
+but instead retains points in space and points to orient to in space for easy access for the actual camera object within ECApplication.
+*/
+
 #pragma once
 
 #include <OGRE\Ogre.h>
@@ -5,28 +12,43 @@
 
 namespace EnvironmentCore {
 
-	typedef Ogre::SceneNode ECCamera;
+	typedef struct ECCamera_t {
+		float x, y, z;
+		float wx, wy, wz;
+		std::string name;
+
+		void orient(float _x, float _y, float _z, float _wx, float _wy, float _wz) {
+			x = _x;
+			y = _y;
+			z = _z;
+			wx = _wx;
+			wy = _wy;
+			wz = _wz;
+		}
+
+		void operator() (float _x, float _y, float _z, float _wx, float _wy, float _wz) {
+			orient(_x, _y, _z, _wx, _wy, _wz);
+		}
+	} ECCamera;
 
 	class ECCameraManager {
 
 	public:
 
-		ECCameraManager(Ogre::SceneManager* SceneManager);
+		ECCameraManager();
 		~ECCameraManager();
 
-		virtual ECCamera* createCamera(Ogre::String Name=( "Camera" + std::to_string( g_CameraCount ) ) );
+		virtual ECCamera* createCamera(std::string Name=( "Camera" + std::to_string( g_CameraCount ) ) );
 
 		virtual ECCamera* getCamera(unsigned int iterator);
 
-		virtual ECCamera* getCamera(Ogre::String Name);
+		virtual ECCamera* getCamera(std::string Name);
 
 		virtual ECCamera* operator[] (unsigned int iterator);
 
-		virtual ECCamera* operator[] (Ogre::String Name);
+		virtual ECCamera* operator[] (std::string Name);
 
 	protected:
-
-		Ogre::SceneManager* m_pSceneManager;
 
 		std::vector<ECCamera*> m_CameraList;
 

@@ -1,3 +1,10 @@
+/*
+Author: Charles Ricchio
+
+The actual definitions for EnvironmentCoreApplication. Most of the code in the constructor is from a tutorial, and could probably be
+written more elegantly.
+*/
+
 #include "ECApplication.h"
 
 namespace EnvironmentCore {
@@ -7,7 +14,7 @@ namespace EnvironmentCore {
 
 		//NOTE: Probably terrible practice. Do better
 		{
-			typedef std::vector<Ogre::String> __Strings_t__;
+			typedef std::vector<std::string> __Strings_t__;
 
 			__Strings_t__ l_Plugins;
 
@@ -25,7 +32,7 @@ namespace EnvironmentCore {
 				__Strings_t__::iterator l_IteratorEnd = l_Plugins.end();
 
 				for (l_Iterator; l_Iterator != l_IteratorEnd; l_Iterator++) {
-					Ogre::String& l_PluginName = (*l_Iterator);
+					std::string& l_PluginName = (*l_Iterator);
 
 					bool l_IsInDebugMode = OGRE_DEBUG_MODE;
 
@@ -54,17 +61,34 @@ namespace EnvironmentCore {
 
 			m_pSceneManager = m_pRoot->createSceneManager(Ogre::ST_GENERIC, "MainSceneManager");
 
-			m_pCameraManager = new ECCameraManager(m_pSceneManager);
+			m_pCameraManager = new ECCameraManager;
+			m_pScene = new ECScene(m_pSceneManager);
+		}
+
+		{
+			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets", "FileSystem");
+			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/materials", "FileSystem");
+			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/materials/programs", "FileSystem");
+			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/materials/scripts", "FileSystem");
+			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/materials/textures", "FileSystem");
+			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/materials/textures/nvidia", "FileSystem");
+			Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/models", "FileSystem");
+			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/particle", "FileSystem");
+			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/DeferredShadingMedia", "FileSystem");
+			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/RTShaderLib", "FileSystem");
+			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/RTShaderLib/materials", "FileSystem");
+			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/materials/scripts/SSAO", "FileSystem");
+			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/materials/textures/SSAO", "FileSystem");
+
+			Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+
 		}
 
 	}
 
 	EnvironmentCoreApplication::~EnvironmentCoreApplication() {
-		m_pInputManager->destroyInputObject(m_pKeyboard);
-		m_pInputManager->destroyInputObject(m_pMouse);
-		OIS::InputManager::destroyInputSystem(m_pInputManager);
-
 		delete m_pCameraManager;
+		delete m_pScene;
 		m_pRoot->destroySceneManager(m_pSceneManager);
 		closeWindow();
 	}
@@ -73,10 +97,9 @@ namespace EnvironmentCore {
 		int l_run = 0;
 		while (l_run == 0) {
 
-			m_pKeyboard->capture();
-			m_pMouse->capture();
-
 			l_run = _func();
+
+			m_pViewport->update();
 
 			m_pRenderWindow->update(false);
 			m_pRenderWindow->swapBuffers();
@@ -92,7 +115,7 @@ namespace EnvironmentCore {
 		return l_run;
 	}
 
-	Ogre::RenderWindow* EnvironmentCoreApplication::createWindow(Ogre::String Title, uint32_t Width, uint32_t Height, uint8_t FSAA_Level, bool VSync, bool Fullscreen) {
+	Ogre::RenderWindow* EnvironmentCoreApplication::createWindow(std::string Title, uint32_t Width, uint32_t Height, uint8_t FSAA_Level, bool VSync, bool Fullscreen) {
 		Ogre::NameValuePairList l_Params;
 		l_Params["FSAA"] = "0";
 		if (VSync) {
@@ -106,39 +129,14 @@ namespace EnvironmentCore {
 		m_pCamera = m_pSceneManager->createCamera("MainCamera");
 
 		m_pViewport = m_pRenderWindow->addViewport(m_pCamera);
-		m_pViewport->setAutoUpdated(true);
-		m_pViewport->setBackgroundColour(Ogre::ColourValue(0.5f, 0.5f, 0.5f, 1.0f));
+		m_pViewport->setAutoUpdated(false);
+		m_pViewport->setBackgroundColour(Ogre::ColourValue(0.0f, 0.0f, 0.0f));
 
-		m_pCamera->setAspectRatio(((float)(m_pViewport->getActualWidth()))/((float)(m_pViewport->getActualHeight())));
-		m_pCamera->setNearClipDistance(1.5f);
+		m_pCamera->setAspectRatio( ( ( (float)(m_pViewport->getActualWidth()) ) / ( (float)(m_pViewport->getActualHeight()) ) ) );
+		m_pCamera->setNearClipDistance(5.0f);
 
 		m_pRenderWindow->setActive(true);
 		m_pRenderWindow->setAutoUpdated(false);
-
-
-		{
-			size_t l_WindowHandle = 0;
-			m_pRenderWindow->getCustomAttribute("WINDOW", &l_WindowHandle);
-
-			std::string l_WindowHandleString = "";
-
-			{
-				std::ostringstream l_WindowHndStr;
-				l_WindowHndStr << l_WindowHandle;
-				l_WindowHandleString = l_WindowHndStr.str();
-			}
-
-			OIS::ParamList l_SpecialParameters;
-			l_SpecialParameters.insert(std::make_pair(std::string("WINDOW"), l_WindowHandleString));
-
-			m_pInputManager = OIS::InputManager::createInputSystem(l_SpecialParameters);
-			m_pKeyboard = static_cast<OIS::Keyboard*>(m_pInputManager->createInputObject(OIS::OISKeyboard, false));
-			m_pMouse = static_cast<OIS::Mouse*>(m_pInputManager->createInputObject(OIS::OISMouse, false));
-
-			const OIS::MouseState &l_InfoSouris = m_pMouse->getMouseState();
-			l_InfoSouris.width = m_pRenderWindow->getWidth();
-			l_InfoSouris.height = m_pRenderWindow->getHeight();
-		}
 
 
 		m_pRoot->clearEventTimes();
@@ -146,8 +144,15 @@ namespace EnvironmentCore {
 		return m_pRenderWindow;
 	}
 
+	void EnvironmentCoreApplication::loadResourcePath(std::string Path, std::string Title) {
+
+	}
+
 	void EnvironmentCoreApplication::setCamera(ECCamera* Camera) {
-		Camera->attachObject(m_pCamera);
+		m_pCamera->setPosition(Camera->x, Camera->y, Camera->z);
+		m_pCamera->lookAt(Camera->wx, Camera->wy, Camera->wz);
+
+		logMessage("Camera positioned at: " + std::to_string(Camera->x) + " " + std::to_string(Camera->y) + " " + std::to_string(Camera->z) + "  Looking at: " + std::to_string(Camera->wx) + " " + std::to_string(Camera->wy) + " " + std::to_string(Camera->wz));
 	}
 
 	void EnvironmentCoreApplication::setVSync(bool VSync) {
@@ -174,19 +179,19 @@ namespace EnvironmentCore {
 		return m_pCameraManager;
 	}
 
-	OIS::InputManager* EnvironmentCoreApplication::getInputManager() {
-		return m_pInputManager;
+	ECScene* EnvironmentCoreApplication::getScene() {
+		return m_pScene;
 	}
 
-	OIS::Mouse* EnvironmentCoreApplication::getMouse() {
-		return m_pMouse;
+	Ogre::RenderWindow* EnvironmentCoreApplication::getWindow() {
+		return m_pRenderWindow;
 	}
 
-	OIS::Keyboard* EnvironmentCoreApplication::getKeyboard() {
-		return m_pKeyboard;
+	Ogre::SceneManager* EnvironmentCoreApplication::getSceneManager() {
+		return m_pSceneManager;
 	}
 
-	void EnvironmentCoreApplication::logMessage(const Ogre::String& Message, Ogre::LogMessageLevel lml, bool maskDebug) {
+	void EnvironmentCoreApplication::logMessage(const std::string& Message, Ogre::LogMessageLevel lml, bool maskDebug) {
 		Ogre::LogManager::getSingleton().logMessage(Message, lml, maskDebug);
 	}
 }
