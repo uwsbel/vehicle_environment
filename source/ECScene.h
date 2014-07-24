@@ -7,6 +7,9 @@ ECScene is designed to be a layer of abstraction from the Ogre lighting system, 
 #pragma once
 
 #include <OGRE\Ogre.h>
+#include <physics\ChSystem.h>
+
+#include "ECBody.h"
 
 namespace EnvironmentCore {
 
@@ -14,7 +17,7 @@ namespace EnvironmentCore {
 
 	public:
 
-		ECScene(Ogre::SceneManager* SceneManager);
+		ECScene(Ogre::SceneManager* SceneManager, chrono::ChSystem* System);
 		~ECScene();
 
 		////////
@@ -31,18 +34,19 @@ namespace EnvironmentCore {
 		//Body Creation
 		///////
 
-
-
-		////////
-		//Body Management/Storage
-		////////
-
-
+		virtual ECBody* createBody();
 
 
 	protected:
 
 		Ogre::SceneManager* m_pSceneManager;
+
+		chrono::ChSystem* m_pChSystem;
+
+
+		////////
+		//Body Management/Storage
+		////////
 
 	private:
 

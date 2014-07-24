@@ -62,7 +62,8 @@ namespace EnvironmentCore {
 			m_pSceneManager = m_pRoot->createSceneManager(Ogre::ST_GENERIC, "MainSceneManager");
 
 			m_pCameraManager = new ECCameraManager;
-			m_pScene = new ECScene(m_pSceneManager);
+			m_pChSystem = new chrono::ChSystem;
+			m_pScene = new ECScene(m_pSceneManager, m_pChSystem);
 		}
 
 		{
@@ -90,14 +91,19 @@ namespace EnvironmentCore {
 		delete m_pCameraManager;
 		delete m_pScene;
 		m_pRoot->destroySceneManager(m_pSceneManager);
+		delete m_pChSystem;
 		closeWindow();
 	}
 
 	int EnvironmentCoreApplication::startLoop(std::function<int()> _func) {
 		int l_run = 0;
+		double l_systemTimeIncriment = 0.1;
 		while (l_run == 0) {
 
 			l_run = _func();
+
+			m_pChSystem->DoFrameDynamics(l_systemTimeIncriment);
+			l_systemTimeIncriment += 0.01;
 
 			m_pViewport->update();
 
@@ -147,7 +153,8 @@ namespace EnvironmentCore {
 	}
 
 	void EnvironmentCoreApplication::loadResourcePath(std::string Path, std::string Title) {
-
+		Ogre::ResourceGroupManager::getSingleton().addResourceLocation(Path, Title);
+		Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(Title);
 	}
 
 	void EnvironmentCoreApplication::setCamera(ECCamera* Camera) {
@@ -170,6 +177,12 @@ namespace EnvironmentCore {
 		m_pRenderWindow->setVSyncEnabled(isVSyncEnabled);
 		m_pRenderWindow->setVSyncInterval(60);
 	}
+
+
+	void EnvironmentCoreApplication::chronoThread() {
+
+	}
+
 
 	void EnvironmentCoreApplication::closeWindow() {
 		if (m_pRenderWindow) {
@@ -199,6 +212,10 @@ namespace EnvironmentCore {
 
 	Ogre::SceneManager* EnvironmentCoreApplication::getSceneManager() {
 		return m_pSceneManager;
+	}
+
+	chrono::ChSystem* EnvironmentCoreApplication::getChSystem() {
+		return m_pChSystem;
 	}
 
 	void EnvironmentCoreApplication::logMessage(const std::string& Message, Ogre::LogMessageLevel lml, bool maskDebug) {

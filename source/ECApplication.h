@@ -29,9 +29,11 @@ namespace EnvironmentCore {
 
 		virtual int startLoop(std::function<int()> PerFrame);
 		virtual Ogre::RenderWindow* createWindow(std::string Title, uint32_t Width, uint32_t Height, uint8_t FSAA_Level, bool VSync=false, bool Fullscreen=false);
-		virtual void loadResourcePath(std::string Path, std::string Title);
+		virtual void loadResourcePath(std::string Path, std::string Title="FileSystem");
 		virtual void setCamera(ECCamera* Camera);
 		virtual void setVSync(bool VSync);
+
+		virtual void chronoThread();
 
 		virtual void closeWindow();
 
@@ -39,6 +41,7 @@ namespace EnvironmentCore {
 		virtual ECScene* getScene();
 		virtual Ogre::RenderWindow* getWindow();
 		virtual Ogre::SceneManager* getSceneManager();
+		virtual chrono::ChSystem* getChSystem();
 
 		static void logMessage(const std::string& Message, Ogre::LogMessageLevel lml = Ogre::LML_NORMAL, bool maskDebug = false);
 
@@ -49,6 +52,10 @@ namespace EnvironmentCore {
 		Ogre::SceneManager* m_pSceneManager;
 		Ogre::Viewport* m_pViewport;
 		Ogre::Camera* m_pCamera;
+
+		chrono::ChSystem* m_pChSystem;
+
+		std::thread m_ChronoThread;
 
 		ECCameraManager* m_pCameraManager;
 		ECScene* m_pScene;
