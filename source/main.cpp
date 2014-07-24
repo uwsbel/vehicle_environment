@@ -21,9 +21,11 @@ int main(int argc, char *argv[])
 
 		EnvironmentCore::ECCamera* DebugCamera = app.getCameraManager()->createCamera("DebugCamera");
 		EnvironmentCore::ECCamera* DebugCamera2 = app.getCameraManager()->createCamera("DebugCamera2");
+		EnvironmentCore::ECCamera* DebugCamera3 = app.getCameraManager()->createCamera("DebugCamera3");
 
 		DebugCamera->orient(0.0f, 20.0f, 500.0f, 0.0f, 0.0f, 0.0f);
 		DebugCamera2->orient(0.0f, 20.0f, -500.0f, 0.0f, 0.0f, 0.0f);
+		DebugCamera3->orient(0.0f, 10.0f, 500.0f, 5.0f, 10.0f);
 
 		app.setCamera(DebugCamera);
 
@@ -42,25 +44,30 @@ int main(int argc, char *argv[])
 		std::chrono::system_clock cl;
 		auto t1 = cl.now();
 
+		bool k = false;
+
 		std::function<int()> Loop = [&]() {
 			
 			auto t2 = cl.now() - t1;
 			auto td = std::chrono::seconds(10);
+			auto td2 = std::chrono::seconds(20);
+			auto td3 = std::chrono::seconds(30);
 
-			if (t2 > td) {
+			/*if (t2 > td) {
 				app.setCamera(DebugCamera2);
+			}*/
+			if (t2 > td && k == false) {
+				app.setCamera(DebugCamera3);
+				app.getScene()->setAmbientLight(1.0f, 1.0f, 1.0f);
+				k = true;
 			}
 
 			float _l_r = (float)l_rand() / (float)l_rand.max();
 			float _l_g = (float)l_rand() / (float)l_rand.max();
 			float _l_b = (float)l_rand() / (float)l_rand.max();
 
-			app.logMessage("r: " + std::to_string(_l_r) + " g: " + std::to_string(_l_g) + " b: " + std::to_string(_l_b));
-
 			yeh->setDiffuseColour(_l_r, _l_g, _l_b);
 			yeh->setSpecularColour(_l_r, _l_g, _l_b);
-
-			app.logMessage("Frame");
 
 			return 0;
 		};

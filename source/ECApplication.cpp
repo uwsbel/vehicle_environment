@@ -106,6 +106,8 @@ namespace EnvironmentCore {
 
 			m_pRoot->renderOneFrame();
 
+			m_pCamera->setAspectRatio((((float)(m_pViewport->getActualWidth())) / ((float)(m_pViewport->getActualHeight()))));
+
 			Ogre::WindowEventUtilities::messagePump();
 
 			if (m_pRenderWindow->isClosed()) {
@@ -150,9 +152,17 @@ namespace EnvironmentCore {
 
 	void EnvironmentCoreApplication::setCamera(ECCamera* Camera) {
 		m_pCamera->setPosition(Camera->x, Camera->y, Camera->z);
-		m_pCamera->lookAt(Camera->wx, Camera->wy, Camera->wz);
-
-		logMessage("Camera positioned at: " + std::to_string(Camera->x) + " " + std::to_string(Camera->y) + " " + std::to_string(Camera->z) + "  Looking at: " + std::to_string(Camera->wx) + " " + std::to_string(Camera->wy) + " " + std::to_string(Camera->wz));
+		if (!Camera->useAngles) {
+			m_pCamera->lookAt(Camera->wx, Camera->wy, Camera->wz);
+			logMessage("Camera positioned at: " + std::to_string(Camera->x) + " " + std::to_string(Camera->y) + " " + std::to_string(Camera->z) + "  Looking at: " + std::to_string(Camera->wx) + " " + std::to_string(Camera->wy) + " " + std::to_string(Camera->wz));
+		}
+		else {
+			auto _yaw = Ogre::Degree::Degree(Camera->yaw);
+			auto _pitch = Ogre::Degree::Degree(Camera->pitch);
+			m_pCamera->yaw(Ogre::Radian::Radian(_yaw));
+			m_pCamera->pitch(Ogre::Radian::Radian(_pitch));
+			logMessage("Camera positioned at: " + std::to_string(Camera->x) + " " + std::to_string(Camera->y) + " " + std::to_string(Camera->z) + "  Looking at: " + std::to_string(Camera->yaw) + " " + std::to_string(Camera->pitch));
+		}
 	}
 
 	void EnvironmentCoreApplication::setVSync(bool VSync) {
