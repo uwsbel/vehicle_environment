@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 
 		app.setCamera(DebugCamera);
 
-
+		std::random_device l_rand;
 
 		EnvironmentCore::ECBody& Epsilon = app.getScene()->createBody();
 		EnvironmentCore::ECBody& Gamma = app.getScene()->createBody();
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 		Epsilon.refresh();
 
 
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 200; i++) {
 			EnvironmentCore::ECBody& Beta = app.getScene()->createBody();
 			Beta->GetCollisionModel()->ClearModel();
 			Beta->GetCollisionModel()->AddSphere(1, chrono::ChVector<>(0, 0, 0));
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 			Beta->SetBodyFixed(false);
 
 			Beta->GetAssets().push_back(sphere2);
-			Beta->SetPos(chrono::ChVector<>(0, 20+(i*5), 0));
+			Beta->SetPos(chrono::ChVector<>(((double)l_rand() / (double)l_rand.max()) * 2, 20 + (i * 5), ((double)l_rand() / (double)l_rand.max()) * 2));
 			Beta.refresh();
 		}
 
@@ -109,8 +109,6 @@ int main(int argc, char *argv[])
 		Gamma.refresh();
 
 		
-
-		std::random_device l_rand;
 
 		Ogre::Light* yeh = app.getSceneManager()->createLight("Swag");
 		yeh->setType(Ogre::Light::LT_POINT);
