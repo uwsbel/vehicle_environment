@@ -22,52 +22,51 @@ int main(int argc, char *argv[])
 		EnvironmentCore::ECCamera* DebugCamera = app.getCameraManager()->createCamera("DebugCamera");
 		
 
-		DebugCamera->orient(0.0f, 80.0f, 600.0f, 0.0f, 0.0f, 0.0f);
+		DebugCamera->orient(200.0f, 200.0f, -600.0f, 0.0f, 0.0f, 0.0f);
 		
 
 		app.setCamera(DebugCamera);
 
 
 
-		EnvironmentCore::ECBody* Epsilon = app.getScene()->createBody();
-		EnvironmentCore::ECBody* Gamma = app.getScene()->createBody();
+		EnvironmentCore::ECBody& Epsilon = app.getScene()->createBody();
+		EnvironmentCore::ECBody& Gamma = app.getScene()->createBody();
 
-		
-		Epsilon->getChBody()->GetCollisionModel()->ClearModel();
-		Epsilon->getChBody()->GetCollisionModel()->AddSphere(2, chrono::ChVector<>(0, 0, 0));
+		Epsilon->GetCollisionModel()->ClearModel();
+		Epsilon->GetCollisionModel()->AddSphere(2, chrono::ChVector<>(0, 0, 0));
 
 		chrono::ChSharedPtr<chrono::ChSphereShape> sphere(new chrono::ChSphereShape);
 		sphere->GetSphereGeometry().rad = 2;
 		sphere->Pos = chrono::ChVector<>(0, 0, 0);
 		sphere->Rot = chrono::ChQuaternion<>(1, 0, 0, 0);
 
-		Epsilon->getChBody()->GetCollisionModel()->BuildModel();
+		Epsilon->GetCollisionModel()->BuildModel();
 
-		Epsilon->getChBody()->SetCollide(true);
-		Epsilon->getChBody()->SetBodyFixed(false);
+		Epsilon->SetCollide(true);
+		Epsilon->SetBodyFixed(false);
 
-		Epsilon->getChBody()->GetAssets().push_back(sphere);
-		Epsilon->getChBody()->SetPos(chrono::ChVector<>(10, 20, 0));
-		Epsilon->refresh();
+		Epsilon->GetAssets().push_back(sphere);
+		Epsilon->SetPos(chrono::ChVector<>(10, 20, 0));
+		Epsilon.refresh();
 
 
 
-		Gamma->getChBody()->GetCollisionModel()->ClearModel();
-		Gamma->getChBody()->GetCollisionModel()->AddBox(20, 1, 20, chrono::ChVector<>(0, 0, 0));
+		Gamma->GetCollisionModel()->ClearModel();
+		Gamma->GetCollisionModel()->AddBox(20, 1, 20, chrono::ChVector<>(0, 0, 0));
 
 		chrono::ChSharedPtr<chrono::ChBoxShape> box(new chrono::ChBoxShape);
 		box->GetBoxGeometry().Size = chrono::ChVector<>(20, 1, 20);
 		box->Pos = chrono::ChVector<>(0, 0, 0);
 		box->Rot = chrono::ChQuaternion<>(1, 0, 0, 0);
 
-		Gamma->getChBody()->GetCollisionModel()->BuildModel();
+		Gamma->GetCollisionModel()->BuildModel();
 
-		Gamma->getChBody()->SetCollide(true);
-		Gamma->getChBody()->SetBodyFixed(true);
+		Gamma->SetCollide(true);
+		Gamma->SetBodyFixed(true);
 
-		Gamma->getChBody()->GetAssets().push_back(box);
-		Gamma->getChBody()->SetPos(chrono::ChVector<>(10, -20, 0));
-		Gamma->refresh();
+		Gamma->GetAssets().push_back(box);
+		Gamma->SetPos(chrono::ChVector<>(10, -100, 0));
+		Gamma.refresh();
 
 		
 
@@ -79,13 +78,25 @@ int main(int argc, char *argv[])
 		yeh->setDiffuseColour(1.0f, 1.0f, 0.0f);
 		yeh->setSpecularColour(1.0f, 1.0f, 0.0f);
 
+		Ogre::Light* yeh2 = app.getSceneManager()->createLight("Que");
+		yeh2->setType(Ogre::Light::LT_POINT);
+		yeh2->setPosition(50.0f, 50.0f, 50.0f);
+		yeh2->setDiffuseColour(1.0f, 0.0f, 1.0f);
+		yeh2->setSpecularColour(1.0f, 0.0f, 1.0f);
 
-		app.getScene()->setAmbientLight(1.0f, 1.0f, 1.0f);
+		Ogre::Light* yeh3 = app.getSceneManager()->createLight("Holo");
+		yeh3->setType(Ogre::Light::LT_POINT);
+		yeh3->setPosition(50.0f, 80.0f, -80.0f);
+		yeh3->setDiffuseColour(0.0f, 1.0f, 1.0f);
+		yeh3->setSpecularColour(0.0f, 1.0f, 1.0f);
+
+
+		//app.getScene()->setAmbientLight(1.0f, 1.0f, 1.0f);
 
 		std::function<int()> Loop = [&]() {
 
-			Epsilon->update();
-			Gamma->update();
+			Epsilon.update();
+			Gamma.update();
 
 			return 0;
 		};

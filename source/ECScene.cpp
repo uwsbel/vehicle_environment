@@ -8,7 +8,11 @@ namespace EnvironmentCore {
 	}
 
 	ECScene::~ECScene() {
-
+		for (int i = 0; i < m_ECBodies.size(); i++) {
+			if (m_ECBodies[i]) {
+				delete m_ECBodies[i];
+			}
+		}
 	}
 
 
@@ -22,8 +26,9 @@ namespace EnvironmentCore {
 
 
 
-	ECBody* ECScene::createBody() {
+	ECBody& ECScene::createBody() {
 		ECBody* _ret = new ECBody(m_pSceneManager, m_pChSystem);
-		return _ret;
+		m_ECBodies.push_back(_ret);
+		return *_ret;
 	}
 }

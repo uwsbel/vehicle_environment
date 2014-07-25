@@ -34,7 +34,7 @@ namespace EnvironmentCore {
 		//Body Creation
 		///////
 
-		virtual ECBody* createBody();
+		virtual ECBody& createBody();
 
 
 	protected:
@@ -47,6 +47,8 @@ namespace EnvironmentCore {
 		////////
 		//Body Management/Storage
 		////////
+
+		std::vector<ECBody*> m_ECBodies;
 
 	private:
 

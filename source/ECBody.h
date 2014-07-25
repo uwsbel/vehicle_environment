@@ -1,3 +1,9 @@
+/*
+Author: Charles Ricchio
+
+ECBody is the basic physical body class. It will set up Ogre scene nodes to display the assets of its ChBody every time refresh() is called.
+*/
+
 #pragma once
 
 #include <vector>
@@ -31,6 +37,8 @@ namespace EnvironmentCore {
 		virtual void refresh();
 
 		virtual chrono::ChSharedBodyPtr getChBody();
+
+		virtual chrono::ChSharedBodyPtr operator-> (); //Operator magic. Allows a refrence to an ECBody to offer members as an ECBody object, and as a ChBody pointer
 
 	protected:
 

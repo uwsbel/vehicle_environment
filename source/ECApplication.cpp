@@ -97,13 +97,13 @@ namespace EnvironmentCore {
 
 	int EnvironmentCoreApplication::startLoop(std::function<int()> _func) {
 		int l_run = 0;
-		double l_systemTimeIncriment = 0.1;
+		double l_systemTimeIncriment = 0.0;
 		while (l_run == 0) {
 
 			l_run = _func();
 
 			m_pChSystem->DoFrameDynamics(l_systemTimeIncriment);
-			l_systemTimeIncriment += 0.01;
+			l_systemTimeIncriment += 0.05;
 
 			m_pViewport->update();
 

@@ -69,4 +69,8 @@ namespace EnvironmentCore {
 		return m_pBody;
 	}
 
+	chrono::ChSharedBodyPtr ECBody::operator-> () {
+		return getChBody();
+	}
+
 }
