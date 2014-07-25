@@ -25,6 +25,18 @@ namespace EnvironmentCore {
 			if (l_pAssetList[i].IsType<chrono::ChVisualization>()) {
 				chrono::ChVector<> _pos = ((chrono::ChVisualization*)l_pAssetList[i].get_ptr())->Pos;
 				m_SceneNodes[i]->setPosition((_pos.x + m_pBody->GetPos().x), (_pos.y + m_pBody->GetPos().y), (_pos.z) + m_pBody->GetPos().z);
+
+
+				chrono::ChQuaternion<> l_q;
+
+				chrono::ChBoxShape* shape = (chrono::ChBoxShape*)l_pAssetList[i].get_ptr();
+				l_q = m_pBody->GetRot() % shape->Rot.Get_A_quaternion();
+
+				double __w = l_q.e0;
+				double __x = l_q.e1;
+				double __y = l_q.e2;
+				double __z = l_q.e3;
+				m_SceneNodes[i]->setOrientation(__w, __x, __y, __z);
 			}
 		}
 	}
@@ -43,33 +55,44 @@ namespace EnvironmentCore {
 
 			if (temp_asset.IsType<chrono::ChBoxShape>()) {
 				l_pEntity = m_pSceneManager->createEntity("box.mesh");
-				double _w = chrono::static_cast_chshared<chrono::ChBoxShape>(temp_asset)->GetBoxGeometry().Size.x;
-				double _h = chrono::static_cast_chshared<chrono::ChBoxShape>(temp_asset)->GetBoxGeometry().Size.y;
-				double _d = chrono::static_cast_chshared<chrono::ChBoxShape>(temp_asset)->GetBoxGeometry().Size.z;
+				chrono::ChBoxShape* shape = (chrono::ChBoxShape*)temp_asset.get_ptr();
+				double _w = shape->GetBoxGeometry().Size.x;
+				double _h = shape->GetBoxGeometry().Size.y;
+				double _d = shape->GetBoxGeometry().Size.z;
 				l_pNode->setScale((Ogre::Real)_w, (Ogre::Real)_h, (Ogre::Real)_d);
 
-
-				/*double __w = chrono::static_cast_chshared<chrono::ChBoxShape>(temp_asset)->GetBoxGeometry();
-				double __x = chrono::static_cast_chshared<chrono::ChBoxShape>(temp_asset)->GetBoxGeometry();
-				double __y = chrono::static_cast_chshared<chrono::ChBoxShape>(temp_asset)->GetBoxGeometry();
-				double __z = chrono::static_cast_chshared<chrono::ChBoxShape>(temp_asset)->GetBoxGeometry();
-				l_pNode->setOrientation();*/
 			}
 			else if (temp_asset.IsType<chrono::ChCapsuleShape>()) {
 				
 			}
 			else if (temp_asset.IsType<chrono::ChConeShape>()) {
 				l_pEntity = m_pSceneManager->createEntity("cone.mesh");
+				chrono::ChConeShape* shape = (chrono::ChConeShape*)temp_asset.get_ptr();
+				double _r1 = shape->GetConeGeometry().rad.x;
+				double _r2 = shape->GetConeGeometry().rad.z;
+				double _h = shape->GetConeGeometry().rad.y;
+				l_pNode->setScale((Ogre::Real)_r1, (Ogre::Real)_h, (Ogre::Real)_r2);
 			}
 			else if (temp_asset.IsType<chrono::ChCylinderShape>()) {
 				l_pEntity = m_pSceneManager->createEntity("cylinder.mesh");
+				chrono::ChCylinderShape* shape = (chrono::ChCylinderShape*)temp_asset.get_ptr();
+
+				double _r1 = shape->GetCylinderGeometry().rad;
+				double _h = (shape->GetCylinderGeometry().p1 - shape->GetCylinderGeometry().p2).Length();
+				l_pNode->setScale((Ogre::Real)_r1, (Ogre::Real)_h, (Ogre::Real)_r1);
 			}
 			else if (temp_asset.IsType<chrono::ChEllipsoidShape>()) {
-				
+				l_pEntity = m_pSceneManager->createEntity("sphere.mesh");
+				chrono::ChEllipsoidShape* shape = (chrono::ChEllipsoidShape*)temp_asset.get_ptr();
+
+				double _rx = shape->GetEllipsoidGeometry().rad.x;
+				double _ry = shape->GetEllipsoidGeometry().rad.y;
+				double _rz = shape->GetEllipsoidGeometry().rad.z;
+				l_pNode->setScale((Ogre::Real)_rx, (Ogre::Real)_ry, (Ogre::Real)_rz);
 			}
 			else if (temp_asset.IsType<chrono::ChSphereShape>()) {
 				l_pEntity = m_pSceneManager->createEntity("sphere.mesh");
-				double _r = chrono::static_cast_chshared<chrono::ChSphereShape>(temp_asset)->GetSphereGeometry().rad * 2;
+				double _r = chrono::static_cast_chshared<chrono::ChSphereShape>(temp_asset)->GetSphereGeometry().rad;
 				l_pNode->setScale((Ogre::Real)_r, (Ogre::Real)_r, (Ogre::Real)_r);
 			}
 

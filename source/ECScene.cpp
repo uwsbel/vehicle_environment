@@ -31,4 +31,10 @@ namespace EnvironmentCore {
 		m_ECBodies.push_back(_ret);
 		return *_ret;
 	}
+
+	void ECScene::update() {
+		for (int i = 0; i < m_ECBodies.size(); i++) {
+			m_ECBodies[i]->update();
+		}
+	}
 }

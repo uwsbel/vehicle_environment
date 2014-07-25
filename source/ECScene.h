@@ -36,6 +36,8 @@ namespace EnvironmentCore {
 
 		virtual ECBody& createBody();
 
+		virtual void update();
+
 
 	protected:
 
