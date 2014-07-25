@@ -103,7 +103,7 @@ namespace EnvironmentCore {
 			l_run = _func();
 
 			m_pChSystem->DoFrameDynamics(l_systemTimeIncriment);
-			l_systemTimeIncriment += 0.05;
+			l_systemTimeIncriment += 0.01;
 
 			m_pViewport->update();
 

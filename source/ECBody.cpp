@@ -42,22 +42,35 @@ namespace EnvironmentCore {
 			Ogre::Entity* l_pEntity = nullptr;
 
 			if (temp_asset.IsType<chrono::ChBoxShape>()) {
-				l_pEntity = m_pSceneManager->createEntity("ninja.mesh");
+				l_pEntity = m_pSceneManager->createEntity("box.mesh");
+				double _w = chrono::static_cast_chshared<chrono::ChBoxShape>(temp_asset)->GetBoxGeometry().Size.x;
+				double _h = chrono::static_cast_chshared<chrono::ChBoxShape>(temp_asset)->GetBoxGeometry().Size.y;
+				double _d = chrono::static_cast_chshared<chrono::ChBoxShape>(temp_asset)->GetBoxGeometry().Size.z;
+				l_pNode->setScale((Ogre::Real)_w, (Ogre::Real)_h, (Ogre::Real)_d);
+
+
+				/*double __w = chrono::static_cast_chshared<chrono::ChBoxShape>(temp_asset)->GetBoxGeometry();
+				double __x = chrono::static_cast_chshared<chrono::ChBoxShape>(temp_asset)->GetBoxGeometry();
+				double __y = chrono::static_cast_chshared<chrono::ChBoxShape>(temp_asset)->GetBoxGeometry();
+				double __z = chrono::static_cast_chshared<chrono::ChBoxShape>(temp_asset)->GetBoxGeometry();
+				l_pNode->setOrientation();*/
 			}
 			else if (temp_asset.IsType<chrono::ChCapsuleShape>()) {
 				
 			}
 			else if (temp_asset.IsType<chrono::ChConeShape>()) {
-				
+				l_pEntity = m_pSceneManager->createEntity("cone.mesh");
 			}
 			else if (temp_asset.IsType<chrono::ChCylinderShape>()) {
-				
+				l_pEntity = m_pSceneManager->createEntity("cylinder.mesh");
 			}
 			else if (temp_asset.IsType<chrono::ChEllipsoidShape>()) {
 				
 			}
 			else if (temp_asset.IsType<chrono::ChSphereShape>()) {
-				l_pEntity = m_pSceneManager->createEntity("ninja.mesh");
+				l_pEntity = m_pSceneManager->createEntity("sphere.mesh");
+				double _r = chrono::static_cast_chshared<chrono::ChSphereShape>(temp_asset)->GetSphereGeometry().rad * 2;
+				l_pNode->setScale((Ogre::Real)_r, (Ogre::Real)_r, (Ogre::Real)_r);
 			}
 
 			l_pNode->attachObject(l_pEntity);

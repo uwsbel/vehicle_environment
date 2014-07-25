@@ -12,6 +12,7 @@ ECBody is the basic physical body class. It will set up Ogre scene nodes to disp
 
 #include <physics\ChSystem.h>
 #include <physics\ChBody.h>
+#include <core\ChSmartpointers.h>
 #include <assets\ChVisualization.h>
 #include <assets\ChBoxShape.h>
 #include <assets\ChCapsuleShape.h>

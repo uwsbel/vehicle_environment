@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 		EnvironmentCore::ECCamera* DebugCamera = app.getCameraManager()->createCamera("DebugCamera");
 		
 
-		DebugCamera->orient(200.0f, 200.0f, -600.0f, 0.0f, 0.0f, 0.0f);
+		DebugCamera->orient(0.0f, 1.0f, -15.0f, 0.0f, 0.0f, 0.0f);
 		
 
 		app.setCamera(DebugCamera);
@@ -33,10 +33,10 @@ int main(int argc, char *argv[])
 		EnvironmentCore::ECBody& Gamma = app.getScene()->createBody();
 
 		Epsilon->GetCollisionModel()->ClearModel();
-		Epsilon->GetCollisionModel()->AddSphere(2, chrono::ChVector<>(0, 0, 0));
+		Epsilon->GetCollisionModel()->AddSphere(1, chrono::ChVector<>(0, 0, 0));
 
 		chrono::ChSharedPtr<chrono::ChSphereShape> sphere(new chrono::ChSphereShape);
-		sphere->GetSphereGeometry().rad = 2;
+		sphere->GetSphereGeometry().rad = 1;
 		sphere->Pos = chrono::ChVector<>(0, 0, 0);
 		sphere->Rot = chrono::ChQuaternion<>(1, 0, 0, 0);
 
@@ -46,16 +46,16 @@ int main(int argc, char *argv[])
 		Epsilon->SetBodyFixed(false);
 
 		Epsilon->GetAssets().push_back(sphere);
-		Epsilon->SetPos(chrono::ChVector<>(10, 20, 0));
+		Epsilon->SetPos(chrono::ChVector<>(0, 20, 0));
 		Epsilon.refresh();
 
 
 
 		Gamma->GetCollisionModel()->ClearModel();
-		Gamma->GetCollisionModel()->AddBox(20, 1, 20, chrono::ChVector<>(0, 0, 0));
+		Gamma->GetCollisionModel()->AddBox(20, 0.1, 20, chrono::ChVector<>(0, 0, 0));
 
 		chrono::ChSharedPtr<chrono::ChBoxShape> box(new chrono::ChBoxShape);
-		box->GetBoxGeometry().Size = chrono::ChVector<>(20, 1, 20);
+		box->GetBoxGeometry().Size = chrono::ChVector<>(20, 0.1, 20);
 		box->Pos = chrono::ChVector<>(0, 0, 0);
 		box->Rot = chrono::ChQuaternion<>(1, 0, 0, 0);
 
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 		Gamma->SetBodyFixed(true);
 
 		Gamma->GetAssets().push_back(box);
-		Gamma->SetPos(chrono::ChVector<>(10, -100, 0));
+		Gamma->SetPos(chrono::ChVector<>(0, 0, 0));
 		Gamma.refresh();
 
 		
