@@ -41,6 +41,9 @@ namespace EnvironmentCore {
 
 		virtual chrono::ChSharedBodyPtr operator-> (); //Operator magic. Allows a refrence to an ECBody to offer members as an ECBody object, and as a ChBody pointer
 
+		std::string name;
+		bool deletable;
+
 	protected:
 
 		chrono::ChSharedBodyPtr m_pBody;

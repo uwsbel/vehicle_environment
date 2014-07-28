@@ -34,9 +34,62 @@ namespace EnvironmentCore {
 		//Body Creation
 		///////
 
-		virtual ECBody& createBody();
+		virtual ECBody& createBody(std::string Name="");
+
+		virtual ECBody& getBody(std::string Name);
+
+		virtual void removeBody(ECBody& Body);
+		virtual void removeBody(std::string Name);
 
 		virtual void update();
+
+		////////
+		//Convience functions
+		////////
+
+		virtual ECBody& spawnBox(	std::string Name = "", 
+									double mass = 1.0, 
+									chrono::ChVector<>& position = chrono::ChVector<>(0, 0, 0),
+									chrono::ChVector<>& size = chrono::ChVector<>(1, 1, 1), 
+									chrono::ChQuaternion<>& rotation = chrono::ChQuaternion<>(1, 0, 0, 0), 
+									bool fixed = false);
+
+		virtual ECBody& spawnCapsule(std::string Name = ""); // TODO: Actually implement the capsule
+
+		virtual ECBody& spawnCone(	std::string Name = "", 
+									double mass = 1.0, 
+									chrono::ChVector<>& position = chrono::ChVector<>(0, 0, 0), 
+									chrono::ChVector<>& size = chrono::ChVector<>(1, 1, 1),
+									chrono::ChQuaternion<>& rotation = chrono::ChQuaternion<>(1, 0, 0, 0), 
+									bool fixed = false);
+
+		virtual ECBody& spawnCylinder(	std::string Name = "", 
+										double mass = 1.0, 
+										chrono::ChVector<>& position = chrono::ChVector<>(0, 0, 0), 
+										chrono::ChVector<>& size = chrono::ChVector<>(1, 1, 1), 
+										chrono::ChQuaternion<>& rotation = chrono::ChQuaternion<>(1, 0, 0, 0),
+										bool fixed = false);
+
+		virtual ECBody& spawnEllipsoid(	std::string Name = "", 
+										double mass = 1.0, 
+										chrono::ChVector<>& position = chrono::ChVector<>(0, 0, 0),
+										chrono::ChVector<>& size = chrono::ChVector<>(1, 1, 1), 
+										chrono::ChQuaternion<>& rotation = chrono::ChQuaternion<>(1, 0, 0, 0), 
+										bool fixed = false);
+
+		virtual ECBody& spawnSphere(	std::string Name = "", 
+										double mass = 1.0, 
+										chrono::ChVector<>& position = chrono::ChVector<>(0, 0, 0), 
+										double radius = 1.0,
+										bool fixed = false);
+
+		////////
+		//Various world management functions
+		////////
+
+		virtual void setLowerLimit(double height);
+
+		virtual double getLowerLimit();
 
 
 	protected:
@@ -51,6 +104,8 @@ namespace EnvironmentCore {
 		////////
 
 		std::vector<ECBody*> m_ECBodies;
+
+		double m_LowerLimit;
 
 	private:
 

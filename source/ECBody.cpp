@@ -9,6 +9,9 @@ namespace EnvironmentCore {
 
 		m_pBody = chrono::ChSharedBodyPtr(new chrono::ChBody);
 		System->AddBody(m_pBody);
+
+		name = "";
+		deletable = true;
 	}
 
 	ECBody::~ECBody() {
@@ -17,6 +20,7 @@ namespace EnvironmentCore {
 				m_pSceneManager->getRootSceneNode()->removeChild(m_SceneNodes[i]);
 			}
 		}
+		m_pChSystem->RemoveBody(m_pBody);
 	}
 
 	void ECBody::update() {
@@ -31,6 +35,7 @@ namespace EnvironmentCore {
 
 				chrono::ChBoxShape* shape = (chrono::ChBoxShape*)l_pAssetList[i].get_ptr();
 				l_q = m_pBody->GetRot() % shape->Rot.Get_A_quaternion();
+				l_q.Normalize();
 
 				double __w = l_q.e0;
 				double __x = l_q.e1;
