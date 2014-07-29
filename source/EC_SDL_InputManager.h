@@ -28,9 +28,43 @@ namespace EnvironmentCore {
 		ECKeyState x1;
 		ECKeyState x2;
 
-		double x, y;
+		typedef struct __posState_t {
+			double x, y;
+			double xrel, yrel;
+			double timestamp;
+		} __posState;
 
-	} ECMouseState;;
+		__posState position;
+
+		typedef struct __wheelState_t {
+			double x, y;
+			double timestamp;
+		} __wheelState;
+
+		__wheelState wheel;
+
+	} ECMouseState;
+
+	typedef struct ECControllerState_t {
+
+		typedef struct __axisState_t {
+			double value;
+			double timestamp;
+		} __axisState;
+
+		__axisState stick1x, stick1y;
+		__axisState stick2x, sitck2y;
+		__axisState trigger;
+
+		ECKeyState a, b, x, y;
+		ECKeyState back, start;
+		ECKeyState stick1, stick2;
+		ECKeyState d_left, d_right, d_up, d_down;
+		ECKeyState rbumper, lbumper;
+
+	} ECControllerState;
+
+
 
 	class EC_SDL_InputManager {
 
@@ -56,6 +90,7 @@ namespace EnvironmentCore {
 		std::map<SDL_Keycode, ECKeyState> m_KeyStates_keycode;
 
 		ECMouseState m_MouseState;
+		ECControllerState m_ControllerState;
 
 	private:
 

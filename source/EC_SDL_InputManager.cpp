@@ -5,6 +5,7 @@
 #endif
 
 #include <string>
+#include <climits>
 #include "EC_SDL_InputManager.h"
 
 namespace EnvironmentCore {
@@ -77,6 +78,56 @@ namespace EnvironmentCore {
 				case SDL_BUTTON_X2: m_MouseState.x2.down = false; m_MouseState.x2.timestamp = (double)(_event.button.timestamp) / 1000.0; break;
 				}
 			}
+			else if (_event.type == SDL_MOUSEMOTION) {
+				m_MouseState.position.timestamp = (double)(_event.motion.timestamp) / 1000.0;
+
+				m_MouseState.position.x = (double)(_event.motion.x) / (double)INT_MAX;
+				m_MouseState.position.y = (double)(_event.motion.y) / (double)INT_MAX;
+				m_MouseState.position.xrel = (double)(_event.motion.xrel) / (double)INT_MAX;
+				m_MouseState.position.yrel = (double)(_event.motion.yrel) / (double)INT_MAX;
+
+				if (_event.motion.state & SDL_BUTTON_LMASK) {
+					m_MouseState.left.down = true;
+				}
+				else {
+					m_MouseState.left.down = false;
+				}
+
+				if (_event.motion.state & SDL_BUTTON_RMASK) {
+					m_MouseState.right.down = true;
+				}
+				else {
+					m_MouseState.right.down = false;
+				}
+
+				if (_event.motion.state & SDL_BUTTON_MMASK) {
+					m_MouseState.middle.down = true;
+				}
+				else {
+					m_MouseState.middle.down = false;
+				}
+
+				if (_event.motion.state & SDL_BUTTON_X1MASK) {
+					m_MouseState.x1.down = true;
+				}
+				else {
+					m_MouseState.x1.down = false;
+				}
+
+				if (_event.motion.state & SDL_BUTTON_X2MASK) {
+					m_MouseState.x2.down = true;
+				}
+				else {
+					m_MouseState.x2.down = false;
+				}
+
+			}
+			else if (_event.type == SDL_MOUSEWHEEL) {
+				m_MouseState.wheel.timestamp = (double)(_event.wheel.timestamp) / 1000.0;
+				m_MouseState.wheel.x = (double)(_event.wheel.x) / (double)INT_MAX;
+				m_MouseState.wheel.y = (double)(_event.wheel.y) / (double)INT_MAX;
+			}
+
 		}
 
 	}
