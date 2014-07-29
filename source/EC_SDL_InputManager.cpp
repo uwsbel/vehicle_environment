@@ -127,6 +127,15 @@ namespace EnvironmentCore {
 				m_MouseState.wheel.x = (double)(_event.wheel.x) / (double)INT_MAX;
 				m_MouseState.wheel.y = (double)(_event.wheel.y) / (double)INT_MAX;
 			}
+			else if (_event.type == SDL_CONTROLLERAXISMOTION) {
+
+			}
+			else if (_event.type == SDL_CONTROLLERBUTTONDOWN) {
+
+			}
+			else if (_event.type == SDL_CONTROLLERBUTTONUP) {
+
+			}
 
 		}
 
