@@ -85,6 +85,8 @@ namespace EnvironmentCore {
 
 		}
 
+		timestep = 0;
+
 	}
 
 	EnvironmentCoreApplication::~EnvironmentCoreApplication() {
@@ -98,12 +100,22 @@ namespace EnvironmentCore {
 	int EnvironmentCoreApplication::startLoop(std::function<int()> _func) {
 		int l_run = 0;
 		double l_systemTimeIncriment = 0.0;
+
+		std::chrono::high_resolution_clock l_time;
+		auto l_start = l_time.now();
+
 		while (l_run == 0) {
 
 			l_run = _func();
 
 			m_pChSystem->DoFrameDynamics(l_systemTimeIncriment);
-			l_systemTimeIncriment += 0.01;
+
+			if (timestep > 0) {
+				l_systemTimeIncriment += timestep;
+			}
+			else {
+				l_systemTimeIncriment = ((double)(std::chrono::duration_cast<std::chrono::milliseconds>(l_time.now()-l_start).count())) / 1000.0;
+			}
 
 			m_pViewport->update();
 

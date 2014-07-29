@@ -20,13 +20,9 @@ int main(int argc, char *argv[])
 		EnvironmentCore::EnvironmentCoreApplication app;
 		app.createWindow("Test", 800, 600, 0, false, false);
 
-		app.getScene()->setLowerLimit(-50);
-
 		EnvironmentCore::ECCamera* DebugCamera = app.getCameraManager()->createCamera("DebugCamera");
 		
-
 		DebugCamera->orient(50.0f, 20.0f, -50.0f, 0.0f, 0.0f, 0.0f);
-		
 
 		app.setCamera(DebugCamera);
 
@@ -267,7 +263,7 @@ int main(int argc, char *argv[])
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0),
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0)));
 
-		EnvironmentCore::ECBody& Gamma = app.getScene()->spawnBox("Platform", 1.0, chrono::ChVector<>(0, -10, 0), chrono::ChVector<>(25, 0.5, 100), chrono::ChQuaternion<>(1, 0, 0, 0), true);
+		EnvironmentCore::ECBody& Gamma = app.getScene()->spawnBox("Platform", 1.0, chrono::ChVector<>(0, -10, 0), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
 
 		/*EnvironmentCore::ECBody& Theta = app.getScene()->spawnEllipsoid("Theta", 1.0, chrono::ChVector<>(0, 30, 0), chrono::ChVector<>(2, 5, 2));
 		Theta->SetInertiaXX(chrono::ChVector<>(
@@ -298,21 +294,32 @@ int main(int argc, char *argv[])
 
 		Ogre::Light* yeh = app.getSceneManager()->createLight("Swag");
 		yeh->setType(Ogre::Light::LT_POINT);
-		yeh->setPosition(0.0f, 10.0f, 0.0f);
+		yeh->setPosition(0.0f, 100.0f, 0.0f);
 		yeh->setDiffuseColour(1.0f, 1.0f, 0.0f);
 		yeh->setSpecularColour(1.0f, 1.0f, 0.0f);
+		yeh->setDirection(0.0f, 0.0f, 0.0f);
+		yeh->setPowerScale(400.0f);
 
 		Ogre::Light* yeh2 = app.getSceneManager()->createLight("Que");
 		yeh2->setType(Ogre::Light::LT_POINT);
-		yeh2->setPosition(50.0f, 50.0f, 50.0f);
+		yeh2->setPosition(500.0f, 500.0f, 500.0f);
 		yeh2->setDiffuseColour(1.0f, 0.0f, 1.0f);
 		yeh2->setSpecularColour(1.0f, 0.0f, 1.0f);
+		yeh2->setDirection(0.0f, 0.0f, 0.0f);
+		yeh2->setPowerScale(400.0f);
 
 		Ogre::Light* yeh3 = app.getSceneManager()->createLight("Holo");
 		yeh3->setType(Ogre::Light::LT_POINT);
-		yeh3->setPosition(50.0f, 80.0f, -80.0f);
+		yeh3->setPosition(500.0f, 800.0f, -800.0f);
 		yeh3->setDiffuseColour(0.0f, 1.0f, 1.0f);
 		yeh3->setSpecularColour(0.0f, 1.0f, 1.0f);
+		yeh3->setDirection(0.0f, 0.0f, 0.0f);
+		yeh3->setPowerScale(400.0f);
+
+		Ogre::Light* follow = app.getSceneManager()->createLight("Follow");
+		follow->setType(Ogre::Light::LT_POINT);
+		follow->setDiffuseColour(1.0f, 1.0f, 1.0f);
+		follow->setSpecularColour(1.0f, 1.0f, 1.0f);
 
 
 		//app.getScene()->setAmbientLight(1.0f, 1.0f, 1.0f);
@@ -322,8 +329,10 @@ int main(int argc, char *argv[])
 
 		std::function<int()> Loop = [&]() {
 
-			DebugCamera->orient(truss->GetPos().x, truss->GetPos().y+6, truss->GetPos().z+10, truss->GetPos().x, truss->GetPos().y+2, truss->GetPos().z);
+			DebugCamera->orient(truss->GetPos().x, truss->GetPos().y+10, truss->GetPos().z+14, truss->GetPos().x, truss->GetPos().y+6, truss->GetPos().z);
 			app.setCamera(DebugCamera);
+
+			follow->setPosition(truss->GetPos().x, truss->GetPos().y + 10, truss->GetPos().z + 14);
 
 			app.getScene()->update();
 

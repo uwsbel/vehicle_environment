@@ -5,7 +5,7 @@ namespace EnvironmentCore {
 	ECScene::ECScene(Ogre::SceneManager* SceneManager, chrono::ChSystem* System) {
 		m_pSceneManager = SceneManager;
 		m_pChSystem = System;
-		m_LowerLimit = -10;
+		m_LowerLimit = 0;
 	}
 
 	ECScene::~ECScene() {
@@ -73,7 +73,7 @@ namespace EnvironmentCore {
 	void ECScene::update() {
 		for (unsigned int i = 0; i < m_ECBodies.size(); i++) {
 			m_ECBodies[i]->update();
-			if (m_ECBodies[i]->getChBody()->GetPos().y < m_LowerLimit && m_ECBodies[i]->deletable == true) {
+			if (m_ECBodies[i]->getChBody()->GetPos().y < m_LowerLimit && m_ECBodies[i]->deletable == true && m_LowerLimit < 0) {
 				removeBody(*m_ECBodies[i]);
 			}
 		}

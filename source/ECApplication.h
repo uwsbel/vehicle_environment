@@ -7,6 +7,7 @@ Contains the prototype for a basic application. Manages things such as window cr
 #pragma once
 
 #include <OGRE\Ogre.h>
+#include <OIS\OIS.h>
 
 #include <memory>
 #include <exception>
@@ -44,6 +45,8 @@ namespace EnvironmentCore {
 		virtual chrono::ChSystem* getChSystem();
 
 		static void logMessage(const std::string& Message, Ogre::LogMessageLevel lml = Ogre::LML_NORMAL, bool maskDebug = false);
+
+		double timestep; //Set to 0 for real-time time-step. Default 0
 
 	protected:
 
