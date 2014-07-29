@@ -92,7 +92,6 @@ namespace EnvironmentCore {
 	EnvironmentCoreApplication::~EnvironmentCoreApplication() {
 		delete m_pCameraManager;
 		delete m_pScene;
-		m_pRoot->destroySceneManager(m_pSceneManager);
 		delete m_pChSystem;
 		closeWindow();
 	}
@@ -106,7 +105,11 @@ namespace EnvironmentCore {
 
 		while (l_run == 0) {
 
+			m_pInputManager->update();
+
 			l_run = _func();
+
+			m_pScene->update();
 
 			m_pChSystem->DoFrameDynamics(l_systemTimeIncriment);
 
@@ -114,7 +117,7 @@ namespace EnvironmentCore {
 				l_systemTimeIncriment += timestep;
 			}
 			else {
-				l_systemTimeIncriment = ((double)(std::chrono::duration_cast<std::chrono::milliseconds>(l_time.now()-l_start).count())) / 1000.0;
+				l_systemTimeIncriment = ((double)(std::chrono::duration_cast<std::chrono::milliseconds>(l_time.now()-l_start).count())) / 1000.0; //converts standard library time difference to a double for Chrono
 			}
 
 			m_pViewport->update();
@@ -125,6 +128,7 @@ namespace EnvironmentCore {
 			m_pRoot->renderOneFrame();
 
 			m_pCamera->setAspectRatio((((float)(m_pViewport->getActualWidth())) / ((float)(m_pViewport->getActualHeight()))));
+			//m_pInputManager->setWindowExtents(m_pViewport->getActualWidth(), m_pViewport->getActualHeight());
 
 			Ogre::WindowEventUtilities::messagePump();
 
@@ -160,6 +164,8 @@ namespace EnvironmentCore {
 
 
 		m_pRoot->clearEventTimes();
+
+		m_pInputManager = new EC_SDL_InputManager(m_pRenderWindow);
 
 		return m_pRenderWindow;
 	}
@@ -216,6 +222,10 @@ namespace EnvironmentCore {
 
 	ECScene* EnvironmentCoreApplication::getScene() {
 		return m_pScene;
+	}
+
+	EC_SDL_InputManager* EnvironmentCoreApplication::getInputManager() {
+		return m_pInputManager;
 	}
 
 	Ogre::RenderWindow* EnvironmentCoreApplication::getWindow() {

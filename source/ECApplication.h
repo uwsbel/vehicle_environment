@@ -7,7 +7,6 @@ Contains the prototype for a basic application. Manages things such as window cr
 #pragma once
 
 #include <OGRE\Ogre.h>
-#include <OIS\OIS.h>
 
 #include <memory>
 #include <exception>
@@ -16,6 +15,7 @@ Contains the prototype for a basic application. Manages things such as window cr
 #include <vector>
 #include <random>
 
+#include "EC_SDL_InputManager.h"
 #include "ECCameraManager.h"
 #include "ECScene.h"
 
@@ -40,6 +40,7 @@ namespace EnvironmentCore {
 
 		virtual ECCameraManager* getCameraManager();
 		virtual ECScene* getScene();
+		virtual EC_SDL_InputManager* getInputManager();
 		virtual Ogre::RenderWindow* getWindow();
 		virtual Ogre::SceneManager* getSceneManager();
 		virtual chrono::ChSystem* getChSystem();
@@ -62,6 +63,7 @@ namespace EnvironmentCore {
 
 		ECCameraManager* m_pCameraManager;
 		ECScene* m_pScene;
+		EC_SDL_InputManager* m_pInputManager;
 
 		bool isVSyncEnabled;
 

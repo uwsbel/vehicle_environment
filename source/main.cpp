@@ -264,6 +264,7 @@ int main(int argc, char *argv[])
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0)));
 
 		EnvironmentCore::ECBody& Gamma = app.getScene()->spawnBox("Platform", 1.0, chrono::ChVector<>(0, -10, 0), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
+		Gamma->SetFriction(10);
 
 		/*EnvironmentCore::ECBody& Theta = app.getScene()->spawnEllipsoid("Theta", 1.0, chrono::ChVector<>(0, 30, 0), chrono::ChVector<>(2, 5, 2));
 		Theta->SetInertiaXX(chrono::ChVector<>(
@@ -327,14 +328,74 @@ int main(int argc, char *argv[])
 		std::chrono::high_resolution_clock l_time;
 		auto l_start = l_time.now();
 
+		double throttle = 0; // actual value 0...1 of gas throttle.
+		double conic_tau = 1; // the transmission ratio of the conic gears at the rear axle
+		double gear_tau = 1; // the actual tau of the gear
+		double max_motor_torque = 30; // the max torque of the motor [Nm];
+		double max_motor_speed = 100;	 // the max rotation speed of the motor [rads/s]
+
 		std::function<int()> Loop = [&]() {
 
-			DebugCamera->orient(truss->GetPos().x, truss->GetPos().y+10, truss->GetPos().z+14, truss->GetPos().x, truss->GetPos().y+6, truss->GetPos().z);
+			if (app.getInputManager()->getMouseState().left.down) {
+				EnvironmentCore::ECBody& Alpha = app.getScene()->spawnBox("Boox", 1, chrono::ChVector<>(truss->GetPos().x, truss->GetPos().y+20, truss->GetPos().z), chrono::ChVector<>(1, 1, 1));
+				Alpha->SetInertiaXX(chrono::ChVector<>(
+					((1.0 / 12.0)*Alpha->GetMass() * 8.0),
+					((1.0 / 12.0)*Alpha->GetMass() * 8.0),
+					((1.0 / 12.0)*Alpha->GetMass() * 8.0)));
+
+				chrono::ChSharedForcePtr force(new chrono::ChForce);
+	
+				force->SetBody((Alpha.getChBody().get_ptr()));
+
+			}
+
+
+			
+
+			if (app.getInputManager()->getKeyState(SDL_SCANCODE_W).down) {
+				throttle = 1;
+			}
+			else {
+				throttle = 0;
+			}
+
+			if (app.getInputManager()->getKeyState(SDL_SCANCODE_ESCAPE).down) {
+				return 1;
+			}
+
+
+			double shaftspeed = (1.0 / conic_tau) * 0.5 *
+				(link_engineL->Get_mot_rot_dt() + link_engineR->Get_mot_rot_dt());
+			// The motorspeed is the shaft speed multiplied by gear ratio inversed:
+			double motorspeed = (1.0 / gear_tau)*shaftspeed;
+			// The torque depends on speed-torque curve of the motor: here we assume a
+			// very simplified model a bit like in DC motors:
+			double motortorque = max_motor_torque - motorspeed*(max_motor_torque / max_motor_speed);
+			// Motor torque is linearly modulated by throttle gas value:
+			motortorque = motortorque *  throttle;
+			// The torque at motor shaft:
+			double shafttorque = motortorque * (1.0 / gear_tau);
+			// The torque at wheels - for each wheel, given the differential transmission,
+			// it is half of the shaft torque  (multiplied the conic gear transmission ratio)
+			double singlewheeltorque = 0.5 * shafttorque * (1.0 / conic_tau);
+			// Set the wheel torque in both 'engine' links, connecting the wheels to the truss;
+			if (chrono::ChFunction_Const* mfun = dynamic_cast<chrono::ChFunction_Const*>(link_engineL->Get_tor_funct()))
+				mfun->Set_yconst(singlewheeltorque);
+			if (chrono::ChFunction_Const* mfun = dynamic_cast<chrono::ChFunction_Const*>(link_engineR->Get_tor_funct()))
+				mfun->Set_yconst(singlewheeltorque);
+			//debug:print infos on screen:
+			//GetLog() << "motor torque="<< motortorque<< "  speed=" << motorspeed << "  wheel torqe=" << singlewheeltorque <<"\n";
+			// If needed, return also the value of wheel torque:
+
+
+			follow->setDiffuseColour((float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed));
+			follow->setSpecularColour((float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed));
+
+			DebugCamera->orient(truss->GetPos().x, truss->GetPos().y+10, truss->GetPos().z-25, truss->GetPos().x, truss->GetPos().y+6, truss->GetPos().z);
 			app.setCamera(DebugCamera);
 
 			follow->setPosition(truss->GetPos().x, truss->GetPos().y + 10, truss->GetPos().z + 14);
 
-			app.getScene()->update();
 
 			return 0;
 		};

@@ -1,3 +1,9 @@
+/*
+Author: Charles Ricchio
+
+Contains the definitions for ECScene
+*/
+
 #include "ECScene.h"
 
 namespace EnvironmentCore {
