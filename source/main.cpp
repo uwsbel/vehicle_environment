@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 {
 	try {
 		EnvironmentCore::EnvironmentCoreApplication app;
-		app.createWindow("Test", 800, 600, 0, false, false);
+		app.createWindow("Test", 1280, 720, 0, false, false);
 
 		EnvironmentCore::ECCamera* DebugCamera = app.getCameraManager()->createCamera("DebugCamera");
 		
@@ -30,16 +30,16 @@ int main(int argc, char *argv[])
 
 		std::random_device l_rand;
 
-		EnvironmentCore::ECBody& truss = app.getScene()->spawnBox("Truss", 150.0, chrono::ChVector<>(0, 1, 0), chrono::ChVector<>(1, 0.5, 3));
+		EnvironmentCore::ECBody& truss = app.getScene()->spawnBox("Truss", 150.0, chrono::ChVector<>(0, 1, 0), chrono::ChVector<>(1.0, 0.5, 3)*.5);
 		truss->SetInertiaXX(chrono::ChVector<>(4.8, 4.5, 1));
 		truss.deletable = false;
 
-		EnvironmentCore::ECBody& spindleRF = app.getScene()->spawnBox("SpindleRF", 8.0, chrono::ChVector<>(1.3, 1, 1), chrono::ChVector<>(0.1, 0.4, 0.4));
+		EnvironmentCore::ECBody& spindleRF = app.getScene()->spawnBox("SpindleRF", 8.0, chrono::ChVector<>(1.3, 1, 1), chrono::ChVector<>(0.1, 0.4, 0.4)*.5);
 		spindleRF->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
 		spindleRF->SetCollide(false);
 		spindleRF.deletable = false;
 
-		EnvironmentCore::ECBody& wheelRF = app.getScene()->spawnCylinder("WheelRF", 3.0, chrono::ChVector<>(1.5, 1, 1), chrono::ChVector<>(0.9, 0.3, 0.9), chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
+		EnvironmentCore::ECBody& wheelRF = app.getScene()->spawnEllipsoid("WheelRF", 3.0, chrono::ChVector<>(1.5, 1, 1), chrono::ChVector<>(0.9, 0.3, 0.9)*.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
 		wheelRF->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
 		wheelRF->SetFriction(1.0);
 		wheelRF.deletable = false;
@@ -52,12 +52,12 @@ int main(int argc, char *argv[])
 		chrono::ChSharedPtr<chrono::ChLinkSpring>   link_springRF;
 		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distRSTEER;
 
-		EnvironmentCore::ECBody& spindleLF = app.getScene()->spawnBox("SpindleLF", 8.0, chrono::ChVector<>(-1.3, 1, 1), chrono::ChVector<>(0.1, 0.4, 0.4));
+		EnvironmentCore::ECBody& spindleLF = app.getScene()->spawnBox("SpindleLF", 8.0, chrono::ChVector<>(-1.3, 1, 1), chrono::ChVector<>(0.1, 0.4, 0.4)*.5);
 		spindleLF->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
 		spindleLF->SetCollide(false);
 		spindleLF.deletable = false;
 
-		EnvironmentCore::ECBody& wheelLF = app.getScene()->spawnCylinder("WheelLF", 3.0, chrono::ChVector<>(-1.5, 1, 1), chrono::ChVector<>(0.9, 0.3, 0.9), chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
+		EnvironmentCore::ECBody& wheelLF = app.getScene()->spawnEllipsoid("WheelLF", 3.0, chrono::ChVector<>(-1.5, 1, 1), chrono::ChVector<>(0.9, 0.3, 0.9)*.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
 		wheelLF->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
 		wheelLF->SetFriction(1.0);
 		wheelLF.deletable = false;
@@ -70,12 +70,12 @@ int main(int argc, char *argv[])
 		chrono::ChSharedPtr<chrono::ChLinkSpring>   link_springLF;
 		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distLSTEER;
 
-		EnvironmentCore::ECBody& spindleRB = app.getScene()->spawnBox("SpindleRB", 8.0, chrono::ChVector<>(1.3, 1, -1),  chrono::ChVector<>(0.1, 0.4, 0.4));
+		EnvironmentCore::ECBody& spindleRB = app.getScene()->spawnBox("SpindleRB", 8.0, chrono::ChVector<>(1.3, 1, -1), chrono::ChVector<>(0.1, 0.4, 0.4)*.5);
 		spindleRB->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
 		spindleRB->SetCollide(false);
 		spindleRB.deletable = false;
 
-		EnvironmentCore::ECBody& wheelRB = app.getScene()->spawnCylinder("WheelRB", 3.0, chrono::ChVector<>(1.5, 1, -1), chrono::ChVector<>(0.9, 0.3, 0.9), chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
+		EnvironmentCore::ECBody& wheelRB = app.getScene()->spawnEllipsoid("WheelRB", 3.0, chrono::ChVector<>(1.5, 1, -1), chrono::ChVector<>(0.9, 0.3, 0.9)*.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
 		wheelRB->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
 		wheelRB->SetFriction(1.0);
 		wheelRB.deletable = false;
@@ -89,12 +89,12 @@ int main(int argc, char *argv[])
 		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distRBlat;
 		chrono::ChSharedPtr<chrono::ChLinkEngine>   link_engineL;
 
-		EnvironmentCore::ECBody& spindleLB = app.getScene()->spawnBox("SpindleLB", 8.0, chrono::ChVector<>(-1.3, 1, -1), chrono::ChVector<>(0.1, 0.4, 0.4));
+		EnvironmentCore::ECBody& spindleLB = app.getScene()->spawnBox("SpindleLB", 8.0, chrono::ChVector<>(-1.3, 1, -1), chrono::ChVector<>(0.1, 0.4, 0.4)*.5);
 		spindleLB->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
 		spindleLB->SetCollide(false);
 		spindleLB.deletable = false;
 
-		EnvironmentCore::ECBody& wheelLB = app.getScene()->spawnCylinder("WheelLB", 3.0, chrono::ChVector<>(-1.5, 1, -1), chrono::ChVector<>(0.9, 0.3, 0.9), chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
+		EnvironmentCore::ECBody& wheelLB = app.getScene()->spawnEllipsoid("WheelLB", 3.0, chrono::ChVector<>(-1.5, 1, -1), chrono::ChVector<>(0.9, 0.3, 0.9)*.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
 		wheelLB->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
 		wheelLB->SetFriction(1.0);
 		wheelLB.deletable = false;
@@ -325,20 +325,33 @@ int main(int argc, char *argv[])
 		follow->setSpecularColour(1.0f, 1.0f, 1.0f);
 
 
+
+		chrono::ChVector<> direction = chrono::ChVector<>(0, 0, 5);
+		chrono::ChQuaternion<> dirRot = truss->GetRot();
+		dirRot.Normalize();
+		direction = dirRot.Rotate(chrono::ChVector<>(0, 0, 5));
+
+		chrono::ChVector<> camera_pos;
+		chrono::ChVector<> camera_tpos;
+		chrono::ChVector<> look_at;
+		chrono::ChVector<> camera_vel;
+
 		//app.getScene()->setAmbientLight(1.0f, 1.0f, 1.0f);
 
 		std::chrono::high_resolution_clock l_time;
 		auto l_start = l_time.now();
 
 		double throttle = 0; // actual value 0...1 of gas throttle.
-		double conic_tau = 1; // the transmission ratio of the conic gears at the rear axle
-		double gear_tau = 1; // the actual tau of the gear
+		double conic_tau = 10; // the transmission ratio of the conic gears at the rear axle
+		double gear_tau = 0.5; // the actual tau of the gear
 		double max_motor_torque = 30; // the max torque of the motor [Nm];
 		double max_motor_speed = 100;	 // the max rotation speed of the motor [rads/s]
 
+		app.getChSystem()->SetIterLCPmaxItersSpeed(20);
+
 		std::function<int()> Loop = [&]() {
 
-			if (app.getInputManager()->getMouseState().left.down) {
+			if (app.getInputManager()->getMouseState().right.down || app.getInputManager()->getControllerState().b.down) {
 				EnvironmentCore::ECBody& Alpha = app.getScene()->spawnBox("Boox", 1, chrono::ChVector<>(truss->GetPos().x, truss->GetPos().y+20, truss->GetPos().z), chrono::ChVector<>(1, 1, 1));
 				Alpha->SetInertiaXX(chrono::ChVector<>(
 					((1.0 / 12.0)*Alpha->GetMass() * 8.0),
@@ -355,9 +368,19 @@ int main(int argc, char *argv[])
 				truss->SetPos_dt(chrono::ChVector<>(0, 5, 0));
 			}
 			
+			double steer = 0.05*((double)((double)INT_MAX * -1.0 * app.getInputManager()->getControllerState().lstickx.value));
 
-			if (app.getInputManager()->getKeyState(SDL_SCANCODE_W).down) {
-				throttle = 1;
+			if (steer > 0.1){
+				steer = 0.1;
+			}else if (steer < -.1){
+				steer = -.1;
+			}
+
+			link_distRSTEER->SetEndPoint1Rel(chrono::ChVector<>(0.5 + steer, 0.21, 1.4));
+			link_distLSTEER->SetEndPoint1Rel(chrono::ChVector<>(-0.5 + steer, 0.21, 1.4));
+
+			if (app.getInputManager()->getKeyState(SDL_SCANCODE_W).down || (app.getInputManager()->getControllerState().rtrigger.value > 0.50)) {
+				throttle = 40 * app.getInputManager()->getControllerState().rtrigger.value;
 			}
 			else {
 				throttle = 0;
@@ -366,7 +389,6 @@ int main(int argc, char *argv[])
 			if (app.getInputManager()->getKeyState(SDL_SCANCODE_ESCAPE).down) {
 				return 1;
 			}
-
 
 			double shaftspeed = (1.0 / conic_tau) * 0.5 *
 				(link_engineL->Get_mot_rot_dt() + link_engineR->Get_mot_rot_dt());
@@ -395,7 +417,26 @@ int main(int argc, char *argv[])
 			follow->setDiffuseColour((float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed));
 			follow->setSpecularColour((float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed));
 
-			DebugCamera->orient(truss->GetPos().x, truss->GetPos().y+10, truss->GetPos().z-25, truss->GetPos().x, truss->GetPos().y+6, truss->GetPos().z);
+
+			dirRot = truss->GetRot();
+			dirRot.Normalize();
+			direction = dirRot.Rotate(chrono::ChVector<>(0, 0, -10));
+
+			look_at = truss->GetPos();
+			camera_tpos = (truss->GetPos() + direction);
+
+			auto camera_dpos = camera_tpos - camera_pos;
+
+			auto fSpring = (camera_dpos * 1000) - (camera_vel * 200);
+
+			auto cam_accel = fSpring / 5;
+
+			camera_vel = camera_vel + cam_accel * app.timestep;
+
+			camera_pos = camera_pos + camera_vel * app.timestep + 0.5 * cam_accel * app.timestep * app.timestep;
+			
+
+			DebugCamera->orient(camera_pos.x, camera_pos.y + 10, camera_pos.z, look_at.x, look_at.y+6, look_at.z);
 			app.setCamera(DebugCamera);
 
 			follow->setPosition(truss->GetPos().x, truss->GetPos().y + 10, truss->GetPos().z + 14);

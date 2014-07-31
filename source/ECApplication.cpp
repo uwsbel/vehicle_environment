@@ -177,16 +177,19 @@ namespace EnvironmentCore {
 
 	void EnvironmentCoreApplication::setCamera(ECCamera* Camera) {
 		m_pCamera->setPosition(Camera->x, Camera->y, Camera->z);
-		if (!Camera->useAngles) {
+		if (!Camera->useAngles && !Camera->useQuaternions) {
 			m_pCamera->lookAt(Camera->wx, Camera->wy, Camera->wz);
 			//logMessage("Camera positioned at: " + std::to_string(Camera->x) + " " + std::to_string(Camera->y) + " " + std::to_string(Camera->z) + "  Looking at: " + std::to_string(Camera->wx) + " " + std::to_string(Camera->wy) + " " + std::to_string(Camera->wz));
 		}
-		else {
+		else if (Camera->useAngles && !Camera->useQuaternions) {
 			auto _yaw = Ogre::Degree::Degree(Camera->yaw);
 			auto _pitch = Ogre::Degree::Degree(Camera->pitch);
 			m_pCamera->yaw(Ogre::Radian::Radian(_yaw));
 			m_pCamera->pitch(Ogre::Radian::Radian(_pitch));
 			//logMessage("Camera positioned at: " + std::to_string(Camera->x) + " " + std::to_string(Camera->y) + " " + std::to_string(Camera->z) + "  Looking at: " + std::to_string(Camera->yaw) + " " + std::to_string(Camera->pitch));
+		}
+		else if (!Camera->useAngles && Camera->useQuaternions) {
+			m_pCamera->rotate(Ogre::Quaternion(Camera->rot.e0, Camera->rot.e1, Camera->rot.e2, Camera->rot.e3));
 		}
 	}
 

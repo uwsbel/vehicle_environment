@@ -8,7 +8,7 @@
 #include <climits>
 #include "EC_SDL_InputManager.h"
 
-#define INPUT_DEADZONE  ( ( 0.24 * (double)(0x7FFF) ) / (double)(SHRT_MAX) )
+#define INPUT_DEADZONE  ( ( 0.26 * (double)(0x7FFF) ) / (double)(SHRT_MAX) )
 
 namespace EnvironmentCore {
 
@@ -157,6 +157,18 @@ namespace EnvironmentCore {
 					case 3: m_ControllerState.rsticky.value = ((double)_event.jaxis.value / (double)SHRT_MAX); m_ControllerState.rsticky.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
 					case 4: m_ControllerState.ltrigger.value = ((double)_event.jaxis.value / (double)SHRT_MAX); m_ControllerState.ltrigger.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
 					case 5: m_ControllerState.rtrigger.value = ((double)_event.jaxis.value / (double)SHRT_MAX); m_ControllerState.rtrigger.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+					}
+
+				}
+				else {
+
+					switch (_event.jaxis.axis) {
+					case 0: m_ControllerState.lstickx.value = 0; m_ControllerState.lstickx.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+					case 1: m_ControllerState.lsticky.value = 0; m_ControllerState.lsticky.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+					case 2: m_ControllerState.rstickx.value = 0; m_ControllerState.rstickx.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+					case 3: m_ControllerState.rsticky.value = 0; m_ControllerState.rsticky.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+					case 4: m_ControllerState.ltrigger.value = 0; m_ControllerState.ltrigger.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+					case 5: m_ControllerState.rtrigger.value = 0; m_ControllerState.rtrigger.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
 					}
 
 				}
