@@ -40,6 +40,7 @@ namespace EnvironmentCore {
 		for (int i = 0; i < SDL_NumJoysticks(); ++i) {
 			m_pController = SDL_JoystickOpen(i);
 			if (m_pController) {
+				m_pHaptic = SDL_HapticOpenFromJoystick(m_pController);
 				break;
 			}
 			else {
@@ -232,6 +233,7 @@ namespace EnvironmentCore {
 						m_pController = nullptr;
 					}
 					m_pController = SDL_JoystickOpen(0);
+					m_pHaptic = SDL_HapticOpenFromJoystick(m_pController);
 				}
 			}
 			else if (_event.type == SDL_JOYDEVICEREMOVED) {
@@ -239,6 +241,7 @@ namespace EnvironmentCore {
 					if (m_pController) {
 						SDL_JoystickClose(m_pController);
 						m_pController = nullptr;
+						SDL_HapticClose(m_pHaptic);
 					}
 				}
 			}

@@ -65,6 +65,10 @@ namespace EnvironmentCore {
 	} ECControllerState;
 
 
+	typedef struct ECHapticEffect_t {
+
+	};
+
 
 	class EC_SDL_InputManager {
 
@@ -97,6 +101,7 @@ namespace EnvironmentCore {
 		ECControllerState m_ControllerState;
 		
 		SDL_Joystick* m_pController;
+		SDL_Haptic* m_pHaptic;
 
 	private:
 
