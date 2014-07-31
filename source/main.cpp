@@ -352,7 +352,7 @@ int main(int argc, char *argv[])
 		std::function<int()> Loop = [&]() {
 
 			if (app.getInputManager()->getMouseState().right.down || app.getInputManager()->getControllerState().b.down) {
-				EnvironmentCore::ECBody& Alpha = app.getScene()->spawnBox("Boox", 1, chrono::ChVector<>(truss->GetPos().x, truss->GetPos().y+20, truss->GetPos().z), chrono::ChVector<>(1, 1, 1));
+				EnvironmentCore::ECBody& Alpha = app.getScene()->spawnBox("Boox", 1, chrono::ChVector<>(truss->GetPos().x, truss->GetPos().y+15, truss->GetPos().z), chrono::ChVector<>(1, 1, 1));
 				Alpha->SetInertiaXX(chrono::ChVector<>(
 					((1.0 / 12.0)*Alpha->GetMass() * 8.0),
 					((1.0 / 12.0)*Alpha->GetMass() * 8.0),
@@ -386,7 +386,7 @@ int main(int argc, char *argv[])
 				throttle = 0;
 			}
 
-			if (app.getInputManager()->getKeyState(SDL_SCANCODE_ESCAPE).down) {
+			if (app.getInputManager()->getKeyState(SDL_SCANCODE_ESCAPE).down || app.getInputManager()->getControllerState().back.down) {
 				return 1;
 			}
 
@@ -427,7 +427,7 @@ int main(int argc, char *argv[])
 
 			auto camera_dpos = camera_tpos - camera_pos;
 
-			auto fSpring = (camera_dpos * 1000) - (camera_vel * 200);
+			auto fSpring = (camera_dpos * 200) - (camera_vel * 200);
 
 			auto cam_accel = fSpring / 5;
 

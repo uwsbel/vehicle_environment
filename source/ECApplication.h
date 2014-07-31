@@ -48,6 +48,7 @@ namespace EnvironmentCore {
 		static void logMessage(const std::string& Message, Ogre::LogMessageLevel lml = Ogre::LML_NORMAL, bool maskDebug = false);
 
 		double timestep; //Set to 0 for real-time time-step. Default 0
+		bool isRunning;
 
 	protected:
 

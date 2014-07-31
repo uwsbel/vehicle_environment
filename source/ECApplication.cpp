@@ -86,7 +86,7 @@ namespace EnvironmentCore {
 		}
 
 		timestep = 0;
-
+		isRunning = false;
 	}
 
 	EnvironmentCoreApplication::~EnvironmentCoreApplication() {
@@ -98,10 +98,10 @@ namespace EnvironmentCore {
 
 	int EnvironmentCoreApplication::startLoop(std::function<int()> _func) {
 		int l_run = 0;
-		double l_systemTimeIncriment = 0.0;
+		
+		isRunning = true;
 
-		std::chrono::high_resolution_clock l_time;
-		auto l_start = l_time.now();
+		std::thread chronoThread(&EnvironmentCoreApplication::chronoThread, this);
 
 		while (l_run == 0) {
 
@@ -110,15 +110,6 @@ namespace EnvironmentCore {
 			l_run = _func();
 
 			m_pScene->update();
-
-			m_pChSystem->DoFrameDynamics(l_systemTimeIncriment);
-
-			if (timestep > 0) {
-				l_systemTimeIncriment += timestep;
-			}
-			else {
-				l_systemTimeIncriment = ((double)(std::chrono::duration_cast<std::chrono::milliseconds>(l_time.now()-l_start).count())) / 1000.0; //converts standard library time difference to a double for Chrono
-			}
 
 			m_pViewport->update();
 
@@ -136,7 +127,28 @@ namespace EnvironmentCore {
 				l_run++;
 			}
 		}
+		isRunning = false;
+		chronoThread.join();
 		return l_run;
+	}
+
+
+	void EnvironmentCoreApplication::chronoThread() {
+		double l_systemTimeIncriment = 0.0;
+
+		std::chrono::high_resolution_clock l_time;
+		auto l_start = l_time.now();
+
+		while (isRunning) {
+			m_pChSystem->DoFrameDynamics(l_systemTimeIncriment);
+
+			if (timestep > 0) {
+				l_systemTimeIncriment += timestep;
+			}
+			else {
+				l_systemTimeIncriment = ((double)(std::chrono::duration_cast<std::chrono::milliseconds>(l_time.now() - l_start).count())) / 1000.0; //converts standard library time difference to a double for Chrono
+			}
+		}
 	}
 
 	Ogre::RenderWindow* EnvironmentCoreApplication::createWindow(std::string Title, uint32_t Width, uint32_t Height, uint8_t FSAA_Level, bool VSync, bool Fullscreen) {
@@ -198,12 +210,6 @@ namespace EnvironmentCore {
 		m_pRenderWindow->setVSyncEnabled(isVSyncEnabled);
 		m_pRenderWindow->setVSyncInterval(60);
 	}
-
-
-	void EnvironmentCoreApplication::chronoThread() {
-
-	}
-
 
 	void EnvironmentCoreApplication::closeWindow() {
 		if (m_pRenderWindow) {
