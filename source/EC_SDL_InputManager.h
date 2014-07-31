@@ -52,15 +52,15 @@ namespace EnvironmentCore {
 			double timestamp;
 		} __axisState;
 
-		__axisState stick1x, stick1y;
-		__axisState stick2x, sitck2y;
-		__axisState trigger;
+		__axisState lstickx, lsticky;
+		__axisState rstickx, rsticky;
+		__axisState ltrigger, rtrigger;
 
 		ECKeyState a, b, x, y;
 		ECKeyState back, start;
-		ECKeyState stick1, stick2;
+		ECKeyState lstick, rstick;
 		ECKeyState d_left, d_right, d_up, d_down;
-		ECKeyState rbumper, lbumper;
+		ECKeyState lbumper, rbumper;
 
 	} ECControllerState;
 
@@ -82,6 +82,10 @@ namespace EnvironmentCore {
 
 		virtual ECMouseState& getMouseState();
 
+		virtual ECControllerState& getControllerState();
+
+		double AxisThreshold;
+
 	protected:
 
 		SDL_Window* m_pSDLWindow;
@@ -91,6 +95,8 @@ namespace EnvironmentCore {
 
 		ECMouseState m_MouseState;
 		ECControllerState m_ControllerState;
+		
+		SDL_Joystick* m_pController;
 
 	private:
 

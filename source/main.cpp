@@ -26,6 +26,8 @@ int main(int argc, char *argv[])
 
 		app.setCamera(DebugCamera);
 
+		app.timestep = 0.01;
+
 		std::random_device l_rand;
 
 		EnvironmentCore::ECBody& truss = app.getScene()->spawnBox("Truss", 150.0, chrono::ChVector<>(0, 1, 0), chrono::ChVector<>(1, 0.5, 3));
@@ -349,7 +351,9 @@ int main(int argc, char *argv[])
 
 			}
 
-
+			if (app.getInputManager()->getControllerState().a.down) {
+				truss->SetPos_dt(chrono::ChVector<>(0, 5, 0));
+			}
 			
 
 			if (app.getInputManager()->getKeyState(SDL_SCANCODE_W).down) {
