@@ -13,6 +13,10 @@ ECScene is designed to be a layer of abstraction from the Ogre lighting system, 
 
 namespace EnvironmentCore {
 
+	typedef Ogre::Light ECLight;
+
+	typedef Ogre::Light::LightTypes ECLightTypes;
+
 	class ECScene {
 
 	public:
@@ -27,8 +31,11 @@ namespace EnvironmentCore {
 		virtual void setAmbientLight(Ogre::ColourValue Color);
 		virtual void setAmbientLight(float r, float g, float b);
 
+		virtual ECLight& createLight();
+		virtual ECLight& createLight(std::string Name);
 
-
+		virtual void removeLight(ECLight& Light);
+		virtual void removeLight(std::string Name);
 
 		////////
 		//Body Creation
@@ -106,6 +113,8 @@ namespace EnvironmentCore {
 		std::vector<ECBody*> m_ECBodies;
 
 		double m_LowerLimit;
+
+		static unsigned int m_LightCount;
 
 	private:
 

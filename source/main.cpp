@@ -265,8 +265,22 @@ int main(int argc, char *argv[])
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0),
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0)));
 
+		EnvironmentCore::ECBody& Epsilon1 = app.getScene()->spawnSphere("Spheere1", 1, chrono::ChVector<>(30, 10, 20), 4);
+		Epsilon1->SetInertiaXX(chrono::ChVector<>(
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0),
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0),
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0)));
+
+		EnvironmentCore::ECBody& Epsilon2 = app.getScene()->spawnSphere("Spheere2", 1, chrono::ChVector<>(20, 10, 20), 4);
+		Epsilon2->SetInertiaXX(chrono::ChVector<>(
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0),
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0),
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0)));
+
 		EnvironmentCore::ECBody& Gamma = app.getScene()->spawnBox("Platform", 1.0, chrono::ChVector<>(0, -10, 0), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
 		Gamma->SetFriction(10);
+
+		EnvironmentCore::ECBody& Building = app.getScene()->spawnBox("Building1", 50000, chrono::ChVector<>(0, 240, 100), chrono::ChVector<>(20, 500, 20), chrono::ChQuaternion<>(1, 0, 0, 0), true);
 
 		/*EnvironmentCore::ECBody& Theta = app.getScene()->spawnEllipsoid("Theta", 1.0, chrono::ChVector<>(0, 30, 0), chrono::ChVector<>(2, 5, 2));
 		Theta->SetInertiaXX(chrono::ChVector<>(
@@ -295,35 +309,34 @@ int main(int argc, char *argv[])
 		}*/
 
 
-		Ogre::Light* yeh = app.getSceneManager()->createLight("Swag");
-		yeh->setType(Ogre::Light::LT_POINT);
-		yeh->setPosition(0.0f, 100.0f, 0.0f);
-		yeh->setDiffuseColour(1.0f, 1.0f, 0.0f);
-		yeh->setSpecularColour(1.0f, 1.0f, 0.0f);
-		yeh->setDirection(0.0f, 0.0f, 0.0f);
-		yeh->setPowerScale(400.0f);
+		EnvironmentCore::ECLight& yeh = app.getScene()->createLight("Swag");
+		yeh.setType(EnvironmentCore::ECLightTypes::LT_POINT);
+		yeh.setPosition(0.0f, 100.0f, 0.0f);
+		yeh.setDiffuseColour(1.0f, 1.0f, 0.0f);
+		yeh.setSpecularColour(1.0f, 1.0f, 0.0f);
+		yeh.setDirection(0.0f, 0.0f, 0.0f);
+		yeh.setPowerScale(400.0f);
 
-		Ogre::Light* yeh2 = app.getSceneManager()->createLight("Que");
-		yeh2->setType(Ogre::Light::LT_POINT);
-		yeh2->setPosition(500.0f, 500.0f, 500.0f);
-		yeh2->setDiffuseColour(1.0f, 0.0f, 1.0f);
-		yeh2->setSpecularColour(1.0f, 0.0f, 1.0f);
-		yeh2->setDirection(0.0f, 0.0f, 0.0f);
-		yeh2->setPowerScale(400.0f);
+		EnvironmentCore::ECLight& yeh2 = app.getScene()->createLight("Que");
+		yeh2.setType(EnvironmentCore::ECLightTypes::LT_POINT);
+		yeh2.setPosition(500.0f, 500.0f, 500.0f);
+		yeh2.setDiffuseColour(1.0f, 0.0f, 1.0f);
+		yeh2.setSpecularColour(1.0f, 0.0f, 1.0f);
+		yeh2.setDirection(0.0f, 0.0f, 0.0f);
+		yeh2.setPowerScale(400.0f);
 
-		Ogre::Light* yeh3 = app.getSceneManager()->createLight("Holo");
-		yeh3->setType(Ogre::Light::LT_POINT);
-		yeh3->setPosition(500.0f, 800.0f, -800.0f);
-		yeh3->setDiffuseColour(0.0f, 1.0f, 1.0f);
-		yeh3->setSpecularColour(0.0f, 1.0f, 1.0f);
-		yeh3->setDirection(0.0f, 0.0f, 0.0f);
-		yeh3->setPowerScale(400.0f);
+		EnvironmentCore::ECLight& yeh3 = app.getScene()->createLight("Holo");
+		yeh3.setType(EnvironmentCore::ECLightTypes::LT_POINT);
+		yeh3.setPosition(500.0f, 800.0f, -800.0f);
+		yeh3.setDiffuseColour(0.0f, 1.0f, 1.0f);
+		yeh3.setSpecularColour(0.0f, 1.0f, 1.0f);
+		yeh3.setDirection(0.0f, 0.0f, 0.0f);
+		yeh3.setPowerScale(400.0f);
 
-		Ogre::Light* follow = app.getSceneManager()->createLight("Follow");
-		follow->setType(Ogre::Light::LT_POINT);
-		follow->setDiffuseColour(1.0f, 1.0f, 1.0f);
-		follow->setSpecularColour(1.0f, 1.0f, 1.0f);
-
+		EnvironmentCore::ECLight& follow = app.getScene()->createLight("Follow");
+		follow.setType(EnvironmentCore::ECLightTypes::LT_POINT);
+		follow.setDiffuseColour(1.0f, 1.0f, 1.0f);
+		follow.setSpecularColour(1.0f, 1.0f, 1.0f);
 
 
 		chrono::ChVector<> direction = chrono::ChVector<>(0, 0, 5);
@@ -347,21 +360,37 @@ int main(int argc, char *argv[])
 		double max_motor_torque = 30; // the max torque of the motor [Nm];
 		double max_motor_speed = 100;	 // the max rotation speed of the motor [rads/s]
 
+		bool db = true;
+
+		unsigned int deleteSpheres = 0;
+
 		app.getChSystem()->SetIterLCPmaxItersSpeed(20);
 
 		std::function<int()> Loop = [&]() {
 
-			if (app.getInputManager()->getMouseState().right.down || app.getInputManager()->getControllerState().b.down) {
-				EnvironmentCore::ECBody& Alpha = app.getScene()->spawnBox("Boox", 1, chrono::ChVector<>(truss->GetPos().x, truss->GetPos().y+15, truss->GetPos().z), chrono::ChVector<>(1, 1, 1));
+			if ((app.getInputManager()->getMouseState().right.down || app.getInputManager()->getControllerState().b.down) && db) {
+				EnvironmentCore::ECBody& Alpha = app.getScene()->spawnSphere("Boox", 50, chrono::ChVector<>(truss->GetPos().x, truss->GetPos().y+3, truss->GetPos().z), 0.3);
 				Alpha->SetInertiaXX(chrono::ChVector<>(
-					((1.0 / 12.0)*Alpha->GetMass() * 8.0),
-					((1.0 / 12.0)*Alpha->GetMass() * 8.0),
-					((1.0 / 12.0)*Alpha->GetMass() * 8.0)));
+					((2.0 / 3.0)*Alpha->GetMass() * 0.3 * 0.3),
+					((2.0 / 3.0)*Alpha->GetMass() * 0.3 * 0.3),
+					((2.0 / 3.0)*Alpha->GetMass() * 0.3 * 0.3)));
 
-				chrono::ChSharedForcePtr force(new chrono::ChForce);
-	
-				force->SetBody((Alpha.getChBody().get_ptr()));
+				auto dir = truss->GetRot().Rotate(chrono::ChVector<>(0, 0, 1));
 
+				Alpha->SetPos_dt(dir * 125);
+
+				db = false;
+			}
+
+			if (!app.getInputManager()->getMouseState().right.down && !app.getInputManager()->getControllerState().b.down) {
+				db = true;
+			}
+
+			deleteSpheres++;
+
+			if (deleteSpheres > 500) {
+				app.getScene()->removeBody("Boox");
+				deleteSpheres = 0;
 			}
 
 			if (app.getInputManager()->getControllerState().a.down) {
@@ -414,13 +443,13 @@ int main(int argc, char *argv[])
 			// If needed, return also the value of wheel torque:
 
 
-			follow->setDiffuseColour((float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed));
-			follow->setSpecularColour((float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed));
+			follow.setDiffuseColour((float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed));
+			follow.setSpecularColour((float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed));
 
 
 			dirRot = truss->GetRot();
 			dirRot.Normalize();
-			direction = dirRot.Rotate(chrono::ChVector<>(0, 0, -10));
+			direction = dirRot.Rotate(chrono::ChVector<>(0, 0, -20));
 
 			look_at = truss->GetPos();
 			camera_tpos = (truss->GetPos() + direction);
@@ -439,7 +468,7 @@ int main(int argc, char *argv[])
 			DebugCamera->orient(camera_pos.x, camera_pos.y + 10, camera_pos.z, look_at.x, look_at.y+6, look_at.z);
 			app.setCamera(DebugCamera);
 
-			follow->setPosition(truss->GetPos().x, truss->GetPos().y + 10, truss->GetPos().z + 14);
+			follow.setPosition(truss->GetPos().x, truss->GetPos().y + 10, truss->GetPos().z + 14);
 
 
 			return 0;

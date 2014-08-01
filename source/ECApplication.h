@@ -8,6 +8,8 @@ Contains the prototype for a basic application. Manages things such as window cr
 
 #include <OGRE\Ogre.h>
 
+#include <physics\ChSystem.h>
+
 #include <memory>
 #include <exception>
 #include <thread>

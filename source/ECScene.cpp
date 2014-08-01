@@ -8,6 +8,8 @@ Contains the definitions for ECScene
 
 namespace EnvironmentCore {
 
+	unsigned int ECScene::m_LightCount = 0;
+
 	ECScene::ECScene(Ogre::SceneManager* SceneManager, chrono::ChSystem* System) {
 		m_pSceneManager = SceneManager;
 		m_pChSystem = System;
@@ -31,6 +33,23 @@ namespace EnvironmentCore {
 		m_pSceneManager->setAmbientLight(Ogre::ColourValue(r, g, b));
 	}
 
+	ECLight& ECScene::createLight() {
+		Ogre::Light* _ret = m_pSceneManager->createLight("Light" + std::to_string(m_LightCount));
+		return *_ret;
+	}
+
+	ECLight& ECScene::createLight(std::string Name) {
+		Ogre::Light* _ret = m_pSceneManager->createLight(Name);
+		return *_ret;
+	}
+
+	void ECScene::removeLight(ECLight& Light) {
+		m_pSceneManager->getRootSceneNode()->removeAndDestroyChild(Light.getName());
+	}
+
+	void ECScene::removeLight(std::string Name) {
+		m_pSceneManager->getRootSceneNode()->removeAndDestroyChild(Name);
+	}
 
 
 	ECBody& ECScene::createBody(std::string Name) {

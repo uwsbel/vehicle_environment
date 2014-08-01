@@ -101,11 +101,32 @@ namespace EnvironmentCore {
 		
 		isRunning = true;
 
-		std::thread chronoThread(&EnvironmentCoreApplication::chronoThread, this);
+		double l_systemTimeIncriment = 0.0;
+
+		std::chrono::high_resolution_clock l_time;
+		auto l_start = l_time.now();
 
 		while (l_run == 0) {
 
+			try {
+				m_pChSystem->DoFrameDynamics((l_systemTimeIncriment / 2.0));
+			}
+			catch (std::exception e) {
+
+			}
+			try {
+				m_pChSystem->DoFrameDynamics((l_systemTimeIncriment / 2.0));
+			}
+			catch (std::exception e) {
+
+			}
+
 			m_pInputManager->update();
+
+			if (m_pInputManager->WindowClose) {
+				l_run++;
+				break;
+			}
 
 			l_run = _func();
 
@@ -119,28 +140,7 @@ namespace EnvironmentCore {
 			m_pRoot->renderOneFrame();
 
 			m_pCamera->setAspectRatio((((float)(m_pViewport->getActualWidth())) / ((float)(m_pViewport->getActualHeight()))));
-			//m_pInputManager->setWindowExtents(m_pViewport->getActualWidth(), m_pViewport->getActualHeight());
 
-			Ogre::WindowEventUtilities::messagePump();
-
-			if (m_pRenderWindow->isClosed()) {
-				l_run++;
-			}
-		}
-		isRunning = false;
-		chronoThread.join();
-		return l_run;
-	}
-
-
-	void EnvironmentCoreApplication::chronoThread() {
-		double l_systemTimeIncriment = 0.0;
-
-		std::chrono::high_resolution_clock l_time;
-		auto l_start = l_time.now();
-
-		while (isRunning) {
-			m_pChSystem->DoFrameDynamics(l_systemTimeIncriment);
 
 			if (timestep > 0) {
 				l_systemTimeIncriment += timestep;
@@ -148,6 +148,22 @@ namespace EnvironmentCore {
 			else {
 				l_systemTimeIncriment = ((double)(std::chrono::duration_cast<std::chrono::milliseconds>(l_time.now() - l_start).count())) / 1000.0; //converts standard library time difference to a double for Chrono
 			}
+
+
+			Ogre::WindowEventUtilities::messagePump();
+
+			
+		}
+		isRunning = false;
+
+		return l_run;
+	}
+
+
+	void EnvironmentCoreApplication::chronoThread() {
+		
+		while (isRunning) {
+			
 		}
 	}
 
@@ -220,8 +236,10 @@ namespace EnvironmentCore {
 
 				m_pRenderWindow->removeAllViewports();
 				m_pRenderWindow->destroy();
+
 			}
 			delete m_pRenderWindow;
+			delete m_pInputManager;
 		}
 	}
 

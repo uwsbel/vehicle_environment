@@ -90,6 +90,8 @@ namespace EnvironmentCore {
 
 		double AxisThreshold;
 
+		bool WindowClose;
+
 	protected:
 
 		SDL_Window* m_pSDLWindow;

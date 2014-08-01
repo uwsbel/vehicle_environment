@@ -49,7 +49,7 @@ namespace EnvironmentCore {
 		}
 
 		AxisThreshold = INPUT_DEADZONE;
-
+		WindowClose = false;
 	}
 
 	EC_SDL_InputManager::~EC_SDL_InputManager() {
@@ -243,6 +243,11 @@ namespace EnvironmentCore {
 						m_pController = nullptr;
 						SDL_HapticClose(m_pHaptic);
 					}
+				}
+			}
+			else if (_event.type == SDL_WINDOWEVENT) {
+				if (_event.window.event == SDL_WINDOWEVENT_CLOSE) {
+					WindowClose = true;
 				}
 			}
 		}
