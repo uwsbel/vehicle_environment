@@ -16,7 +16,9 @@ with Ogre. In order to build Ogre so it can be used with Visual Studio 2013, you
 4. Build and install it, and then rename the install folder to "Dependencies"
 5. Clone the Ogre repository at https://bitbucket.org/sinbad/ogre/src/4578da5bf5b00fdf023b87e98099d647c5cb92ab?at=v1-9-0
 6. Copy the "Dependencies" folder from before into the build directory you made for Ogre in CMake
-7. Configure Ogre, build it, and then install it. All headers, libraries, and DLLs will be in the "sdk" folder in the build directory
+7. Download boost at http://www.boost.org/users/download/
+8. Build boost
+9. Configure Ogre, build it, and then install it. All headers, libraries, and DLLs will be in the "sdk" folder in the build directory
 
 For SDL, you can download development libraries at https://www.libsdl.org/download-2.0.php
 For Chrono, you can get the repository at https://github.com/projectchrono/chrono
