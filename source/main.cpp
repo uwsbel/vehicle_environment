@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
 		EnvironmentCore::ECBody& wheelRF = app.getScene()->spawnEllipsoid("WheelRF", 3.0, chrono::ChVector<>(1.5, 1, 1), chrono::ChVector<>(0.9, 0.3, 0.9)*.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
 		wheelRF->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
-		wheelRF->SetFriction(1.0);
+		wheelRF->SetFriction(2.0);
 		wheelRF.deletable = false;
 
 		chrono::ChSharedPtr<chrono::ChLinkLockRevolute> link_revoluteRF;
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 
 		EnvironmentCore::ECBody& wheelLF = app.getScene()->spawnEllipsoid("WheelLF", 3.0, chrono::ChVector<>(-1.5, 1, 1), chrono::ChVector<>(0.9, 0.3, 0.9)*.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
 		wheelLF->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
-		wheelLF->SetFriction(1.0);
+		wheelLF->SetFriction(2.0);
 		wheelLF.deletable = false;
 
 		chrono::ChSharedPtr<chrono::ChLinkLockRevolute> link_revoluteLF;
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 
 		EnvironmentCore::ECBody& wheelRB = app.getScene()->spawnEllipsoid("WheelRB", 3.0, chrono::ChVector<>(1.5, 1, -1), chrono::ChVector<>(0.9, 0.3, 0.9)*.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
 		wheelRB->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
-		wheelRB->SetFriction(1.0);
+		wheelRB->SetFriction(2.0);
 		wheelRB.deletable = false;
 
 		chrono::ChSharedPtr<chrono::ChLinkLockRevolute> link_revoluteRB;
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 
 		EnvironmentCore::ECBody& wheelLB = app.getScene()->spawnEllipsoid("WheelLB", 3.0, chrono::ChVector<>(-1.5, 1, -1), chrono::ChVector<>(0.9, 0.3, 0.9)*.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
 		wheelLB->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
-		wheelLB->SetFriction(1.0);
+		wheelLB->SetFriction(2.0);
 		wheelLB.deletable = false;
 
 		chrono::ChSharedPtr<chrono::ChLinkLockRevolute> link_revoluteLB;
@@ -261,24 +261,44 @@ int main(int argc, char *argv[])
 
 		EnvironmentCore::ECBody& Epsilon = app.getScene()->spawnSphere("Spheere", 1, chrono::ChVector<>(10, 10, 20), 4);
 		Epsilon->SetInertiaXX(chrono::ChVector<>(
-			((2.0 / 5.0)*Epsilon->GetMass() * 4.0),
-			((2.0 / 5.0)*Epsilon->GetMass() * 4.0),
-			((2.0 / 5.0)*Epsilon->GetMass() * 4.0)));
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0)));
 
 		EnvironmentCore::ECBody& Epsilon1 = app.getScene()->spawnSphere("Spheere1", 1, chrono::ChVector<>(30, 10, 20), 4);
 		Epsilon1->SetInertiaXX(chrono::ChVector<>(
-			((2.0 / 5.0)*Epsilon->GetMass() * 4.0),
-			((2.0 / 5.0)*Epsilon->GetMass() * 4.0),
-			((2.0 / 5.0)*Epsilon->GetMass() * 4.0)));
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0)));
 
-		EnvironmentCore::ECBody& Epsilon2 = app.getScene()->spawnSphere("Spheere2", 1, chrono::ChVector<>(20, 10, 20), 4);
+		EnvironmentCore::ECBody& Epsilon2 = app.getScene()->spawnSphere("Spheere2", 1, chrono::ChVector<>(0, 10, 20), 4);
 		Epsilon2->SetInertiaXX(chrono::ChVector<>(
-			((2.0 / 5.0)*Epsilon->GetMass() * 4.0),
-			((2.0 / 5.0)*Epsilon->GetMass() * 4.0),
-			((2.0 / 5.0)*Epsilon->GetMass() * 4.0)));
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0)));
+
+		EnvironmentCore::ECBody& Epsilon3 = app.getScene()->spawnSphere("Spheere3", 1, chrono::ChVector<>(50, 10, 50), 4);
+		Epsilon2->SetInertiaXX(chrono::ChVector<>(
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
+			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0)));
+
+		EnvironmentCore::ECBody& Epsilon4 = app.getScene()->spawnBox("Spheere4", 1, chrono::ChVector<>(-20, 10, -70), chrono::ChVector<>(4, 4, 4));
+		Epsilon2->SetInertiaXX(chrono::ChVector<>(
+			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0)),
+			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0)),
+			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0))));
 
 		EnvironmentCore::ECBody& Gamma = app.getScene()->spawnBox("Platform", 1.0, chrono::ChVector<>(0, -10, 0), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
-		Gamma->SetFriction(10);
+		Gamma->SetFriction(20);
+		EnvironmentCore::ECBody& Gamma1 = app.getScene()->spawnBox("Platform1", 1.0, chrono::ChVector<>(1000, -10, 0), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
+		Gamma1->SetFriction(20);
+		EnvironmentCore::ECBody& Gamma2 = app.getScene()->spawnBox("Platform2", 1.0, chrono::ChVector<>(-1000, -10, 0), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
+		Gamma2->SetFriction(20);
+		EnvironmentCore::ECBody& Gamma3 = app.getScene()->spawnBox("Platform3", 1.0, chrono::ChVector<>(0, -10, 1000), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
+		Gamma3->SetFriction(20);
+		EnvironmentCore::ECBody& Gamma4 = app.getScene()->spawnBox("Platform4", 1.0, chrono::ChVector<>(0, -10, -1000), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
+		Gamma4->SetFriction(20);
 
 		EnvironmentCore::ECBody& Building = app.getScene()->spawnBox("Building1", 50000, chrono::ChVector<>(0, 240, 100), chrono::ChVector<>(20, 500, 20), chrono::ChQuaternion<>(1, 0, 0, 0), true);
 
@@ -371,9 +391,9 @@ int main(int argc, char *argv[])
 			if ((app.getInputManager()->getMouseState().right.down || app.getInputManager()->getControllerState().b.down) && db) {
 				EnvironmentCore::ECBody& Alpha = app.getScene()->spawnSphere("Boox", 50, chrono::ChVector<>(truss->GetPos().x, truss->GetPos().y+3, truss->GetPos().z), 0.3);
 				Alpha->SetInertiaXX(chrono::ChVector<>(
-					((2.0 / 3.0)*Alpha->GetMass() * 0.3 * 0.3),
-					((2.0 / 3.0)*Alpha->GetMass() * 0.3 * 0.3),
-					((2.0 / 3.0)*Alpha->GetMass() * 0.3 * 0.3)));
+					((2.0 / 5.0)*Alpha->GetMass() * 0.3 * 0.3),
+					((2.0 / 5.0)*Alpha->GetMass() * 0.3 * 0.3),
+					((2.0 / 5.0)*Alpha->GetMass() * 0.3 * 0.3)));
 
 				auto dir = truss->GetRot().Rotate(chrono::ChVector<>(0, 0, 1));
 
@@ -394,7 +414,16 @@ int main(int argc, char *argv[])
 			}
 
 			if (app.getInputManager()->getControllerState().a.down) {
-				truss->SetPos_dt(chrono::ChVector<>(0, 5, 0));
+				auto dir = truss->GetRot().Rotate(chrono::ChVector<>(0, 0, 1));
+				truss->SetPos_dt(chrono::ChVector<>(0, 5, 0) + (dir * 25));
+
+				auto vert = truss->GetRot().Rotate(chrono::ChVector<>(0, 1, 0));
+
+				vert = chrono::ChVector<>(0, 1, 0) * (app.getInputManager()->getControllerState().lsticky.value * 0.1);
+				if (app.getInputManager()->getControllerState().lsticky.value > 0.50) {
+					wheelRF->SetPos_dt(vert * 0.01);
+					wheelLF->SetPos_dt(vert * 0.01);
+				}
 			}
 			
 			double steer = 0.05*((double)((double)INT_MAX * -1.0 * app.getInputManager()->getControllerState().lstickx.value));
@@ -408,8 +437,8 @@ int main(int argc, char *argv[])
 			link_distRSTEER->SetEndPoint1Rel(chrono::ChVector<>(0.5 + steer, 0.21, 1.4));
 			link_distLSTEER->SetEndPoint1Rel(chrono::ChVector<>(-0.5 + steer, 0.21, 1.4));
 
-			if (app.getInputManager()->getKeyState(SDL_SCANCODE_W).down || (app.getInputManager()->getControllerState().rtrigger.value > 0.50)) {
-				throttle = 40 * app.getInputManager()->getControllerState().rtrigger.value;
+			if (app.getInputManager()->getKeyState(SDL_SCANCODE_W).down || (app.getInputManager()->getControllerState().rtrigger.value > 0.50) || (app.getInputManager()->getControllerState().ltrigger.value > 0.50)) {
+				throttle = 40 * (app.getInputManager()->getControllerState().rtrigger.value - app.getInputManager()->getControllerState().ltrigger.value);
 			}
 			else {
 				throttle = 0;
