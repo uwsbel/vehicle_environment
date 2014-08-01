@@ -283,7 +283,7 @@ int main(int argc, char *argv[])
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0)));
 
-		EnvironmentCore::ECBody& Epsilon4 = app.getScene()->spawnBox("Spheere4", 1, chrono::ChVector<>(-20, 10, -70), chrono::ChVector<>(4, 4, 4));
+		EnvironmentCore::ECBody& Epsilon4 = app.getScene()->spawnBox("Spheere4", 10, chrono::ChVector<>(-20, 10, -70), chrono::ChVector<>(4, 4, 4));
 		Epsilon2->SetInertiaXX(chrono::ChVector<>(
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0)),
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0)),
@@ -381,8 +381,20 @@ int main(int argc, char *argv[])
 		double max_motor_speed = 100;	 // the max rotation speed of the motor [rads/s]
 
 		bool db = true;
+		bool db2 = true;
 
 		unsigned int deleteSpheres = 0;
+
+		SDL_HapticEffect effect;
+		memset(&effect, 0, sizeof(SDL_HapticEffect)); // 0 is safe default
+		effect.type = SDL_HAPTIC_SINE;
+		effect.periodic.direction.type = SDL_HAPTIC_POLAR; // Polar coordinates
+		effect.periodic.direction.dir[0] = 18000; // Force comes from south
+		effect.periodic.period = 1000; // 1000 ms
+		effect.periodic.magnitude = 20000; // 20000/32767 strength
+		effect.periodic.length = 5000; // 5 seconds long
+		effect.periodic.attack_length = 1000; // Takes 1 second to get max strength
+		effect.periodic.fade_length = 1000; // Takes 1 second to fade away
 
 		app.getChSystem()->SetIterLCPmaxItersSpeed(20);
 
@@ -425,7 +437,15 @@ int main(int argc, char *argv[])
 					wheelLF->SetPos_dt(vert * 0.01);
 				}
 			}
-			
+
+			if (app.getInputManager()->getControllerState().rbumper.down && db2) {
+				app.getInputManager()->runHapticRumble(1.0f, 1);
+				db2 = false;
+			}
+			if (!app.getInputManager()->getControllerState().rbumper.down) {
+				db2 = true;
+			}
+
 			double steer = 0.05*((double)((double)INT_MAX * -1.0 * app.getInputManager()->getControllerState().lstickx.value));
 
 			if (steer > 0.1){

@@ -64,11 +64,7 @@ namespace EnvironmentCore {
 
 	} ECControllerState;
 
-
-	typedef struct ECHapticEffect_t {
-
-	};
-
+	typedef SDL_HapticEffect ECHapticEffect;
 
 	class EC_SDL_InputManager {
 
@@ -80,6 +76,10 @@ namespace EnvironmentCore {
 		virtual void update();
 
 		virtual void grabMouse(bool grab);
+
+		virtual void runHapticEffect(ECHapticEffect& Effect, int Iterations);
+		virtual void runHapticRumble(float Strength, double Length);
+		virtual void stopHapticRumble();
 
 		virtual ECKeyState& getKeyState(SDL_Scancode scancode);
 		virtual ECKeyState& getKeyState(SDL_Keycode keycode);

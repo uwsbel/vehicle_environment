@@ -40,7 +40,8 @@ namespace EnvironmentCore {
 		for (int i = 0; i < SDL_NumJoysticks(); ++i) {
 			m_pController = SDL_JoystickOpen(i);
 			if (m_pController) {
-				m_pHaptic = SDL_HapticOpenFromJoystick(m_pController);
+				m_pHaptic = SDL_HapticOpen(0);
+				SDL_HapticRumbleInit(m_pHaptic);
 				break;
 			}
 			else {
@@ -233,7 +234,8 @@ namespace EnvironmentCore {
 						m_pController = nullptr;
 					}
 					m_pController = SDL_JoystickOpen(0);
-					m_pHaptic = SDL_HapticOpenFromJoystick(m_pController);
+					m_pHaptic = SDL_HapticOpen(0);
+					SDL_HapticRumbleInit(m_pHaptic);
 				}
 			}
 			else if (_event.type == SDL_JOYDEVICEREMOVED) {
@@ -260,6 +262,24 @@ namespace EnvironmentCore {
 		else {
 			SDL_SetWindowGrab(m_pSDLWindow, SDL_FALSE);
 		}
+	}
+
+	void EC_SDL_InputManager::runHapticEffect(ECHapticEffect& effect, int iterations) {
+		int _effect_id = SDL_HapticNewEffect(m_pHaptic, &effect);
+
+		//SDL_HapticRunEffect(m_pHaptic, _effect_id, iterations);
+		SDL_HapticRumbleInit(m_pHaptic);
+		SDL_HapticRumblePlay(m_pHaptic, 0.5, 2000);
+
+		SDL_HapticDestroyEffect(m_pHaptic, _effect_id);
+	}
+
+	void EC_SDL_InputManager::runHapticRumble(float strength, double length) {
+		SDL_HapticRumblePlay(m_pHaptic, strength, ((unsigned int)(length * 1000.0)));
+	}
+
+	void EC_SDL_InputManager::stopHapticRumble() {
+		SDL_HapticRumbleStop(m_pHaptic);
 	}
 
 	ECKeyState& EC_SDL_InputManager::getKeyState(SDL_Scancode scancode) {
