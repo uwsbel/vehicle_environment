@@ -252,11 +252,12 @@ namespace EnvironmentCore {
 		return _ret;
 	}
 
-	ECBody& ECScene::spawnMesh(std::string Name, double mass, chrono::ChVector<>& position, chrono::ChQuaternion<>& rotation, std::string FileName, bool fixed) {
+	ECBody& ECScene::spawnMesh(std::string Name, double mass, chrono::ChVector<>& position, chrono::ChVector<>& size, chrono::ChQuaternion<>& rotation, std::string FileName, bool fixed) {
 		ECBody& _ret = createBody(Name);
 
 		chrono::ChSharedPtr<chrono::ChTriangleMeshShape> _mesh(new chrono::ChTriangleMeshShape);
 		_mesh->SetName(FileName);
+		_mesh->SetScale(size);
 
 		_ret->SetRot(rotation);
 		_ret->SetPos(position);

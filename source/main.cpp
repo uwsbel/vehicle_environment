@@ -39,7 +39,6 @@ int main(int argc, char *argv[])
 		car.build(chrono::ChVector<>(0, 0, 0));
 
 
-
 		EnvironmentCore::ECBody& Epsilon = app.getScene()->spawnSphere("Spheere", 1, chrono::ChVector<>(10, 10, 20), 4);
 		Epsilon->SetInertiaXX(chrono::ChVector<>(
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
@@ -109,7 +108,7 @@ int main(int argc, char *argv[])
 				((2.0 / 5.0)*Epsilon->GetMass() * 1.0)));
 		}*/
 
-		EnvironmentCore::ECBody& Mesh_Test = app.getScene()->spawnMesh("Mesh", 1.0, chrono::ChVector<>(0, 10, 0), chrono::ChQuaternion<>(1, 0, 0, 0), "ninja.mesh", true);
+		EnvironmentCore::ECBody& Mesh_Test = app.getScene()->spawnMesh("Mesh", 1.0, chrono::ChVector<>(0, 10, 0), chrono::ChVector<>(0.1, 0.1, 0.1), chrono::ChQuaternion<>(1, 0, 0, 0), "ninja.mesh", true);
 
 
 		EnvironmentCore::ECLight& yeh = app.getScene()->createLight("Swag");
