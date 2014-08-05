@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "ECApplication.h"
+#include "VESuspensionDemo.h"
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -26,236 +27,16 @@ int main(int argc, char *argv[])
 
 		app.setCamera(DebugCamera);
 
-		app.timestep = 0.01;
+		app.timestep_max = 0.01;
+		app.isRealTime = true;
 
 		std::random_device l_rand;
 
-		EnvironmentCore::ECBody& truss = app.getScene()->spawnBox("Truss", 150.0, chrono::ChVector<>(0, 1, 0), chrono::ChVector<>(1.0, 0.5, 3)*.5);
-		truss->SetInertiaXX(chrono::ChVector<>(4.8, 4.5, 1));
-		truss.deletable = false;
+		
 
-		EnvironmentCore::ECBody& spindleRF = app.getScene()->spawnBox("SpindleRF", 8.0, chrono::ChVector<>(1.3, 1, 1), chrono::ChVector<>(0.1, 0.4, 0.4)*.5);
-		spindleRF->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
-		spindleRF->SetCollide(false);
-		spindleRF.deletable = false;
-
-		EnvironmentCore::ECBody& wheelRF = app.getScene()->spawnEllipsoid("WheelRF", 3.0, chrono::ChVector<>(1.5, 1, 1), chrono::ChVector<>(0.9, 0.3, 0.9)*.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
-		wheelRF->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
-		wheelRF->SetFriction(2.0);
-		wheelRF.deletable = false;
-
-		chrono::ChSharedPtr<chrono::ChLinkLockRevolute> link_revoluteRF;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distRFU1;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distRFU2;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distRFL1;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distRFL2;
-		chrono::ChSharedPtr<chrono::ChLinkSpring>   link_springRF;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distRSTEER;
-
-		EnvironmentCore::ECBody& spindleLF = app.getScene()->spawnBox("SpindleLF", 8.0, chrono::ChVector<>(-1.3, 1, 1), chrono::ChVector<>(0.1, 0.4, 0.4)*.5);
-		spindleLF->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
-		spindleLF->SetCollide(false);
-		spindleLF.deletable = false;
-
-		EnvironmentCore::ECBody& wheelLF = app.getScene()->spawnEllipsoid("WheelLF", 3.0, chrono::ChVector<>(-1.5, 1, 1), chrono::ChVector<>(0.9, 0.3, 0.9)*.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
-		wheelLF->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
-		wheelLF->SetFriction(2.0);
-		wheelLF.deletable = false;
-
-		chrono::ChSharedPtr<chrono::ChLinkLockRevolute> link_revoluteLF;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distLFU1;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distLFU2;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distLFL1;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distLFL2;
-		chrono::ChSharedPtr<chrono::ChLinkSpring>   link_springLF;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distLSTEER;
-
-		EnvironmentCore::ECBody& spindleRB = app.getScene()->spawnBox("SpindleRB", 8.0, chrono::ChVector<>(1.3, 1, -1), chrono::ChVector<>(0.1, 0.4, 0.4)*.5);
-		spindleRB->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
-		spindleRB->SetCollide(false);
-		spindleRB.deletable = false;
-
-		EnvironmentCore::ECBody& wheelRB = app.getScene()->spawnEllipsoid("WheelRB", 3.0, chrono::ChVector<>(1.5, 1, -1), chrono::ChVector<>(0.9, 0.3, 0.9)*.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
-		wheelRB->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
-		wheelRB->SetFriction(2.0);
-		wheelRB.deletable = false;
-
-		chrono::ChSharedPtr<chrono::ChLinkLockRevolute> link_revoluteRB;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distRBU1;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distRBU2;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distRBL1;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distRBL2;
-		chrono::ChSharedPtr<chrono::ChLinkSpring>   link_springRB;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distRBlat;
-		chrono::ChSharedPtr<chrono::ChLinkEngine>   link_engineL;
-
-		EnvironmentCore::ECBody& spindleLB = app.getScene()->spawnBox("SpindleLB", 8.0, chrono::ChVector<>(-1.3, 1, -1), chrono::ChVector<>(0.1, 0.4, 0.4)*.5);
-		spindleLB->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
-		spindleLB->SetCollide(false);
-		spindleLB.deletable = false;
-
-		EnvironmentCore::ECBody& wheelLB = app.getScene()->spawnEllipsoid("WheelLB", 3.0, chrono::ChVector<>(-1.5, 1, -1), chrono::ChVector<>(0.9, 0.3, 0.9)*.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
-		wheelLB->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
-		wheelLB->SetFriction(2.0);
-		wheelLB.deletable = false;
-
-		chrono::ChSharedPtr<chrono::ChLinkLockRevolute> link_revoluteLB;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distLBU1;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distLBU2;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distLBL1;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distLBL2;
-		chrono::ChSharedPtr<chrono::ChLinkSpring>   link_springLB;
-		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distLBlat;
-		chrono::ChSharedPtr<chrono::ChLinkEngine>   link_engineR;
-
-
-		//Right front wheel
-
-		link_revoluteRF = chrono::ChSharedPtr<chrono::ChLinkLockRevolute>(new chrono::ChLinkLockRevolute);
-		link_revoluteRF->Initialize(wheelRF.getChBody(), spindleRF.getChBody(),
-			chrono::ChCoordsys<>(chrono::ChVector<>(1.5, 1, 1), chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Y)));
-		app.getChSystem()->AddLink(link_revoluteRF);
-
-		link_distRFU1 = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distRFU1->Initialize(truss.getChBody(), spindleRF.getChBody(), false, chrono::ChVector<>(0.5, 1.2, 1.2), chrono::ChVector<>(1.25, 1.2, 1));
-		app.getChSystem()->AddLink(link_distRFU1);
-
-		link_distRFU2 = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distRFU2->Initialize(truss.getChBody(), spindleRF.getChBody(), false, chrono::ChVector<>(0.5, 1.2, 0.8), chrono::ChVector<>(1.25, 1.2, 1));
-		app.getChSystem()->AddLink(link_distRFU2);
-
-		link_distRFL1 = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distRFL1->Initialize(truss.getChBody(), spindleRF.getChBody(), false, chrono::ChVector<>(0.5, 0.8, 1.2), chrono::ChVector<>(1.25, 0.8, 1));
-		app.getChSystem()->AddLink(link_distRFL1);
-
-		link_distRFL2 = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distRFL2->Initialize(truss.getChBody(), spindleRF.getChBody(), false, chrono::ChVector<>(0.5, 0.8, 0.8), chrono::ChVector<>(1.25, 0.8, 1));
-		app.getChSystem()->AddLink(link_distRFL2);
-
-		link_springRF = chrono::ChSharedPtr<chrono::ChLinkSpring>(new chrono::ChLinkSpring);
-		link_springRF->Initialize(truss.getChBody(), spindleRF.getChBody(), false, chrono::ChVector<>(0.5, 1.2, 1.0), chrono::ChVector<>(1.25, 0.8, 1));
-		link_springRF->Set_SpringK(28300);
-		link_springRF->Set_SpringR(80);
-		app.getChSystem()->AddLink(link_springRF);
-
-		link_distRSTEER = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distRSTEER->Initialize(truss.getChBody(), spindleRF.getChBody(), false, chrono::ChVector<>(0.5, 1.21, 1.4), chrono::ChVector<>(1.25, 1.21, 1.3));
-		app.getChSystem()->AddLink(link_distRSTEER);
-
-		//Left front wheel
-
-		link_revoluteLF = chrono::ChSharedPtr<chrono::ChLinkLockRevolute>(new chrono::ChLinkLockRevolute);
-		link_revoluteLF->Initialize(wheelLF.getChBody(), spindleLF.getChBody(),
-			chrono::ChCoordsys<>(chrono::ChVector<>(-1.5, 1, 1), chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Y)));
-		app.getChSystem()->AddLink(link_revoluteLF);
-
-		link_distLFU1 = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distLFU1->Initialize(truss.getChBody(), spindleLF.getChBody(), false, chrono::ChVector<>(-0.5, 1.2, 1.2), chrono::ChVector<>(-1.25, 1.2, 1));
-		app.getChSystem()->AddLink(link_distLFU1);
-
-		link_distLFU2 = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distLFU2->Initialize(truss.getChBody(), spindleLF.getChBody(), false, chrono::ChVector<>(-0.5, 1.2, 0.8), chrono::ChVector<>(-1.25, 1.2, 1));
-		app.getChSystem()->AddLink(link_distLFU2);
-
-		link_distLFL1 = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distLFL1->Initialize(truss.getChBody(), spindleLF.getChBody(), false, chrono::ChVector<>(-0.5, 0.8, 1.2), chrono::ChVector<>(-1.25, 0.8, 1));
-		app.getChSystem()->AddLink(link_distLFL1);
-
-		link_distLFL2 = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distLFL2->Initialize(truss.getChBody(), spindleLF.getChBody(), false, chrono::ChVector<>(-0.5, 0.8, 0.8), chrono::ChVector<>(-1.25, 0.8, 1));
-		app.getChSystem()->AddLink(link_distLFL2);
-
-		link_springLF = chrono::ChSharedPtr<chrono::ChLinkSpring>(new chrono::ChLinkSpring);
-		link_springLF->Initialize(truss.getChBody(), spindleLF.getChBody(), false, chrono::ChVector<>(-0.5, 1.2, 1.0), chrono::ChVector<>(-1.25, 0.8, 1));
-		link_springLF->Set_SpringK(28300);
-		link_springLF->Set_SpringR(80);
-		app.getChSystem()->AddLink(link_springLF);
-
-		link_distLSTEER = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distLSTEER->Initialize(truss.getChBody(), spindleLF.getChBody(), false, chrono::ChVector<>(-0.5, 1.21, 1.4), chrono::ChVector<>(-1.25, 1.21, 1.3));
-		app.getChSystem()->AddLink(link_distLSTEER);
-
-		//Right back wheel
-
-		link_revoluteRB = chrono::ChSharedPtr<chrono::ChLinkLockRevolute>(new chrono::ChLinkLockRevolute);
-		link_revoluteRB->Initialize(wheelRB.getChBody(), spindleRB.getChBody(),
-			chrono::ChCoordsys<>(chrono::ChVector<>(1.5, 1, -1), chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Y)));
-		app.getChSystem()->AddLink(link_revoluteRB);
-
-		link_engineR = chrono::ChSharedPtr<chrono::ChLinkEngine>(new chrono::ChLinkEngine);
-		link_engineR->Initialize(wheelRB.getChBody(), truss.getChBody(),
-			chrono::ChCoordsys<>(chrono::ChVector<>(1.5, 1, -1), chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Y)));
-		link_engineR->Set_shaft_mode(chrono::ChLinkEngine::ENG_SHAFT_CARDANO);
-		link_engineR->Set_eng_mode(chrono::ChLinkEngine::ENG_MODE_TORQUE);
-		app.getChSystem()->AddLink(link_engineR);
-
-		link_distRBU1 = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distRBU1->Initialize(truss.getChBody(), spindleRB.getChBody(), false, chrono::ChVector<>(0.5, 1.2, -1.2), chrono::ChVector<>(1.25, 1.2, -1));
-		app.getChSystem()->AddLink(link_distRBU1);
-
-		link_distRBU2 = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distRBU2->Initialize(truss.getChBody(), spindleRB.getChBody(), false, chrono::ChVector<>(0.5, 1.2, -0.8), chrono::ChVector<>(1.25, 1.2, -1));
-		app.getChSystem()->AddLink(link_distRBU2);
-
-		link_distRBL1 = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distRBL1->Initialize(truss.getChBody(), spindleRB.getChBody(), false, chrono::ChVector<>(0.5, 0.8, -1.2), chrono::ChVector<>(1.25, 0.8, -1));
-		app.getChSystem()->AddLink(link_distRBL1);
-
-		link_distRBL2 = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distRBL2->Initialize(truss.getChBody(), spindleRB.getChBody(), false, chrono::ChVector<>(0.5, 0.8, -0.8), chrono::ChVector<>(1.25, 0.8, -1));
-		app.getChSystem()->AddLink(link_distRBL2);
-
-		link_springRB = chrono::ChSharedPtr<chrono::ChLinkSpring>(new chrono::ChLinkSpring);
-		link_springRB->Initialize(truss.getChBody(), spindleRB.getChBody(), false, chrono::ChVector<>(0.5, 1.2, -1.0), chrono::ChVector<>(1.25, 0.8, -1));
-		link_springRB->Set_SpringK(28300);
-		link_springRB->Set_SpringR(80);
-		app.getChSystem()->AddLink(link_springRB);
-
-		link_distRBlat = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distRBlat->Initialize(truss.getChBody(), spindleRB.getChBody(), false, chrono::ChVector<>(0.5, 1.21, -1.4), chrono::ChVector<>(1.25, 1.21, -1.3));
-		app.getChSystem()->AddLink(link_distRBlat);
-
-		//Left back wheel
-
-		link_revoluteLB = chrono::ChSharedPtr<chrono::ChLinkLockRevolute>(new chrono::ChLinkLockRevolute);
-		link_revoluteLB->Initialize(wheelLB.getChBody(), spindleLB.getChBody(),
-			chrono::ChCoordsys<>(chrono::ChVector<>(-1.5, 1, -1), chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Y)));
-		app.getChSystem()->AddLink(link_revoluteLB);
-
-		link_engineL = chrono::ChSharedPtr<chrono::ChLinkEngine>(new chrono::ChLinkEngine);
-		link_engineL->Initialize(wheelLB.getChBody(), truss.getChBody(),
-			chrono::ChCoordsys<>(chrono::ChVector<>(-1.5, 1, -1), chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Y)));
-		link_engineL->Set_shaft_mode(chrono::ChLinkEngine::ENG_SHAFT_CARDANO);
-		link_engineL->Set_eng_mode(chrono::ChLinkEngine::ENG_MODE_TORQUE);
-		app.getChSystem()->AddLink(link_engineL);
-
-		link_distLBU1 = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distLBU1->Initialize(truss.getChBody(), spindleLB.getChBody(), false, chrono::ChVector<>(-0.5, 1.2, -1.2), chrono::ChVector<>(-1.25, 1.2, -1));
-		app.getChSystem()->AddLink(link_distLBU1);
-
-		link_distLBU2 = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distLBU2->Initialize(truss.getChBody(), spindleLB.getChBody(), false, chrono::ChVector<>(-0.5, 1.2, -0.8), chrono::ChVector<>(-1.25, 1.2, -1));
-		app.getChSystem()->AddLink(link_distLBU2);
-
-		link_distLBL1 = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distLBL1->Initialize(truss.getChBody(), spindleLB.getChBody(), false, chrono::ChVector<>(-0.5, 0.8, -1.2), chrono::ChVector<>(-1.25, 0.8, -1));
-		app.getChSystem()->AddLink(link_distLBL1);
-
-		link_distLBL2 = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distLBL2->Initialize(truss.getChBody(), spindleLB.getChBody(), false, chrono::ChVector<>(-0.5, 0.8, -0.8), chrono::ChVector<>(-1.25, 0.8, -1));
-		app.getChSystem()->AddLink(link_distLBL2);
-
-		link_springLB = chrono::ChSharedPtr<chrono::ChLinkSpring>(new chrono::ChLinkSpring);
-		link_springLB->Initialize(truss.getChBody(), spindleLB.getChBody(), false, chrono::ChVector<>(-0.5, 1.2, -1.0), chrono::ChVector<>(-1.25, 0.8, -1));
-		link_springLB->Set_SpringK(28300);
-		link_springLB->Set_SpringR(80);
-		app.getChSystem()->AddLink(link_springLB);
-
-		link_distLBlat = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
-		link_distLBlat->Initialize(truss.getChBody(), spindleLB.getChBody(), false, chrono::ChVector<>(-0.5, 1.21, -1.4), chrono::ChVector<>(-1.25, 1.21, -1.3));
-		app.getChSystem()->AddLink(link_distLBlat);
-
-
+		VehicleEnvironment::VESuspensionDemo car;
+		car.setApp(&app);
+		car.build(chrono::ChVector<>(0, 0, 0));
 
 
 
@@ -277,7 +58,7 @@ int main(int argc, char *argv[])
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0)));
 
-		EnvironmentCore::ECBody& Epsilon3 = app.getScene()->spawnSphere("Spheere3", 1, chrono::ChVector<>(50, 10, 50), 4);
+		/*EnvironmentCore::ECBody& Epsilon3 = app.getScene()->spawnSphere("Spheere3", 1, chrono::ChVector<>(50, 10, 50), 4);
 		Epsilon2->SetInertiaXX(chrono::ChVector<>(
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
@@ -287,7 +68,7 @@ int main(int argc, char *argv[])
 		Epsilon2->SetInertiaXX(chrono::ChVector<>(
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0)),
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0)),
-			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0))));
+			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0))));*/
 
 		EnvironmentCore::ECBody& Gamma = app.getScene()->spawnBox("Platform", 1.0, chrono::ChVector<>(0, -10, 0), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
 		Gamma->SetFriction(20);
@@ -300,7 +81,7 @@ int main(int argc, char *argv[])
 		EnvironmentCore::ECBody& Gamma4 = app.getScene()->spawnBox("Platform4", 1.0, chrono::ChVector<>(0, -10, -1000), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
 		Gamma4->SetFriction(20);
 
-		EnvironmentCore::ECBody& Building = app.getScene()->spawnBox("Building1", 50000, chrono::ChVector<>(0, 240, 100), chrono::ChVector<>(20, 500, 20), chrono::ChQuaternion<>(1, 0, 0, 0), true);
+		EnvironmentCore::ECBody& Building = app.getScene()->spawnBox("Building1", 50000, chrono::ChVector<>(0, 490, 100), chrono::ChVector<>(20, 500, 20), chrono::ChQuaternion<>(1, 0, 0, 0), true);
 
 		/*EnvironmentCore::ECBody& Theta = app.getScene()->spawnEllipsoid("Theta", 1.0, chrono::ChVector<>(0, 30, 0), chrono::ChVector<>(2, 5, 2));
 		Theta->SetInertiaXX(chrono::ChVector<>(
@@ -360,7 +141,7 @@ int main(int argc, char *argv[])
 
 
 		chrono::ChVector<> direction = chrono::ChVector<>(0, 0, 5);
-		chrono::ChQuaternion<> dirRot = truss->GetRot();
+		chrono::ChQuaternion<> dirRot = car.getRot();
 		dirRot.Normalize();
 		direction = dirRot.Rotate(chrono::ChVector<>(0, 0, 5));
 
@@ -385,29 +166,18 @@ int main(int argc, char *argv[])
 
 		unsigned int deleteSpheres = 0;
 
-		SDL_HapticEffect effect;
-		memset(&effect, 0, sizeof(SDL_HapticEffect)); // 0 is safe default
-		effect.type = SDL_HAPTIC_SINE;
-		effect.periodic.direction.type = SDL_HAPTIC_POLAR; // Polar coordinates
-		effect.periodic.direction.dir[0] = 18000; // Force comes from south
-		effect.periodic.period = 1000; // 1000 ms
-		effect.periodic.magnitude = 20000; // 20000/32767 strength
-		effect.periodic.length = 5000; // 5 seconds long
-		effect.periodic.attack_length = 1000; // Takes 1 second to get max strength
-		effect.periodic.fade_length = 1000; // Takes 1 second to fade away
-
 		app.getChSystem()->SetIterLCPmaxItersSpeed(20);
 
 		std::function<int()> Loop = [&]() {
 
 			if ((app.getInputManager()->getMouseState().right.down || app.getInputManager()->getControllerState().b.down) && db) {
-				EnvironmentCore::ECBody& Alpha = app.getScene()->spawnSphere("Boox", 50, chrono::ChVector<>(truss->GetPos().x, truss->GetPos().y+3, truss->GetPos().z), 0.3);
+				EnvironmentCore::ECBody& Alpha = app.getScene()->spawnSphere("Boox", 50, chrono::ChVector<>(car.getPos().x, car.getPos().y + 3, car.getPos().z), 0.1);
 				Alpha->SetInertiaXX(chrono::ChVector<>(
 					((2.0 / 5.0)*Alpha->GetMass() * 0.3 * 0.3),
 					((2.0 / 5.0)*Alpha->GetMass() * 0.3 * 0.3),
 					((2.0 / 5.0)*Alpha->GetMass() * 0.3 * 0.3)));
 
-				auto dir = truss->GetRot().Rotate(chrono::ChVector<>(0, 0, 1));
+				auto dir = car.getRot().Rotate(chrono::ChVector<>(0, 0, 1));
 
 				Alpha->SetPos_dt(dir * 125);
 
@@ -425,18 +195,6 @@ int main(int argc, char *argv[])
 				deleteSpheres = 0;
 			}
 
-			if (app.getInputManager()->getControllerState().a.down) {
-				auto dir = truss->GetRot().Rotate(chrono::ChVector<>(0, 0, 1));
-				truss->SetPos_dt(chrono::ChVector<>(0, 5, 0) + (dir * 25));
-
-				auto vert = truss->GetRot().Rotate(chrono::ChVector<>(0, 1, 0));
-
-				vert = chrono::ChVector<>(0, 1, 0) * (app.getInputManager()->getControllerState().lsticky.value * 0.1);
-				if (app.getInputManager()->getControllerState().lsticky.value > 0.50) {
-					wheelRF->SetPos_dt(vert * 0.01);
-					wheelLF->SetPos_dt(vert * 0.01);
-				}
-			}
 
 			if (app.getInputManager()->getControllerState().rbumper.down && db2) {
 				app.getInputManager()->runHapticRumble(1.0f, 1);
@@ -448,14 +206,14 @@ int main(int argc, char *argv[])
 
 			double steer = 0.05*((double)((double)INT_MAX * -1.0 * app.getInputManager()->getControllerState().lstickx.value));
 
-			if (steer > 0.1){
+			if (steer > 0.1) {
 				steer = 0.1;
-			}else if (steer < -.1){
-				steer = -.1;
+			}
+			else if (steer < -0.1) {
+				steer = -0.1;
 			}
 
-			link_distRSTEER->SetEndPoint1Rel(chrono::ChVector<>(0.5 + steer, 0.21, 1.4));
-			link_distLSTEER->SetEndPoint1Rel(chrono::ChVector<>(-0.5 + steer, 0.21, 1.4));
+			car.steer = steer;
 
 			if (app.getInputManager()->getKeyState(SDL_SCANCODE_W).down || (app.getInputManager()->getControllerState().rtrigger.value > 0.50) || (app.getInputManager()->getControllerState().ltrigger.value > 0.50)) {
 				throttle = 40 * (app.getInputManager()->getControllerState().rtrigger.value - app.getInputManager()->getControllerState().ltrigger.value);
@@ -468,40 +226,21 @@ int main(int argc, char *argv[])
 				return 1;
 			}
 
-			double shaftspeed = (1.0 / conic_tau) * 0.5 *
-				(link_engineL->Get_mot_rot_dt() + link_engineR->Get_mot_rot_dt());
-			// The motorspeed is the shaft speed multiplied by gear ratio inversed:
-			double motorspeed = (1.0 / gear_tau)*shaftspeed;
-			// The torque depends on speed-torque curve of the motor: here we assume a
-			// very simplified model a bit like in DC motors:
-			double motortorque = max_motor_torque - motorspeed*(max_motor_torque / max_motor_speed);
-			// Motor torque is linearly modulated by throttle gas value:
-			motortorque = motortorque *  throttle;
-			// The torque at motor shaft:
-			double shafttorque = motortorque * (1.0 / gear_tau);
-			// The torque at wheels - for each wheel, given the differential transmission,
-			// it is half of the shaft torque  (multiplied the conic gear transmission ratio)
-			double singlewheeltorque = 0.5 * shafttorque * (1.0 / conic_tau);
-			// Set the wheel torque in both 'engine' links, connecting the wheels to the truss;
-			if (chrono::ChFunction_Const* mfun = dynamic_cast<chrono::ChFunction_Const*>(link_engineL->Get_tor_funct()))
-				mfun->Set_yconst(singlewheeltorque);
-			if (chrono::ChFunction_Const* mfun = dynamic_cast<chrono::ChFunction_Const*>(link_engineR->Get_tor_funct()))
-				mfun->Set_yconst(singlewheeltorque);
-			//debug:print infos on screen:
-			//GetLog() << "motor torque="<< motortorque<< "  speed=" << motorspeed << "  wheel torqe=" << singlewheeltorque <<"\n";
-			// If needed, return also the value of wheel torque:
+			car.throttle = throttle;
+
+			car.update();
 
 
-			follow.setDiffuseColour((float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed));
-			follow.setSpecularColour((float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed), (float)(motorspeed / max_motor_speed));
+			follow.setDiffuseColour(1.0f, 1.0f, 1.0f);
+			follow.setSpecularColour(1.0f, 1.0f, 1.0f);
 
 
-			dirRot = truss->GetRot();
+			dirRot = car.getRot();
 			dirRot.Normalize();
 			direction = dirRot.Rotate(chrono::ChVector<>(0, 0, -20));
 
-			look_at = truss->GetPos();
-			camera_tpos = (truss->GetPos() + direction);
+			look_at = car.getPos();
+			camera_tpos = (car.getPos() + direction);
 
 			auto camera_dpos = camera_tpos - camera_pos;
 
@@ -517,7 +256,7 @@ int main(int argc, char *argv[])
 			DebugCamera->orient(camera_pos.x, camera_pos.y + 10, camera_pos.z, look_at.x, look_at.y+6, look_at.z);
 			app.setCamera(DebugCamera);
 
-			follow.setPosition(truss->GetPos().x, truss->GetPos().y + 10, truss->GetPos().z + 14);
+			follow.setPosition(car.getPos().x, car.getPos().y + 10, car.getPos().z + 14);
 
 
 			return 0;

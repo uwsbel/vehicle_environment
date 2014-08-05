@@ -85,7 +85,10 @@ namespace EnvironmentCore {
 
 		}
 
+		timestep_max = 0.05;
+		timestep_min = 0.001;
 		timestep = 0;
+		isRealTime = true;
 		isRunning = false;
 	}
 
@@ -105,6 +108,7 @@ namespace EnvironmentCore {
 
 		std::chrono::high_resolution_clock l_time;
 		auto l_start = l_time.now();
+		auto l_last = l_start;
 
 		while (l_run == 0) {
 
@@ -142,11 +146,18 @@ namespace EnvironmentCore {
 			m_pCamera->setAspectRatio((((float)(m_pViewport->getActualWidth())) / ((float)(m_pViewport->getActualHeight()))));
 
 
-			if (timestep > 0) {
-				l_systemTimeIncriment += timestep;
+			if (!isRealTime) {
+				l_systemTimeIncriment += timestep_max;
+				timestep = timestep_max;
 			}
 			else {
 				l_systemTimeIncriment = ((double)(std::chrono::duration_cast<std::chrono::milliseconds>(l_time.now() - l_start).count())) / 1000.0; //converts standard library time difference to a double for Chrono
+
+				l_systemTimeIncriment = l_systemTimeIncriment > timestep_max ? l_systemTimeIncriment+=timestep_max : l_systemTimeIncriment;
+				l_systemTimeIncriment = l_systemTimeIncriment < timestep_min ? l_systemTimeIncriment+=timestep_min : l_systemTimeIncriment;
+
+				timestep = ((double)(std::chrono::duration_cast<std::chrono::milliseconds>(l_time.now() - l_last).count())) / 1000.0;
+				l_last = l_time.now();
 			}
 
 

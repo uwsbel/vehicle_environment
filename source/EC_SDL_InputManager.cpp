@@ -256,12 +256,8 @@ namespace EnvironmentCore {
 	}
 
 	void EC_SDL_InputManager::grabMouse(bool grab) {
-		if (grab) {
-			SDL_SetWindowGrab(m_pSDLWindow, SDL_TRUE);
-		}
-		else {
-			SDL_SetWindowGrab(m_pSDLWindow, SDL_FALSE);
-		}
+		SDL_bool _grab = grab ? SDL_TRUE : SDL_FALSE;
+		SDL_SetWindowGrab(m_pSDLWindow, _grab);
 	}
 
 	void EC_SDL_InputManager::runHapticEffect(ECHapticEffect& effect, int iterations) {
