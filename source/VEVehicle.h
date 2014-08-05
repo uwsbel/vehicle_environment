@@ -16,6 +16,7 @@ namespace VehicleEnvironment {
 		virtual void setApp(EnvironmentCore::EnvironmentCoreApplication* App);
 		virtual void build(chrono::ChVector<>& Pos) =0;
 		virtual void update() = 0;
+		virtual void reset(chrono::ChVector<>& Pos) =0;
 
 		double throttle;
 		double steer;

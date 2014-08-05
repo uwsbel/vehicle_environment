@@ -263,6 +263,8 @@ namespace EnvironmentCore {
 		_ret->SetMass(mass);
 		_ret->GetAssets().push_back(_mesh);
 
+		_ret->SetBodyFixed(fixed);
+
 		_ret.refresh();
 		
 		return _ret;

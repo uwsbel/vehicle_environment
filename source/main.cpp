@@ -165,6 +165,7 @@ int main(int argc, char *argv[])
 
 		bool db = true;
 		bool db2 = true;
+		bool db3 = true;
 
 		unsigned int deleteSpheres = 0;
 
@@ -188,6 +189,15 @@ int main(int argc, char *argv[])
 
 			if (!app.getInputManager()->getMouseState().right.down && !app.getInputManager()->getControllerState().b.down) {
 				db = true;
+			}
+
+			if (app.getInputManager()->getControllerState().start.down && db) {
+				car.reset(chrono::ChVector<>(5, 0, 5));
+				db3 = false;
+			}
+
+			if (!app.getInputManager()->getControllerState().start.down) {
+				db3 = true;
 			}
 
 			deleteSpheres++;

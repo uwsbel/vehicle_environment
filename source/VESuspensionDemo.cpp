@@ -318,6 +318,53 @@ namespace VehicleEnvironment {
 
 	}
 
+	void VESuspensionDemo::reset(chrono::ChVector<>& Pos) {
+		truss->getChBody()->SetPos(chrono::ChVector<>(0, 1, 0) + Pos);
+		truss->getChBody()->SetRot(chrono::QUNIT);
+		truss->getChBody()->SetPos_dt(chrono::ChVector<>(0, 0, 0));
+		truss->getChBody()->SetRot_dt(chrono::QUNIT);
+
+		spindleRF->getChBody()->SetPos(chrono::ChVector<>(1.3, 1, 1) + Pos);
+		spindleRF->getChBody()->SetRot(chrono::QUNIT);
+		spindleRF->getChBody()->SetPos_dt(chrono::ChVector<>(0, 0, 0));
+		spindleRF->getChBody()->SetRot_dt(chrono::QUNIT);
+
+		wheelRF->getChBody()->SetPos(chrono::ChVector<>(1.5, 1, 1) + Pos);
+		wheelRF->getChBody()->SetRot(chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
+		wheelRF->getChBody()->SetPos_dt(chrono::ChVector<>(0, 0, 0));
+		wheelRF->getChBody()->SetRot_dt(chrono::QUNIT);
+
+		spindleLF->getChBody()->SetPos(chrono::ChVector<>(-1.3, 1, 1) + Pos);
+		spindleLF->getChBody()->SetRot(chrono::QUNIT);
+		spindleLF->getChBody()->SetPos_dt(chrono::ChVector<>(0, 0, 0));
+		spindleLF->getChBody()->SetRot_dt(chrono::QUNIT);
+
+		wheelLF->getChBody()->SetPos(chrono::ChVector<>(-1.5, 1, 1) + Pos);
+		wheelLF->getChBody()->SetRot(chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
+		wheelLF->getChBody()->SetPos_dt(chrono::ChVector<>(0, 0, 0));
+		wheelLF->getChBody()->SetRot_dt(chrono::QUNIT);
+
+		spindleRB->getChBody()->SetPos(chrono::ChVector<>(1.3, 1, -1) + Pos);
+		spindleRB->getChBody()->SetRot(chrono::QUNIT);
+		spindleRB->getChBody()->SetPos_dt(chrono::ChVector<>(0, 0, 0));
+		spindleRB->getChBody()->SetRot_dt(chrono::QUNIT);
+
+		wheelRB->getChBody()->SetPos(chrono::ChVector<>(1.5, 1, -1) + Pos);
+		wheelRB->getChBody()->SetRot(chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
+		wheelRB->getChBody()->SetPos_dt(chrono::ChVector<>(0, 0, 0));
+		wheelRB->getChBody()->SetRot_dt(chrono::QUNIT);
+
+		spindleLB->getChBody()->SetPos(chrono::ChVector<>(-1.3, 1, -1) + Pos);
+		spindleLB->getChBody()->SetRot(chrono::QUNIT);
+		spindleLB->getChBody()->SetPos_dt(chrono::ChVector<>(0, 0, 0));
+		spindleLB->getChBody()->SetRot_dt(chrono::QUNIT);
+
+		wheelLB->getChBody()->SetPos(chrono::ChVector<>(-1.5, 1, -1) + Pos);
+		wheelLB->getChBody()->SetRot(chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
+		wheelLB->getChBody()->SetPos_dt(chrono::ChVector<>(0, 0, 0));
+		wheelLB->getChBody()->SetRot_dt(chrono::QUNIT);
+	}
+
 	chrono::ChVector<> VESuspensionDemo::getPos() {
 		return truss->getChBody()->GetPos();
 	}

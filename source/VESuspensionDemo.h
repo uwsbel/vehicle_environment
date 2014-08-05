@@ -14,6 +14,7 @@ namespace VehicleEnvironment {
 
 		virtual void build(chrono::ChVector<>& Pos);
 		virtual void update();
+		virtual void reset(chrono::ChVector<>& Pos);
 
 		virtual chrono::ChVector<> getPos();
 		virtual chrono::ChQuaternion<> getRot();
