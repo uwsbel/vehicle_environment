@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 		app.setCamera(DebugCamera);
 
 		app.timestep_max = 0.01;
-		app.isRealTime = true;
+		app.isRealTime = false;
 
 		std::random_device l_rand;
 
@@ -169,6 +169,8 @@ int main(int argc, char *argv[])
 		unsigned int deleteSpheres = 0;
 
 		app.getChSystem()->SetIterLCPmaxItersSpeed(20);
+
+		app.WriteToFile = true;
 
 		std::function<int()> Loop = [&]() {
 

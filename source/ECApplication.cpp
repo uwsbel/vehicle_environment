@@ -90,6 +90,7 @@ namespace EnvironmentCore {
 		timestep = 0;
 		isRealTime = true;
 		isRunning = false;
+		WriteToFile = false;
 	}
 
 	EnvironmentCoreApplication::~EnvironmentCoreApplication() {
@@ -105,6 +106,15 @@ namespace EnvironmentCore {
 		isRunning = true;
 
 		double l_systemTimeIncriment = 0.0;
+
+		int l_frame = 0;
+		Ogre::TexturePtr rtt_texture = Ogre::TextureManager::getSingleton().createManual("RttTex", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::TEX_TYPE_2D, m_pRenderWindow->getWidth(), m_pRenderWindow->getHeight(), 0, Ogre::PF_R8G8B8, Ogre::TU_RENDERTARGET);
+		Ogre::RenderTexture* renderTexture = rtt_texture->getBuffer()->getRenderTarget();
+
+		renderTexture->addViewport(m_pCamera);
+		renderTexture->getViewport(0)->setClearEveryFrame(true);
+		renderTexture->getViewport(0)->setBackgroundColour(Ogre::ColourValue::Black);
+		renderTexture->getViewport(0)->setOverlaysEnabled(false);
 
 		std::chrono::high_resolution_clock l_time;
 		auto l_start = l_time.now();
@@ -160,6 +170,12 @@ namespace EnvironmentCore {
 				l_last = l_time.now();
 			}
 
+			if (WriteToFile) {
+				std::string name = "out/frame" + std::to_string(l_frame) + "time" + std::to_string(l_systemTimeIncriment) + ".png";
+				renderTexture->update();
+				renderTexture->writeContentsToFile(name);
+				l_frame++;
+			}
 
 			Ogre::WindowEventUtilities::messagePump();
 

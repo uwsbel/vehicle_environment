@@ -57,6 +57,8 @@ namespace EnvironmentCore {
 
 		bool isRunning;
 
+		bool WriteToFile;
+
 	protected:
 
 		Ogre::Root* m_pRoot;
