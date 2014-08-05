@@ -106,6 +106,9 @@ namespace EnvironmentCore {
 				double _r = chrono::static_cast_chshared<chrono::ChSphereShape>(temp_asset)->GetSphereGeometry().rad;
 				l_pNode->setScale((Ogre::Real)_r, (Ogre::Real)_r, (Ogre::Real)_r);
 			}
+			else if (temp_asset.IsType<chrono::ChTriangleMeshShape>()) {
+				l_pEntity = m_pSceneManager->createEntity(chrono::static_cast_chshared<chrono::ChTriangleMeshShape>(temp_asset)->GetName());
+			}
 
 			l_pNode->attachObject(l_pEntity);
 			m_SceneNodes.push_back(l_pNode);

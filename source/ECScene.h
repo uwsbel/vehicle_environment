@@ -90,6 +90,13 @@ namespace EnvironmentCore {
 										double radius = 1.0,
 										bool fixed = false);
 
+		virtual ECBody& spawnMesh(	std::string Name = "",
+									double mass = 1.0,
+									chrono::ChVector<>& position = chrono::ChVector<>(0, 0, 0),
+									chrono::ChQuaternion<>& rotation = chrono::ChQuaternion<>(1, 0, 0, 0),
+									std::string FileName = "",
+									bool fixed = false);
+
 		////////
 		//Various world management functions
 		////////

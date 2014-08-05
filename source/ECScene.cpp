@@ -252,6 +252,22 @@ namespace EnvironmentCore {
 		return _ret;
 	}
 
+	ECBody& ECScene::spawnMesh(std::string Name, double mass, chrono::ChVector<>& position, chrono::ChQuaternion<>& rotation, std::string FileName, bool fixed) {
+		ECBody& _ret = createBody(Name);
+
+		chrono::ChSharedPtr<chrono::ChTriangleMeshShape> _mesh(new chrono::ChTriangleMeshShape);
+		_mesh->SetName(FileName);
+
+		_ret->SetRot(rotation);
+		_ret->SetPos(position);
+		_ret->SetMass(mass);
+		_ret->GetAssets().push_back(_mesh);
+
+		_ret.refresh();
+		
+		return _ret;
+	}
+
 
 	void ECScene::setLowerLimit(double limit) {
 		m_LowerLimit = limit;

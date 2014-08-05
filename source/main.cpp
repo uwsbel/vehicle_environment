@@ -109,6 +109,8 @@ int main(int argc, char *argv[])
 				((2.0 / 5.0)*Epsilon->GetMass() * 1.0)));
 		}*/
 
+		EnvironmentCore::ECBody& Mesh_Test = app.getScene()->spawnMesh("Mesh", 1.0, chrono::ChVector<>(0, 10, 0), chrono::ChQuaternion<>(1, 0, 0, 0), "ninja.mesh", true);
+
 
 		EnvironmentCore::ECLight& yeh = app.getScene()->createLight("Swag");
 		yeh.setType(EnvironmentCore::ECLightTypes::LT_POINT);
