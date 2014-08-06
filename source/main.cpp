@@ -170,11 +170,9 @@ int main(int argc, char *argv[])
 
 		app.getChSystem()->SetIterLCPmaxItersSpeed(20);
 
-		app.WriteToFile = true;
-
 		std::function<int()> Loop = [&]() {
 
-			if ((app.getInputManager()->getMouseState().right.down || app.getInputManager()->getControllerState().b.down) && db) {
+			if ((app.getInputManager()->getWheelState().rwheelb1.down) && db) {
 				EnvironmentCore::ECBody& Alpha = app.getScene()->spawnSphere("Boox", 50, chrono::ChVector<>(car.getPos().x, car.getPos().y + 3, car.getPos().z), 0.1);
 				Alpha->SetInertiaXX(chrono::ChVector<>(
 					((2.0 / 5.0)*Alpha->GetMass() * 0.3 * 0.3),
@@ -188,16 +186,16 @@ int main(int argc, char *argv[])
 				db = false;
 			}
 
-			if (!app.getInputManager()->getMouseState().right.down && !app.getInputManager()->getControllerState().b.down) {
+			if (!app.getInputManager()->getWheelState().rwheelb1.down) {
 				db = true;
 			}
 
-			if (app.getInputManager()->getControllerState().start.down && db) {
+			if (app.getInputManager()->getWheelState().rpaddle.down && db3) {
 				car.reset(chrono::ChVector<>(5, 0, 5));
 				db3 = false;
 			}
 
-			if (!app.getInputManager()->getControllerState().start.down) {
+			if (!app.getInputManager()->getWheelState().rpaddle.down) {
 				db3 = true;
 			}
 
@@ -209,15 +207,15 @@ int main(int argc, char *argv[])
 			}
 
 
-			if (app.getInputManager()->getControllerState().rbumper.down && db2) {
+			if (app.getInputManager()->getWheelState().rwheelb2.down && db2) {
 				app.getInputManager()->runHapticRumble(1.0f, 1);
 				db2 = false;
 			}
-			if (!app.getInputManager()->getControllerState().rbumper.down) {
+			if (!app.getInputManager()->getWheelState().rwheelb2.down) {
 				db2 = true;
 			}
 
-			double steer = 0.05*((double)((double)INT_MAX * -1.0 * app.getInputManager()->getControllerState().lstickx.value));
+			double steer = 0.05*((double)((double)INT_MAX * -1.0 * app.getInputManager()->getWheelState().wheel.value));
 
 			if (steer > 0.1) {
 				steer = 0.1;
@@ -228,10 +226,14 @@ int main(int argc, char *argv[])
 
 			car.steer = steer;
 
-			if (app.getInputManager()->getKeyState(SDL_SCANCODE_W).down || (app.getInputManager()->getControllerState().rtrigger.value > 0.50) || (app.getInputManager()->getControllerState().ltrigger.value > 0.50)) {
-				throttle = 40 * (app.getInputManager()->getControllerState().rtrigger.value - app.getInputManager()->getControllerState().ltrigger.value);
+			if ((app.getInputManager()->getWheelState().accelerator.value)) {
+				throttle = 40 * ((app.getInputManager()->getWheelState().accelerator.value) - (app.getInputManager()->getWheelState().brake.value));
+				if (app.getInputManager()->getWheelState().reverse.down) {
+					throttle *= -1;
+				}
 			}
-			else {
+
+			if (app.getInputManager()->getWheelState().brake.value) {
 				throttle = 0;
 			}
 

@@ -8,9 +8,9 @@
 #include <climits>
 #include "EC_SDL_InputManager.h"
 
-#define INPUT_DEADZONE  ( ( 0.26 * (double)(0x7FFF) ) / (double)(SHRT_MAX) )
-
 namespace EnvironmentCore {
+
+	std::string const EC_SDL_InputManager::WheelGUID = "6d049bc2000000000000504944564944";
 
 	EC_SDL_InputManager::EC_SDL_InputManager(Ogre::RenderWindow* renderWindow) {
 
@@ -39,6 +39,20 @@ namespace EnvironmentCore {
 
 		for (int i = 0; i < SDL_NumJoysticks(); ++i) {
 			m_pController = SDL_JoystickOpen(i);
+
+			SDL_JoystickGUID k = SDL_JoystickGetGUID(m_pController);
+			char* l = new char[33];
+			SDL_JoystickGetGUIDString(k, l, 33);
+			if (l == WheelGUID) {
+				m_WheelState.active = true;
+				m_ControllerState.active = false;
+			}
+			else {
+				m_ControllerState.active = true;
+				m_WheelState.active = false;
+			}
+			delete l;
+
 			if (m_pController) {
 				m_pHaptic = SDL_HapticOpen(0);
 				SDL_HapticRumbleInit(m_pHaptic);
@@ -153,11 +167,16 @@ namespace EnvironmentCore {
 				if (std::abs(((double)_event.jaxis.value / (double)SHRT_MAX)) > AxisThreshold ) {
 
 					switch (_event.jaxis.axis) {
-					case 0: m_ControllerState.lstickx.value = ((double)_event.jaxis.value / (double)SHRT_MAX); m_ControllerState.lstickx.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
-					case 1: m_ControllerState.lsticky.value = ((double)_event.jaxis.value / (double)SHRT_MAX); m_ControllerState.lsticky.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
-					case 2: m_ControllerState.rstickx.value = ((double)_event.jaxis.value / (double)SHRT_MAX); m_ControllerState.rstickx.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+					case 0: m_ControllerState.lstickx.value = ((double)_event.jaxis.value / (double)SHRT_MAX); m_ControllerState.lstickx.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; m_WheelState.wheel.value = ((double)_event.jaxis.value / (double)SHRT_MAX); m_WheelState.wheel.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+
+					case 1: m_ControllerState.lsticky.value = ((double)_event.jaxis.value / (double)SHRT_MAX); m_ControllerState.lsticky.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; m_WheelState.accelerator.value = std::abs((((double)_event.jaxis.value / (double)SHRT_MAX)-1)/2); m_WheelState.accelerator.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+
+					case 2: m_ControllerState.rstickx.value = ((double)_event.jaxis.value / (double)SHRT_MAX); m_ControllerState.rstickx.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; m_WheelState.brake.value = std::abs((((double)_event.jaxis.value / (double)SHRT_MAX)-1)/2); m_WheelState.brake.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+
 					case 3: m_ControllerState.rsticky.value = ((double)_event.jaxis.value / (double)SHRT_MAX); m_ControllerState.rsticky.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
-					case 4: m_ControllerState.ltrigger.value = ((double)_event.jaxis.value / (double)SHRT_MAX); m_ControllerState.ltrigger.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+
+					case 4: m_ControllerState.ltrigger.value = ((double)_event.jaxis.value / (double)SHRT_MAX); m_ControllerState.ltrigger.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; m_WheelState.clutch.value = std::abs((((double)_event.jaxis.value / (double)SHRT_MAX)-1)/2); m_WheelState.clutch.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+
 					case 5: m_ControllerState.rtrigger.value = ((double)_event.jaxis.value / (double)SHRT_MAX); m_ControllerState.rtrigger.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
 					}
 
@@ -165,11 +184,16 @@ namespace EnvironmentCore {
 				else {
 
 					switch (_event.jaxis.axis) {
-					case 0: m_ControllerState.lstickx.value = 0; m_ControllerState.lstickx.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
-					case 1: m_ControllerState.lsticky.value = 0; m_ControllerState.lsticky.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
-					case 2: m_ControllerState.rstickx.value = 0; m_ControllerState.rstickx.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+					case 0: m_ControllerState.lstickx.value = 0; m_ControllerState.lstickx.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; m_WheelState.wheel.value = 0; m_WheelState.wheel.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+
+					case 1: m_ControllerState.lsticky.value = 0; m_ControllerState.lsticky.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; m_WheelState.accelerator.value = 0; m_WheelState.accelerator.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+
+					case 2: m_ControllerState.rstickx.value = 0; m_ControllerState.rstickx.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; m_WheelState.brake.value = 0; m_WheelState.brake.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+
 					case 3: m_ControllerState.rsticky.value = 0; m_ControllerState.rsticky.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
-					case 4: m_ControllerState.ltrigger.value = 0; m_ControllerState.ltrigger.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+
+					case 4: m_ControllerState.ltrigger.value = 0; m_ControllerState.ltrigger.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; m_WheelState.clutch.value = 0; m_WheelState.clutch.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
+
 					case 5: m_ControllerState.rtrigger.value = 0; m_ControllerState.rtrigger.timestamp = (double)(_event.jaxis.timestamp) / 1000.0; break;
 					}
 
@@ -184,48 +208,124 @@ namespace EnvironmentCore {
 			else if (_event.type == SDL_JOYBUTTONDOWN) {
 
 				switch (_event.jbutton.button) {
-				case 0: m_ControllerState.d_up.down = true; m_ControllerState.d_up.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 1: m_ControllerState.d_down.down = true; m_ControllerState.d_down.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 2: m_ControllerState.d_left.down = true; m_ControllerState.d_left.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 3: m_ControllerState.d_right.down = true; m_ControllerState.d_right.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 4: m_ControllerState.start.down = true; m_ControllerState.start.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 5: m_ControllerState.back.down = true; m_ControllerState.back.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 6: m_ControllerState.lstick.down = true; m_ControllerState.lstick.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 7: m_ControllerState.rstick.down = true; m_ControllerState.rstick.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 8: m_ControllerState.lbumper.down = true; m_ControllerState.lbumper.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 9: m_ControllerState.rbumper.down = true; m_ControllerState.rbumper.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 10: m_ControllerState.a.down = true; m_ControllerState.a.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 11: m_ControllerState.b.down = true; m_ControllerState.b.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 12: m_ControllerState.x.down = true; m_ControllerState.x.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 13: m_ControllerState.y.down = true; m_ControllerState.y.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+				case 0: m_ControllerState.d_up.down = true; m_ControllerState.d_up.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.red1.down = true; m_WheelState.red1.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+					
+				case 1: m_ControllerState.d_down.down = true; m_ControllerState.d_down.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.red2.down = true; m_WheelState.red2.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 2: m_ControllerState.d_left.down = true; m_ControllerState.d_left.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.red3.down = true; m_WheelState.red3.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 3: m_ControllerState.d_right.down = true; m_ControllerState.d_right.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.red4.down = true; m_WheelState.red4.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 4: m_ControllerState.start.down = true; m_ControllerState.start.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.rpaddle.down = true; m_WheelState.rpaddle.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 5: m_ControllerState.back.down = true; m_ControllerState.back.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.lpaddle.down = true; m_WheelState.lpaddle.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 6: m_ControllerState.lstick.down = true; m_ControllerState.lstick.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.rwheelb1.down = true; m_WheelState.rwheelb1.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 7: m_ControllerState.rstick.down = true; m_ControllerState.rstick.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.lwheelb1.down = true; m_WheelState.lwheelb1.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 8: m_ControllerState.lbumper.down = true; m_ControllerState.lbumper.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.gear1.down = true; m_WheelState.gear1.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 9: m_ControllerState.rbumper.down = true; m_ControllerState.rbumper.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.gear2.down = true; m_WheelState.gear2.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 10: m_ControllerState.a.down = true; m_ControllerState.a.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.gear3.down = true; m_WheelState.gear3.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 11: m_ControllerState.b.down = true; m_ControllerState.b.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.gear4.down = true; m_WheelState.gear4.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 12: m_ControllerState.x.down = true; m_ControllerState.x.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.gear5.down = true; m_WheelState.gear5.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 13: m_ControllerState.y.down = true; m_ControllerState.y.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.gear6.down = true; m_WheelState.gear6.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 14: m_WheelState.reverse.down = true; m_WheelState.reverse.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 15: m_WheelState.black_up.down = true; m_WheelState.black_up.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 16: m_WheelState.black_left.down = true; m_WheelState.black_left.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break
+					;
+				case 17: m_WheelState.black_down.down = true; m_WheelState.black_down.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 18: m_WheelState.black_right.down = true; m_WheelState.black_right.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 19: m_WheelState.rwheelb2.down = true; m_WheelState.rwheelb2.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 20: m_WheelState.lwheelb2.down = true; m_WheelState.lwheelb2.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 21: m_WheelState.rwheelb3.down = true; m_WheelState.rwheelb3.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 22: m_WheelState.lwheelb3.down = true; m_WheelState.lwheelb3.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
 				}
 
 #ifdef _DEBUG
-				Ogre::LogManager::getSingleton().logMessage(Ogre::LML_NORMAL, "Controller button press - Button:" + std::to_string(_event.jbutton.button) + "\n");
+ 				Ogre::LogManager::getSingleton().logMessage(Ogre::LML_NORMAL, "Controller button press - Button:" + std::to_string(_event.jbutton.button) + "\n");
 #endif
 			}
 			else if (_event.type == SDL_JOYBUTTONUP) {
 
 				switch (_event.jbutton.button) {
-				case 0: m_ControllerState.d_up.down = false; m_ControllerState.d_up.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 1: m_ControllerState.d_down.down = false; m_ControllerState.d_down.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 2: m_ControllerState.d_left.down = false; m_ControllerState.d_left.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 3: m_ControllerState.d_right.down = false; m_ControllerState.d_right.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 4: m_ControllerState.start.down = false; m_ControllerState.start.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 5: m_ControllerState.back.down = false; m_ControllerState.back.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 6: m_ControllerState.lstick.down = false; m_ControllerState.lstick.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 7: m_ControllerState.rstick.down = false; m_ControllerState.rstick.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 8: m_ControllerState.lbumper.down = false; m_ControllerState.lbumper.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 9: m_ControllerState.rbumper.down = false; m_ControllerState.rbumper.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 10: m_ControllerState.a.down = false; m_ControllerState.a.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 11: m_ControllerState.b.down = false; m_ControllerState.b.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 12: m_ControllerState.x.down = false; m_ControllerState.x.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
-				case 13: m_ControllerState.y.down = false; m_ControllerState.y.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+				case 0: m_ControllerState.d_up.down = false; m_ControllerState.d_up.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.red1.down = false; m_WheelState.red1.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 1: m_ControllerState.d_down.down = false; m_ControllerState.d_down.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.red2.down = false; m_WheelState.red2.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 2: m_ControllerState.d_left.down = false; m_ControllerState.d_left.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.red3.down = false; m_WheelState.red3.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 3: m_ControllerState.d_right.down = false; m_ControllerState.d_right.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.red4.down = false; m_WheelState.red4.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 4: m_ControllerState.start.down = false; m_ControllerState.start.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.rpaddle.down = false; m_WheelState.rpaddle.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 5: m_ControllerState.back.down = false; m_ControllerState.back.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.lpaddle.down = false; m_WheelState.lpaddle.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 6: m_ControllerState.lstick.down = false; m_ControllerState.lstick.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.rwheelb1.down = false; m_WheelState.rwheelb1.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 7: m_ControllerState.rstick.down = false; m_ControllerState.rstick.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.lwheelb1.down = false; m_WheelState.lwheelb1.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 8: m_ControllerState.lbumper.down = false; m_ControllerState.lbumper.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.gear1.down = false; m_WheelState.gear1.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 9: m_ControllerState.rbumper.down = false; m_ControllerState.rbumper.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.gear2.down = false; m_WheelState.gear2.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 10: m_ControllerState.a.down = false; m_ControllerState.a.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.gear3.down = false; m_WheelState.gear3.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 11: m_ControllerState.b.down = false; m_ControllerState.b.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.gear4.down = false; m_WheelState.gear4.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 12: m_ControllerState.x.down = false; m_ControllerState.x.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.gear5.down = false; m_WheelState.gear5.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 13: m_ControllerState.y.down = false; m_ControllerState.y.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; m_WheelState.gear6.down = false; m_WheelState.gear6.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 14: m_WheelState.reverse.down = false; m_WheelState.reverse.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 15: m_WheelState.black_up.down = false; m_WheelState.black_up.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 16: m_WheelState.black_left.down = false; m_WheelState.black_left.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 17: m_WheelState.black_down.down = false; m_WheelState.black_down.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 18: m_WheelState.black_right.down = false; m_WheelState.black_right.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 19: m_WheelState.rwheelb2.down = false; m_WheelState.rwheelb2.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 20: m_WheelState.lwheelb2.down = false; m_WheelState.lwheelb2.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 21: m_WheelState.rwheelb3.down = false; m_WheelState.rwheelb3.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
+
+				case 22: m_WheelState.lwheelb3.down = false; m_WheelState.lwheelb3.timestamp = (double)(_event.jbutton.timestamp) / 1000.0; break;
 				}
 
 #ifdef _DEBUG
 				Ogre::LogManager::getSingleton().logMessage(Ogre::LML_NORMAL, "Controller button release - Button:" + std::to_string(_event.jbutton.button) + "\n");
 #endif
+			}
+			else if (_event.type == SDL_JOYHATMOTION) {
+				m_WheelState.d_pad.reset();
+				switch (_event.jhat.value){
+				case SDL_HAT_UP: m_WheelState.d_pad.up = true; break;
+				case SDL_HAT_RIGHTUP: m_WheelState.d_pad.up_right = true; break;
+				case SDL_HAT_RIGHT: m_WheelState.d_pad.right = true; break;
+				case SDL_HAT_RIGHTDOWN: m_WheelState.d_pad.down_right = true; break;
+				case SDL_HAT_DOWN: m_WheelState.d_pad.down = true; break;
+				case SDL_HAT_LEFTDOWN: m_WheelState.d_pad.down_left = true; break;
+				case SDL_HAT_LEFT: m_WheelState.d_pad.left = true; break;
+				case SDL_HAT_LEFTUP: m_WheelState.d_pad.up_left = true; break;
+				case SDL_HAT_CENTERED: m_WheelState.d_pad.centered = true; break;
+				}
 			}
 			else if (_event.type == SDL_JOYDEVICEADDED) {
 				if (_event.jdevice.which == 0) {
@@ -234,6 +334,20 @@ namespace EnvironmentCore {
 						m_pController = nullptr;
 					}
 					m_pController = SDL_JoystickOpen(0);
+
+					SDL_JoystickGUID k = SDL_JoystickGetGUID(m_pController);
+					char* l = new char[33];
+					SDL_JoystickGetGUIDString(k, l, 33);
+					if (l == WheelGUID) {
+						m_WheelState.active = true;
+						m_ControllerState.active = false;
+					}
+					else {
+						m_ControllerState.active = true;
+						m_WheelState.active = false;
+					}
+					delete l;
+
 					m_pHaptic = SDL_HapticOpen(0);
 					SDL_HapticRumbleInit(m_pHaptic);
 				}
@@ -243,6 +357,8 @@ namespace EnvironmentCore {
 					if (m_pController) {
 						SDL_JoystickClose(m_pController);
 						m_pController = nullptr;
+						m_ControllerState.active = false;
+						m_WheelState.active = false;
 						SDL_HapticClose(m_pHaptic);
 					}
 				}
@@ -292,6 +408,10 @@ namespace EnvironmentCore {
 
 	ECControllerState& EC_SDL_InputManager::getControllerState() {
 		return m_ControllerState;
+	}
+
+	ECWheelState& EC_SDL_InputManager::getWheelState() {
+		return m_WheelState;
 	}
 
 }

@@ -1,3 +1,9 @@
+/*
+Author: Charles Ricchio
+
+This is the basic vehicle class, which all vehicles should inherit from
+*/
+
 #pragma once
 
 #include "ECApplication.h"

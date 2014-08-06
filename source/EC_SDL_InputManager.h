@@ -9,7 +9,7 @@ An input manager based on SDL, as opposed to OIS. Will handle keyboard, mouse, a
 #include <OGRE\Ogre.h>
 #include <SDL.h>
 
-#include <map>
+#define INPUT_DEADZONE  0.25
 
 namespace EnvironmentCore {
 
@@ -62,7 +62,46 @@ namespace EnvironmentCore {
 		ECKeyState d_left, d_right, d_up, d_down;
 		ECKeyState lbumper, rbumper;
 
+		bool active;
+
 	} ECControllerState;
+
+	typedef struct ECWheelState_t {
+
+		typedef struct __hatState_t {
+			bool up, up_right, right, down_right, down, down_left, left, up_left, centered;
+			double timestamp;
+			void reset() {
+				up = false;
+				up_right = false;
+				right = false;
+				down_right = false;
+				down = false;
+				down_left = false;
+				left = false;
+				up_left = false;
+				centered = false;
+			}
+		} __hatState;
+
+		ECControllerState::__axisState wheel;
+		ECControllerState::__axisState accelerator;
+		ECControllerState::__axisState brake;
+		ECControllerState::__axisState clutch;
+
+		ECKeyState lpaddle, rpaddle;
+		ECKeyState lwheelb1, rwheelb1,
+				   lwheelb2, rwheelb2,
+				   lwheelb3, rwheelb3;
+		ECKeyState gear1, gear2, gear3, gear4, gear5, gear6, reverse;
+		ECKeyState red1, red2, red3, red4;
+		ECKeyState black_up, black_down, black_left, black_right;
+
+		__hatState d_pad;
+
+		bool active;
+
+	} ECWheelState;
 
 	typedef SDL_HapticEffect ECHapticEffect;
 
@@ -88,6 +127,8 @@ namespace EnvironmentCore {
 
 		virtual ECControllerState& getControllerState();
 
+		virtual ECWheelState& getWheelState();
+
 		double AxisThreshold;
 
 		bool WindowClose;
@@ -101,9 +142,12 @@ namespace EnvironmentCore {
 
 		ECMouseState m_MouseState;
 		ECControllerState m_ControllerState;
+		ECWheelState m_WheelState;
 		
 		SDL_Joystick* m_pController;
 		SDL_Haptic* m_pHaptic;
+
+		static std::string const WheelGUID;
 
 	private:
 

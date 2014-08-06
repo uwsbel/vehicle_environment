@@ -1,3 +1,9 @@
+/*
+Author: Charles Ricchio
+
+The Chrono suspension demo implemented with the VEVehicle class
+*/
+
 #pragma once
 
 #include "VEVehicle.h"
