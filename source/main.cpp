@@ -70,15 +70,15 @@ int main(int argc, char *argv[])
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0))));*/
 
 		EnvironmentCore::ECBody& Gamma = app.getScene()->spawnBox("Platform", 1.0, chrono::ChVector<>(0, -10, 0), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
-		Gamma->SetFriction(20);
+		Gamma->SetFriction(.9);
 		EnvironmentCore::ECBody& Gamma1 = app.getScene()->spawnBox("Platform1", 1.0, chrono::ChVector<>(1000, -10, 0), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
-		Gamma1->SetFriction(20);
+		Gamma1->SetFriction(.9);
 		EnvironmentCore::ECBody& Gamma2 = app.getScene()->spawnBox("Platform2", 1.0, chrono::ChVector<>(-1000, -10, 0), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
-		Gamma2->SetFriction(20);
+		Gamma2->SetFriction(.9);
 		EnvironmentCore::ECBody& Gamma3 = app.getScene()->spawnBox("Platform3", 1.0, chrono::ChVector<>(0, -10, 1000), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
-		Gamma3->SetFriction(20);
+		Gamma3->SetFriction(.9);
 		EnvironmentCore::ECBody& Gamma4 = app.getScene()->spawnBox("Platform4", 1.0, chrono::ChVector<>(0, -10, -1000), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
-		Gamma4->SetFriction(20);
+		Gamma4->SetFriction(.9);
 
 		EnvironmentCore::ECBody& Building = app.getScene()->spawnBox("Building1", 50000, chrono::ChVector<>(0, 490, 100), chrono::ChVector<>(20, 500, 20), chrono::ChQuaternion<>(1, 0, 0, 0), true);
 
@@ -108,8 +108,7 @@ int main(int argc, char *argv[])
 				((2.0 / 5.0)*Epsilon->GetMass() * 1.0)));
 		}*/
 
-		EnvironmentCore::ECBody& Mesh_Test = app.getScene()->spawnMesh("Mesh", 1.0, chrono::ChVector<>(0, 10, 0), chrono::ChVector<>(0.1, 0.1, 0.1), chrono::ChQuaternion<>(1, 0, 0, 0), "ninja.mesh", true);
-
+		
 
 		EnvironmentCore::ECLight& yeh = app.getScene()->createLight("Swag");
 		yeh.setType(EnvironmentCore::ECLightTypes::LT_POINT);
@@ -157,10 +156,6 @@ int main(int argc, char *argv[])
 		auto l_start = l_time.now();
 
 		double throttle = 0; // actual value 0...1 of gas throttle.
-		double conic_tau = 10; // the transmission ratio of the conic gears at the rear axle
-		double gear_tau = 0.5; // the actual tau of the gear
-		double max_motor_torque = 30; // the max torque of the motor [Nm];
-		double max_motor_speed = 100;	 // the max rotation speed of the motor [rads/s]
 
 		bool db = true;
 		bool db2 = true;
@@ -168,7 +163,14 @@ int main(int argc, char *argv[])
 
 		unsigned int deleteSpheres = 0;
 
-		app.getChSystem()->SetIterLCPmaxItersSpeed(20);
+		app.getChSystem()->SetIterLCPmaxItersSpeed(800);
+		app.getChSystem()->SetMaxPenetrationRecoverySpeed(100000);
+		//app.getChSystem()->SetLcpSolverType(chrono::ChSystem::LCP_ITERATIVE_SYMMSOR);
+		app.getChSystem()->SetTol(0);
+
+
+		app.getInputManager()->AxisThreshold = 0.1;
+		app.getGUIManager()->createPanel("Swag");
 
 		std::function<int()> Loop = [&]() {
 
@@ -191,7 +193,7 @@ int main(int argc, char *argv[])
 			}
 
 			if (app.getInputManager()->getWheelState().rpaddle.down && db3) {
-				car.reset(chrono::ChVector<>(5, 0, 5));
+				car.reset(chrono::ChVector<>(5, -7, 5));
 				db3 = false;
 			}
 
@@ -215,7 +217,7 @@ int main(int argc, char *argv[])
 				db2 = true;
 			}
 
-			double steer = 0.05*((double)((double)INT_MAX * -1.0 * app.getInputManager()->getWheelState().wheel.value));
+			double steer = 0.07*((double)(-1.0 * app.getInputManager()->getWheelState().wheel.value));
 
 			if (steer > 0.1) {
 				steer = 0.1;
@@ -226,15 +228,40 @@ int main(int argc, char *argv[])
 
 			car.steer = steer;
 
+			if (app.getInputManager()->getWheelState().clutch.value > 0.7) {
+				throttle = 0;
+				if (app.getInputManager()->getWheelState().gear1.down) {
+					car.shift(1);
+				}
+				else if (app.getInputManager()->getWheelState().gear2.down) {
+					car.shift(2);
+				}
+				else if (app.getInputManager()->getWheelState().gear3.down) {
+					car.shift(3);
+				}
+				else if (app.getInputManager()->getWheelState().gear4.down) {
+					car.shift(4);
+				}
+				else if (app.getInputManager()->getWheelState().gear5.down) {
+					car.shift(5);
+				}
+				else if (app.getInputManager()->getWheelState().gear6.down) {
+					car.shift(6);
+				}
+				else if (app.getInputManager()->getWheelState().reverse.down) {
+					car.shift(0);
+				}
+			}
+
 			if ((app.getInputManager()->getWheelState().accelerator.value)) {
 				throttle = 40 * ((app.getInputManager()->getWheelState().accelerator.value) - (app.getInputManager()->getWheelState().brake.value));
 				if (app.getInputManager()->getWheelState().reverse.down) {
-					throttle *= -1;
+					//throttle *= -1;
 				}
 			}
 
 			if (app.getInputManager()->getWheelState().brake.value) {
-				throttle = 0;
+				car.brake();
 			}
 
 			if (app.getInputManager()->getKeyState(SDL_SCANCODE_ESCAPE).down || app.getInputManager()->getControllerState().back.down) {
@@ -252,7 +279,7 @@ int main(int argc, char *argv[])
 
 			dirRot = car.getRot();
 			dirRot.Normalize();
-			direction = dirRot.Rotate(chrono::ChVector<>(0, 0, -20));
+			direction = dirRot.Rotate(chrono::ChVector<>(0, 10, -20));
 
 			look_at = car.getPos();
 			camera_tpos = (car.getPos() + direction);
@@ -268,7 +295,7 @@ int main(int argc, char *argv[])
 			camera_pos = camera_pos + camera_vel * app.timestep + 0.5 * cam_accel * app.timestep * app.timestep;
 			
 
-			DebugCamera->orient(camera_pos.x, camera_pos.y + 10, camera_pos.z, look_at.x, look_at.y+6, look_at.z);
+			DebugCamera->orient(camera_pos.x, camera_pos.y, camera_pos.z, look_at.x, look_at.y+6, look_at.z);
 			app.setCamera(DebugCamera);
 
 			follow.setPosition(car.getPos().x, car.getPos().y + 10, car.getPos().z + 14);

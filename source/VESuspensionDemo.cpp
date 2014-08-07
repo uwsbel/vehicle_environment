@@ -54,8 +54,8 @@ namespace VehicleEnvironment {
 		link_springLB = chrono::ChSharedPtr<chrono::ChLinkSpring>(new chrono::ChLinkSpring);
 		link_distLBlat = chrono::ChSharedPtr<chrono::ChLinkDistance>(new chrono::ChLinkDistance);
 
-		conic_tau = 10; // the transmission ratio of the conic gears at the rear axle
-		gear_tau = 0.5; // the actual tau of the gear
+		conic_tau = 3.42; // the transmission ratio of the conic gears at the rear axle
+		gear_tau = 2.97; // the actual tau of the gear
 		max_motor_torque = 30; // the max torque of the motor [Nm];
 		max_motor_speed = 100;	 // the max rotation speed of the motor [rads/s]
 	}
@@ -125,52 +125,69 @@ namespace VehicleEnvironment {
 	}
 
 	void VESuspensionDemo::build(chrono::ChVector<>& Pos) {
+		double wheel_fric = .9;
+		chrono::ChVector<> r;
+		double chassis_mass = 140.0;
+		double spindle_mass = 3.3;
+		double wheel_mass = 1.8;
+		r = chrono::ChVector<>(1.0, 0.5, 3)*.5;
+		chrono::ChVector<> inertia_chassis (1 / 12.0 * chassis_mass * (r.y * r.y + r.z * r.z), 1 / 12.0 * chassis_mass * (r.x * r.x + r.z * r.z), 1 / 12.0 * chassis_mass * (r.x * r.x + r.y * r.y));;
+		r = chrono::ChVector<>(0.1, 0.4, 0.4)*.5;
+		chrono::ChVector<> inertia_spindle(1 / 12.0 * spindle_mass * (r.y * r.y + r.z * r.z), 1 / 12.0 * spindle_mass * (r.x * r.x + r.z * r.z), 1 / 12.0 * spindle_mass * (r.x * r.x + r.y * r.y));;
+		r = chrono::ChVector<>(0.9, 0.3, 0.9)*0.5;
+		chrono::ChVector<> inertia_wheel(1 / 5.0 * wheel_mass * (r.y * r.y + r.z * r.z), 1 / 5.0 * wheel_mass * (r.x * r.x + r.z * r.z), 1 / 5.0 * wheel_mass * (r.x * r.x + r.y * r.y));
 
-		truss = &m_pApp->getScene()->spawnBox("Truss", 150.0, chrono::ChVector<>(0, 1, 0) + Pos, chrono::ChVector<>(1.0, 0.5, 3)*.5);
-		truss->getChBody()->SetInertiaXX(chrono::ChVector<>(4.8, 4.5, 1));
+		
+		
+
+		truss = &m_pApp->getScene()->spawnBox("Truss", chassis_mass, chrono::ChVector<>(0, 1, 0) + Pos, chrono::ChVector<>(1.0, 0.5, 3)*.5);
+		truss->getChBody()->SetInertiaXX(inertia_chassis);
+		truss->getChBody()->SetCollide(false);
 		truss->deletable = false;
 
-		spindleRF = &m_pApp->getScene()->spawnBox("SpindleRF", 8.0, chrono::ChVector<>(1.3, 1, 1) + Pos, chrono::ChVector<>(0.1, 0.4, 0.4)*.5);
-		spindleRF->getChBody()->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
+		spindleRF = &m_pApp->getScene()->spawnBox("SpindleRF", 33.0, chrono::ChVector<>(1.3, 1, 1) + Pos, chrono::ChVector<>(0.1, 0.4, 0.4)*.5);
+		r = chrono::ChVector<>(0.1, 0.4, 0.4)*.5;
+		spindleRF->getChBody()->SetInertiaXX(inertia_spindle);
 		spindleRF->getChBody()->SetCollide(false);
 		spindleRF->deletable = false;
 
-		wheelRF = &m_pApp->getScene()->spawnEllipsoid("WheelRF", 3.0, chrono::ChVector<>(1.5, 1, 1) + Pos, chrono::ChVector<>(0.9, 0.3, 0.9)*.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
-		wheelRF->getChBody()->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
-		wheelRF->getChBody()->SetFriction(2.0);
+		wheelRF = &m_pApp->getScene()->spawnEllipsoid("WheelRF", 18.0, chrono::ChVector<>(1.5, 1, 1) + Pos, chrono::ChVector<>(0.9, 0.3, 0.9)*0.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
+		wheelRF->getChBody()->SetInertiaXX(inertia_wheel);
+		wheelRF->getChBody()->SetFriction(wheel_fric);
 		wheelRF->deletable = false;
 
-		spindleLF = &m_pApp->getScene()->spawnBox("SpindleLF", 8.0, chrono::ChVector<>(-1.3, 1, 1) + Pos, chrono::ChVector<>(0.1, 0.4, 0.4)*.5);
-		spindleLF->getChBody()->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
+		spindleLF = &m_pApp->getScene()->spawnBox("SpindleLF", 33.0, chrono::ChVector<>(-1.3, 1, 1) + Pos, chrono::ChVector<>(0.1, 0.4, 0.4)*.5);
+		spindleLF->getChBody()->SetInertiaXX(inertia_spindle);
 		spindleLF->getChBody()->SetCollide(false);
 		spindleLF->deletable = false;
 
-		wheelLF = &m_pApp->getScene()->spawnEllipsoid("WheelLF", 3.0, chrono::ChVector<>(-1.5, 1, 1) + Pos, chrono::ChVector<>(0.9, 0.3, 0.9)*.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
-		wheelLF->getChBody()->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
-		wheelLF->getChBody()->SetFriction(2.0);
+		wheelLF = &m_pApp->getScene()->spawnEllipsoid("WheelLF", 18.0, chrono::ChVector<>(-1.5, 1, 1) + Pos, chrono::ChVector<>(0.9, 0.3, 0.9)*0.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
+		wheelLF->getChBody()->SetInertiaXX(inertia_wheel);
+		wheelLF->getChBody()->SetFriction(wheel_fric);
 		wheelLF->deletable = false;
 
-		spindleRB = &m_pApp->getScene()->spawnBox("SpindleRB", 8.0, chrono::ChVector<>(1.3, 1, -1) + Pos, chrono::ChVector<>(0.1, 0.4, 0.4)*.5);
-		spindleRB->getChBody()->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
+		spindleRB = &m_pApp->getScene()->spawnBox("SpindleRB", 33.0, chrono::ChVector<>(1.3, 1, -1) + Pos, chrono::ChVector<>(0.1, 0.4, 0.4)*.5);
+		spindleRB->getChBody()->SetInertiaXX(inertia_spindle);
 		spindleRB->getChBody()->SetCollide(false);
 		spindleRB->deletable = false;
 
-		wheelRB = &m_pApp->getScene()->spawnEllipsoid("WheelRB", 3.0, chrono::ChVector<>(1.5, 1, -1) + Pos, chrono::ChVector<>(0.9, 0.3, 0.9)*.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
-		wheelRB->getChBody()->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
-		wheelRB->getChBody()->SetFriction(2.0);
+		wheelRB = &m_pApp->getScene()->spawnEllipsoid("WheelRB", 18.0, chrono::ChVector<>(1.5, 1, -1) + Pos, chrono::ChVector<>(0.9, 0.3, 0.9)*0.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
+		wheelRB->getChBody()->SetInertiaXX(inertia_wheel);
+		wheelRB->getChBody()->SetFriction(wheel_fric);
 		wheelRB->deletable = false;
 
-		spindleLB = &m_pApp->getScene()->spawnBox("SpindleLB", 8.0, chrono::ChVector<>(-1.3, 1, -1) + Pos, chrono::ChVector<>(0.1, 0.4, 0.4)*.5);
-		spindleLB->getChBody()->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
+		spindleLB = &m_pApp->getScene()->spawnBox("SpindleLB", 33.0, chrono::ChVector<>(-1.3, 1, -1) + Pos, chrono::ChVector<>(0.1, 0.4, 0.4)*.5);
+		spindleLB->getChBody()->SetInertiaXX(inertia_spindle);
 		spindleLB->getChBody()->SetCollide(false);
 		spindleLB->deletable = false;
 
-		wheelLB = &m_pApp->getScene()->spawnEllipsoid("WheelLB", 3.0, chrono::ChVector<>(-1.5, 1, -1) + Pos, chrono::ChVector<>(0.9, 0.3, 0.9)*.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
-		wheelLB->getChBody()->SetInertiaXX(chrono::ChVector<>(0.2, 0.2, 0.2));
-		wheelLB->getChBody()->SetFriction(2.0);
+		wheelLB = &m_pApp->getScene()->spawnEllipsoid("WheelLB", 18.0, chrono::ChVector<>(-1.5, 1, -1) + Pos, chrono::ChVector<>(0.9, 0.3, 0.9)*0.5, chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
+		wheelLB->getChBody()->SetInertiaXX(inertia_wheel);
+		wheelLB->getChBody()->SetFriction(wheel_fric);
 		wheelLB->deletable = false;
 
-
+		double spring_k_front = 23800;//9393;
+		double spring_k_rear = 23800;//12750;
 		//Right front wheel
 
 		link_revoluteRF->Initialize(wheelRF->getChBody(), spindleRF->getChBody(),
@@ -190,7 +207,7 @@ namespace VehicleEnvironment {
 		m_pApp->getChSystem()->AddLink(link_distRFL2);
 
 		link_springRF->Initialize(truss->getChBody(), spindleRF->getChBody(), false, chrono::ChVector<>(0.5, 1.2, 1.0) + Pos, chrono::ChVector<>(1.25, 0.8, 1) + Pos);
-		link_springRF->Set_SpringK(28300);
+		link_springRF->Set_SpringK(spring_k_front);
 		link_springRF->Set_SpringR(80);
 		m_pApp->getChSystem()->AddLink(link_springRF);
 
@@ -216,7 +233,7 @@ namespace VehicleEnvironment {
 		m_pApp->getChSystem()->AddLink(link_distLFL2);
 
 		link_springLF->Initialize(truss->getChBody(), spindleLF->getChBody(), false, chrono::ChVector<>(-0.5, 1.2, 1.0) + Pos, chrono::ChVector<>(-1.25, 0.8, 1) + Pos);
-		link_springLF->Set_SpringK(28300);
+		link_springLF->Set_SpringK(spring_k_front);
 		link_springLF->Set_SpringR(80);
 		m_pApp->getChSystem()->AddLink(link_springLF);
 
@@ -248,7 +265,7 @@ namespace VehicleEnvironment {
 		m_pApp->getChSystem()->AddLink(link_distRBL2);
 
 		link_springRB->Initialize(truss->getChBody(), spindleRB->getChBody(), false, chrono::ChVector<>(0.5, 1.2, -1.0) + Pos, chrono::ChVector<>(1.25, 0.8, -1) + Pos);
-		link_springRB->Set_SpringK(28300);
+		link_springRB->Set_SpringK(spring_k_rear);
 		link_springRB->Set_SpringR(80);
 		m_pApp->getChSystem()->AddLink(link_springRB);
 
@@ -280,7 +297,7 @@ namespace VehicleEnvironment {
 		m_pApp->getChSystem()->AddLink(link_distLBL2);
 
 		link_springLB->Initialize(truss->getChBody(), spindleLB->getChBody(), false, chrono::ChVector<>(-0.5, 1.2, -1.0) + Pos, chrono::ChVector<>(-1.25, 0.8, -1) + Pos);
-		link_springLB->Set_SpringK(28300);
+		link_springLB->Set_SpringK(spring_k_rear);
 		link_springLB->Set_SpringR(80);
 		m_pApp->getChSystem()->AddLink(link_springLB);
 
@@ -362,6 +379,25 @@ namespace VehicleEnvironment {
 		wheelLB->getChBody()->SetPos(chrono::ChVector<>(-1.5, 1, -1) + Pos);
 		wheelLB->getChBody()->SetRot(chrono::Q_from_AngAxis(chrono::CH_C_PI / 2, chrono::VECT_Z));
 		wheelLB->getChBody()->SetPos_dt(chrono::ChVector<>(0, 0, 0));
+		wheelLB->getChBody()->SetRot_dt(chrono::QUNIT);
+	}
+
+	void VESuspensionDemo::shift(uint8_t gear) {
+		switch (gear) {
+		case 0: gear_tau = -3.38; break;
+		case 1: gear_tau = 2.97; break;
+		case 2: gear_tau = 2.07; break;
+		case 3: gear_tau = 1.43; break;
+		case 4: gear_tau = 1; break;
+		case 5: gear_tau = 0.84; break;
+		case 6: gear_tau = 0.56; break;
+		}
+	}
+
+	void VESuspensionDemo::brake() {
+		wheelRF->getChBody()->SetRot_dt(chrono::QUNIT);
+		wheelLF->getChBody()->SetRot_dt(chrono::QUNIT);
+		wheelRB->getChBody()->SetRot_dt(chrono::QUNIT);
 		wheelLB->getChBody()->SetRot_dt(chrono::QUNIT);
 	}
 

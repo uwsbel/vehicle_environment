@@ -23,6 +23,8 @@ namespace VehicleEnvironment {
 		virtual void build(chrono::ChVector<>& Pos) =0;
 		virtual void update() = 0;
 		virtual void reset(chrono::ChVector<>& Pos) =0;
+		virtual void shift(uint8_t gear) =0; // 0 should be reverse
+		virtual void brake() =0;
 
 		double throttle;
 		double steer;

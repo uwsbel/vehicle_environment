@@ -22,6 +22,9 @@ namespace VehicleEnvironment {
 		virtual void update();
 		virtual void reset(chrono::ChVector<>& Pos);
 
+		virtual void shift(uint8_t gear);
+		virtual void brake();
+
 		virtual chrono::ChVector<> getPos();
 		virtual chrono::ChQuaternion<> getRot();
 
