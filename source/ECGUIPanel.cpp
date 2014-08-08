@@ -4,14 +4,20 @@
 
 namespace EnvironmentCore {
 
+	unsigned int ECGUIPanel::g_count = 0;
+
 	ECGUIPanel::ECGUIPanel(Ogre::Overlay* Overlay) : ECGUIElement(Overlay) {
-		m_pPanel = static_cast<Ogre::OverlayContainer*>(Ogre::OverlayManager::getSingleton().createOverlayElement("Panel", ""));
+		m_pPanel = static_cast<Ogre::OverlayContainer*>(Ogre::OverlayManager::getSingleton().createOverlayElement("Panel", "Panel"+std::to_string(g_count)));
 
 		m_pOverlay->add2D(m_pPanel);
+
+		g_count++;
 	}
 
 	ECGUIPanel::~ECGUIPanel() {
-
+		m_pOverlay->remove2D(m_pPanel);
+		Ogre::OverlayManager::getSingleton().destroyOverlayElement(m_pPanel);
+		g_count--;
 	}
 
 	void ECGUIPanel::setName(std::string Name) {
@@ -32,10 +38,10 @@ namespace EnvironmentCore {
 		Ogre::Real _g = (Ogre::Real)g;
 		Ogre::Real _b = (Ogre::Real)b;
 
-		if (!m_pPanel->getMaterial()->getTechnique(0)->getPass(0)->getTextureUnitState("white.png")) {
+		//if (!m_pPanel->getMaterial()->getTechnique(0)->getPass(0)->getTextureUnitState("white.png")) {
 			m_pPanel->setMaterialName("BaseWhite");
 			m_pPanel->getMaterial()->getTechnique(0)->getPass(0)->createTextureUnitState("white.png");
-		}
+		//}
 		//Next, we see the most convoluted way of changing the color of a UI element ever in the history of graphical application development
 		m_pPanel->getMaterial()->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setColourOperationEx(Ogre::LayerBlendOperationEx::LBX_MODULATE, Ogre::LayerBlendSource::LBS_TEXTURE, Ogre::LayerBlendSource::LBS_MANUAL, Ogre::ColourValue(), Ogre::ColourValue(_r, _g, _b));
 

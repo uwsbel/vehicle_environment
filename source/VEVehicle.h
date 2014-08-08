@@ -29,6 +29,8 @@ namespace VehicleEnvironment {
 		double throttle;
 		double steer;
 
+		uint8_t gear;
+
 	protected:
 
 		EnvironmentCore::EnvironmentCoreApplication* m_pApp;

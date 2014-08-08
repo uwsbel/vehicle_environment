@@ -170,10 +170,24 @@ int main(int argc, char *argv[])
 
 
 		app.getInputManager()->AxisThreshold = 0.1;
-		EnvironmentCore::ECGUIPanel* p = app.getGUIManager()->createPanel("Swag");
+
+		EnvironmentCore::ECGUIPanel* b = app.getGUIManager()->createPanel("back");
+		b->setPosition(0, 0);
+		b->setSize(0.4, 0.16);
+		b->setColor(0.0, 0.0, 0.0);
+
+		EnvironmentCore::ECGUIText* p = app.getGUIManager()->createText("text");
 		p->setPosition(0, 0);
-		p->setSize(0.1, 0.1);
-		p->setColor(0.0, 1.0, 1.0);
+		p->setColor(1.0, 1.0, 1.0);
+		p->setFont(0.06);
+		p->setText("");
+
+		EnvironmentCore::ECGUIText* p2 = app.getGUIManager()->createText("text");
+		p2->setPosition(0, 0.07);
+		p2->setColor(1.0, 1.0, 1.0);
+		p2->setFont(0.06);
+		p2->setText("");
+
 
 		std::function<int()> Loop = [&]() {
 
@@ -275,6 +289,12 @@ int main(int argc, char *argv[])
 
 			car.update();
 
+			p->setText("Velocity: " + std::to_string(car.getBody()->GetPos_dt().Length()));
+			std::string l_gear = std::to_string(car.gear);
+			if (car.gear == 0) {
+				l_gear = "Reverse";
+			}
+			p2->setText("Gear: " + l_gear);
 
 			follow.setDiffuseColour(1.0f, 1.0f, 1.0f);
 			follow.setSpecularColour(1.0f, 1.0f, 1.0f);

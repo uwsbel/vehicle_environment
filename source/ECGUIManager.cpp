@@ -28,12 +28,44 @@ namespace EnvironmentCore {
 	ECGUIPanel* ECGUIManager::createPanel(std::string Name) {
 
 		ECGUIPanel* _ret = new ECGUIPanel(m_pOverlay);
+		_ret->setName(Name);
 
 		m_ElementList.push_back(_ret);
 
 		setActive(true);
 
 		return _ret;
+	}
+
+	ECGUIText* ECGUIManager::createText(std::string Name) {
+		ECGUIText* _ret = new ECGUIText(m_pOverlay);
+		_ret->setName(Name);
+
+		m_ElementList.push_back(_ret);
+
+		setActive(true);
+
+		return _ret;
+	}
+
+	void ECGUIManager::removeElement(std::string Name) {
+		for (unsigned int i = 0; i < m_ElementList.size(); i++) {
+			if (m_ElementList[i]->getName() == Name) {
+				delete m_ElementList[i];
+				m_ElementList[i] = m_ElementList.back();
+				m_ElementList.pop_back();
+			}
+		}
+	}
+
+	void ECGUIManager::removeElement(ECGUIElement* Element) {
+		for (unsigned int i = 0; i < m_ElementList.size(); i++) {
+			if (m_ElementList[i] == Element) {
+				delete m_ElementList[i];
+				m_ElementList[i] = m_ElementList.back();
+				m_ElementList.pop_back();
+			}
+		}
 	}
 
 	template <typename t>

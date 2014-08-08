@@ -392,6 +392,7 @@ namespace VehicleEnvironment {
 		case 5: gear_tau = 0.84; break;
 		case 6: gear_tau = 0.56; break;
 		}
+		this->gear = gear;
 	}
 
 	void VESuspensionDemo::brake() {
@@ -399,6 +400,10 @@ namespace VehicleEnvironment {
 		wheelLF->getChBody()->SetRot_dt(chrono::QUNIT);
 		wheelRB->getChBody()->SetRot_dt(chrono::QUNIT);
 		wheelLB->getChBody()->SetRot_dt(chrono::QUNIT);
+	}
+
+	chrono::ChBody* VESuspensionDemo::getBody() {
+		return truss->getChBody().get_ptr();
 	}
 
 	chrono::ChVector<> VESuspensionDemo::getPos() {

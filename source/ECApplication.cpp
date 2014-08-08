@@ -72,6 +72,7 @@ namespace EnvironmentCore {
 			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/materials/programs", "FileSystem");
 			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/materials/scripts", "FileSystem");
 			Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/materials/textures", "FileSystem");
+			Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/fonts/minecraftia", "FileSystem");
 			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/materials/textures/nvidia", "FileSystem");
 			Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/models", "FileSystem");
 			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/particle", "FileSystem");
