@@ -170,7 +170,10 @@ int main(int argc, char *argv[])
 
 
 		app.getInputManager()->AxisThreshold = 0.1;
-		app.getGUIManager()->createPanel("Swag");
+		EnvironmentCore::ECGUIPanel* p = app.getGUIManager()->createPanel("Swag");
+		p->setPosition(0, 0);
+		p->setSize(0.1, 0.1);
+		p->setColor(0.0, 1.0, 1.0);
 
 		std::function<int()> Loop = [&]() {
 

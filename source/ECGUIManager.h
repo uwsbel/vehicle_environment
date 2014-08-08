@@ -2,6 +2,7 @@
 
 #include "EC_SDL_InputManager.h"
 #include "ECGUIElement.h"
+#include "ECGUIPanel.h"
 #include <OGRE\Ogre.h>
 #include <OGRE\OgrePrerequisites.h>
 #include <OGRE\Overlay\OgreOverlaySystem.h>
@@ -19,7 +20,7 @@ namespace EnvironmentCore {
 
 		virtual void setActive(bool Active);
 
-		virtual void createPanel(std::string Name = "");
+		virtual ECGUIPanel* createPanel(std::string Name = "");
 
 		template <typename t>
 		t* getElement(std::string Name);

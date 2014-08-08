@@ -2,8 +2,8 @@
 
 namespace EnvironmentCore {
 
-	ECGUIElement::ECGUIElement() {
-
+	ECGUIElement::ECGUIElement(Ogre::Overlay* Overlay) {
+		m_pOverlay = Overlay;
 	}
 
 	ECGUIElement::~ECGUIElement() {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <OGRE\Overlay\OgreOverlayContainer.h>
 #include <OGRE\Overlay\OgreOverlay.h>
 #include <OGRE\Overlay\OgreOverlayManager.h>
 
@@ -10,7 +9,7 @@ namespace EnvironmentCore {
 
 	public:
 
-		ECGUIElement();
+		ECGUIElement(Ogre::Overlay* Overlay);
 		~ECGUIElement();
 
 		virtual void setName(std::string Name);
@@ -23,6 +22,7 @@ namespace EnvironmentCore {
 	protected:
 
 		std::string m_Name;
+		Ogre::Overlay* m_pOverlay;
 
 	private:
 
