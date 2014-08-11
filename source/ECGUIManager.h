@@ -4,6 +4,7 @@
 #include "ECGUIElement.h"
 #include "ECGUIPanel.h"
 #include "ECGUIText.h"
+#include "ECGUIButton.h"
 #include <OGRE\Ogre.h>
 #include <OGRE\OgrePrerequisites.h>
 #include <OGRE\Overlay\OgreOverlaySystem.h>
@@ -23,9 +24,12 @@ namespace EnvironmentCore {
 
 		virtual ECGUIPanel* createPanel(std::string Name = "");
 		virtual ECGUIText* createText(std::string Name = "");
+		virtual ECGUIButton* createButton(std::string Name = "");
 
 		virtual void removeElement(std::string Name);
 		virtual void removeElement(ECGUIElement* Element);
+
+		virtual void update();
 
 		template <typename t>
 		t* getElement(std::string Name);

@@ -1,3 +1,7 @@
+/*
+Author: Charles Ricchio
+*/
+
 #include "ECGUIPanel.h"
 #include <OGRE\Ogre.h>
 #include <OGRE\OgreScriptCompiler.h>
@@ -45,6 +49,12 @@ namespace EnvironmentCore {
 		//Next, we see the most convoluted way of changing the color of a UI element ever in the history of graphical application development
 		m_pPanel->getMaterial()->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setColourOperationEx(Ogre::LayerBlendOperationEx::LBX_MODULATE, Ogre::LayerBlendSource::LBS_TEXTURE, Ogre::LayerBlendSource::LBS_MANUAL, Ogre::ColourValue(), Ogre::ColourValue(_r, _g, _b));
 
+	}
+
+	void ECGUIPanel::setDecal(std::string Path) {
+		m_pPanel->setMaterialName("BaseWhite");
+		m_pPanel->getMaterial()->getTechnique(0)->getPass(0)->createTextureUnitState(Path);
+		m_pPanel->getMaterial()->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
 	}
 
 	chrono::ChVector<> ECGUIPanel::getPosition() {

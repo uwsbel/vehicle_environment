@@ -48,6 +48,17 @@ namespace EnvironmentCore {
 		return _ret;
 	}
 
+	ECGUIButton* ECGUIManager::createButton(std::string Name) {
+		ECGUIButton* _ret = new ECGUIButton(m_pOverlay, m_pInputManager);
+		_ret->setName(Name);
+
+		m_ElementList.push_back(_ret);
+
+		setActive(true);
+
+		return _ret;
+	}
+
 	void ECGUIManager::removeElement(std::string Name) {
 		for (unsigned int i = 0; i < m_ElementList.size(); i++) {
 			if (m_ElementList[i]->getName() == Name) {
@@ -65,6 +76,12 @@ namespace EnvironmentCore {
 				m_ElementList[i] = m_ElementList.back();
 				m_ElementList.pop_back();
 			}
+		}
+	}
+
+	void ECGUIManager::update() {
+		for (unsigned int i = 0; i < m_ElementList.size(); i++) {
+			m_ElementList[i]->update();
 		}
 	}
 

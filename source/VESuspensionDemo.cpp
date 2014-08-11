@@ -56,8 +56,10 @@ namespace VehicleEnvironment {
 
 		conic_tau = 3.42; // the transmission ratio of the conic gears at the rear axle
 		gear_tau = 2.97; // the actual tau of the gear
-		max_motor_torque = 30; // the max torque of the motor [Nm];
-		max_motor_speed = 100;	 // the max rotation speed of the motor [rads/s]
+		max_motor_torque = 488; // the max torque of the motor [Nm];
+		max_motor_speed = 37680;	 // the max rotation speed of the motor [rads/s]
+
+		shift(1);
 	}
 
 	VESuspensionDemo::VESuspensionDemo(EnvironmentCore::EnvironmentCoreApplication* App) : VEVehicle(App) {

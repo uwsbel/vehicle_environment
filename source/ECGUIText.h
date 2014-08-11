@@ -1,3 +1,7 @@
+/*
+Author: Charles Ricchio
+*/
+
 #pragma once
 
 #include "ECGUIElement.h"

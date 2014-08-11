@@ -160,6 +160,7 @@ int main(int argc, char *argv[])
 		bool db = true;
 		bool db2 = true;
 		bool db3 = true;
+		bool pshiftdb = true;
 
 		unsigned int deleteSpheres = 0;
 
@@ -171,22 +172,31 @@ int main(int argc, char *argv[])
 
 		app.getInputManager()->AxisThreshold = 0.1;
 
-		EnvironmentCore::ECGUIPanel* b = app.getGUIManager()->createPanel("back");
-		b->setPosition(0, 0);
-		b->setSize(0.4, 0.16);
-		b->setColor(0.0, 0.0, 0.0);
 
 		EnvironmentCore::ECGUIText* p = app.getGUIManager()->createText("text");
 		p->setPosition(0, 0);
 		p->setColor(1.0, 1.0, 1.0);
-		p->setFont(0.06);
+		p->setFont(0.04);
 		p->setText("");
 
 		EnvironmentCore::ECGUIText* p2 = app.getGUIManager()->createText("text");
-		p2->setPosition(0, 0.07);
+		p2->setPosition(0, 0.06);
 		p2->setColor(1.0, 1.0, 1.0);
-		p2->setFont(0.06);
+		p2->setFont(0.04);
 		p2->setText("");
+
+		EnvironmentCore::ECGUIText* p3 = app.getGUIManager()->createText("text");
+		p3->setPosition(0, 0.12);
+		p3->setColor(1.0, 1.0, 1.0);
+		p3->setFont(0.04);
+		p3->setText("");
+
+		EnvironmentCore::ECGUIButton* t = app.getGUIManager()->createButton("Yo");
+		t->setPosition(0, 0.18);
+		t->setText("Button");
+		t->setFont(0.04);
+		t->setTextColor(1.0, 1.0, 1.0);
+		t->setColor(0.0, 0.0, 0.0);
 
 
 		std::function<int()> Loop = [&]() {
@@ -209,12 +219,12 @@ int main(int argc, char *argv[])
 				db = true;
 			}
 
-			if (app.getInputManager()->getWheelState().rpaddle.down && db3) {
+			if (app.getInputManager()->getWheelState().red1.down && db3) {
 				car.reset(chrono::ChVector<>(5, -7, 5));
 				db3 = false;
 			}
 
-			if (!app.getInputManager()->getWheelState().rpaddle.down) {
+			if (!app.getInputManager()->getWheelState().red1.down) {
 				db3 = true;
 			}
 
@@ -270,8 +280,22 @@ int main(int argc, char *argv[])
 				}
 			}
 
+			if (app.getInputManager()->getWheelState().lpaddle.down && pshiftdb && (car.gear > 0)) {
+				car.shift(car.gear-1);
+				pshiftdb = false;
+			}
+
+			if (app.getInputManager()->getWheelState().rpaddle.down && pshiftdb && (car.gear < 6)) {
+				car.shift(car.gear+1);
+				pshiftdb = false;
+			}
+
+			if (!app.getInputManager()->getWheelState().lpaddle.down && !app.getInputManager()->getWheelState().rpaddle.down) {
+				pshiftdb = true;
+			}
+
 			if ((app.getInputManager()->getWheelState().accelerator.value)) {
-				throttle = 40 * ((app.getInputManager()->getWheelState().accelerator.value) - (app.getInputManager()->getWheelState().brake.value));
+				throttle = ((app.getInputManager()->getWheelState().accelerator.value) - (app.getInputManager()->getWheelState().brake.value));
 				if (app.getInputManager()->getWheelState().reverse.down) {
 					//throttle *= -1;
 				}
@@ -281,7 +305,7 @@ int main(int argc, char *argv[])
 				car.brake();
 			}
 
-			if (app.getInputManager()->getKeyState(SDL_SCANCODE_ESCAPE).down || app.getInputManager()->getControllerState().back.down) {
+			if (app.getInputManager()->getKeyState(SDL_SCANCODE_ESCAPE).down || app.getInputManager()->getWheelState().red2.down) {
 				return 1;
 			}
 
@@ -289,12 +313,21 @@ int main(int argc, char *argv[])
 
 			car.update();
 
-			p->setText("Velocity: " + std::to_string(car.getBody()->GetPos_dt().Length()));
+			if (t->isPressed()) {
+				car.getBody()->SetPos_dt(chrono::ChVector<>(0, 10, 0));
+			}
+
+			double speed = car.getBody()->GetPos_dt().Length();
+
+			speed = speed * (3600.0 / 1000.0);
+
+			p->setText("Velocity: " + std::to_string(speed) + " km/h");
 			std::string l_gear = std::to_string(car.gear);
 			if (car.gear == 0) {
 				l_gear = "Reverse";
 			}
 			p2->setText("Gear: " + l_gear);
+			p3->setText("Throttle: " + std::to_string(throttle));
 
 			follow.setDiffuseColour(1.0f, 1.0f, 1.0f);
 			follow.setSpecularColour(1.0f, 1.0f, 1.0f);

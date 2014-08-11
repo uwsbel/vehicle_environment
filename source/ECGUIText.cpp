@@ -1,3 +1,7 @@
+/*
+Author: Charles Ricchio
+*/
+
 #include "ECGUIText.h"
 
 namespace EnvironmentCore {
@@ -7,11 +11,14 @@ namespace EnvironmentCore {
 	ECGUIText::ECGUIText(Ogre::Overlay* Overlay) : ECGUIElement(Overlay) {
 		m_pPanel = static_cast<Ogre::OverlayContainer*>(Ogre::OverlayManager::getSingleton().createOverlayElement("Panel", "TextPanel" + std::to_string(g_count)));
 		m_pText = static_cast<Ogre::TextAreaOverlayElement*>(Ogre::OverlayManager::getSingleton().createOverlayElement("TextArea", "Text" + std::to_string(g_count)));
-		
+
 		m_pOverlay->add2D(m_pPanel);
 		m_pPanel->addChild(m_pText);
 
+		
 		m_Font = Ogre::FontManager::getSingleton().create("default", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+		
+
 		m_Font->setType(Ogre::FT_TRUETYPE);
 		m_Font->setSource("Minecraftia.ttf");
 		m_Font->setTrueTypeSize(8);
@@ -23,6 +30,7 @@ namespace EnvironmentCore {
 	}
 
 	ECGUIText::~ECGUIText() {
+		Ogre::FontManager::getSingleton().remove((Ogre::ResourcePtr)m_Font);
 		m_pOverlay->remove2D(m_pPanel);
 		Ogre::OverlayManager::getSingleton().destroyOverlayElement(m_pPanel);
 		Ogre::OverlayManager::getSingleton().destroyOverlayElement(m_pText);

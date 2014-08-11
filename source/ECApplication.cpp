@@ -143,6 +143,8 @@ namespace EnvironmentCore {
 				break;
 			}
 
+			m_pGUIManager->update();
+
 			l_run = _func();
 
 			m_pScene->update();

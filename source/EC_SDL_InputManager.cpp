@@ -116,8 +116,12 @@ namespace EnvironmentCore {
 			else if (_event.type == SDL_MOUSEMOTION) {
 				m_MouseState.position.timestamp = (double)(_event.motion.timestamp) / 1000.0;
 
-				m_MouseState.position.x = (double)(_event.motion.x) / (double)INT_MAX;
-				m_MouseState.position.y = (double)(_event.motion.y) / (double)INT_MAX;
+				int _w, _h;
+
+				SDL_GetWindowSize(m_pSDLWindow, &_w, &_h);
+
+				m_MouseState.position.x = (double)(_event.motion.x) / (double)_w;
+				m_MouseState.position.y = (double)(_event.motion.y) / (double)_h;
 				m_MouseState.position.xrel = (double)(_event.motion.xrel) / (double)INT_MAX;
 				m_MouseState.position.yrel = (double)(_event.motion.yrel) / (double)INT_MAX;
 
