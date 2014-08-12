@@ -26,6 +26,7 @@ namespace EnvironmentCore {
 				m_pSceneManager->getRootSceneNode()->removeChild(m_SceneNodes[i]);
 			}
 		}
+		m_pBody->RemoveCollisionModelsFromSystem();
 		m_pChSystem->RemoveBody(m_pBody);
 	}
 

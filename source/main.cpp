@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 		app.setCamera(DebugCamera);
 
 		app.timestep_max = 0.01;
-		app.isRealTime = true;
+		app.isRealTime = false;
 
 		std::random_device l_rand;
 
@@ -68,6 +68,9 @@ int main(int argc, char *argv[])
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0)),
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0)),
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0))));*/
+
+		EnvironmentCore::ECBody& Ninja = app.getScene()->spawnMesh("ninja", 10, chrono::ChVector<>(20, -10, 10), chrono::ChVector<>(1, 1, 1) * 0.5, chrono::ChQuaternion<>(1, 0, 0, 0),
+			"hodor.mesh", true); 
 
 		EnvironmentCore::ECBody& Gamma = app.getScene()->spawnBox("Platform", 1.0, chrono::ChVector<>(0, -10, 0), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
 		Gamma->SetFriction(.9);
