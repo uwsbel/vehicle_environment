@@ -28,11 +28,11 @@ int main(int argc, char *argv[])
 		app.setCamera(DebugCamera);
 
 		app.timestep_max = 0.01;
-		app.isRealTime = false;
+		app.isRealTime = true;
 
 		std::random_device l_rand;
 
-		
+		app.getScene()->setSkyBox("sky");
 
 		VehicleEnvironment::VESuspensionDemo car;
 		car.setApp(&app);
@@ -79,6 +79,14 @@ int main(int argc, char *argv[])
 		Gamma3->SetFriction(.9);
 		EnvironmentCore::ECBody& Gamma4 = app.getScene()->spawnBox("Platform4", 1.0, chrono::ChVector<>(0, -10, -1000), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
 		Gamma4->SetFriction(.9);
+		EnvironmentCore::ECBody& Gamma5 = app.getScene()->spawnBox("Platform5", 1.0, chrono::ChVector<>(1000, -10, 1000), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
+		Gamma5->SetFriction(.9);
+		EnvironmentCore::ECBody& Gamma6 = app.getScene()->spawnBox("Platform6", 1.0, chrono::ChVector<>(-1000, -10, 1000), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
+		Gamma6->SetFriction(.9);
+		EnvironmentCore::ECBody& Gamma7 = app.getScene()->spawnBox("Platform7", 1.0, chrono::ChVector<>(-1000, -10, -1000), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
+		Gamma7->SetFriction(.9);
+		EnvironmentCore::ECBody& Gamma8 = app.getScene()->spawnBox("Platform8", 1.0, chrono::ChVector<>(1000, -10, -1000), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
+		Gamma8->SetFriction(.9);
 
 		EnvironmentCore::ECBody& Building = app.getScene()->spawnBox("Building1", 50000, chrono::ChVector<>(0, 490, 100), chrono::ChVector<>(20, 500, 20), chrono::ChQuaternion<>(1, 0, 0, 0), true);
 

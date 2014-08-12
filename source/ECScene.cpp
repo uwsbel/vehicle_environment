@@ -280,4 +280,12 @@ namespace EnvironmentCore {
 		return m_LowerLimit;
 	}
 
+	void ECScene::setSkyBox(std::string Path) {
+		m_pSceneManager->setSkyBox(true, Path);
+	}
+
+	void ECScene::disableSkyBox() {
+		m_pSceneManager->setSkyBoxEnabled(false);
+	}
+
 }

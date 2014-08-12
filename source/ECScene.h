@@ -51,7 +51,7 @@ namespace EnvironmentCore {
 		virtual void update();
 
 		////////
-		//Convience functions
+		//Convenience functions
 		////////
 
 		virtual ECBody& spawnBox(	std::string Name = "", 
@@ -106,6 +106,8 @@ namespace EnvironmentCore {
 
 		virtual double getLowerLimit();
 
+		virtual void setSkyBox(std::string FilePath);
+		virtual void disableSkyBox();
 
 	protected:
 
