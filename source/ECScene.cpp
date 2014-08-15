@@ -5,6 +5,7 @@ Contains the definitions for ECScene
 */
 
 #include "ECScene.h"
+#include <thread>
 
 namespace EnvironmentCore {
 
@@ -537,8 +538,44 @@ namespace EnvironmentCore {
 		//!!!!
 		//	This algorithm takes ungodly long single-threaded in larger heightmaps.
 		//!!!!
+		{ // Calculate normals of all vertices
+			size_t _start1, _start2, _start3, _start4;
+			size_t _end1, _end2, _end3, _end4;
 
-		for (unsigned int i = 0; i < l_vertex_normals.size(); i++) { // Calculate normals of all vertices
+			_start1 = 0;
+			_end1 = l_vertex_count / 4;
+			_start2 = _end1 + 1;
+			_end2 = (l_vertex_count / 4) * 2;
+			_start3 = _end2 + 1;
+			_end3 = (l_vertex_count / 4) * 3;
+			_start4 = _end3 + 1;
+			_end4 = l_vertex_count;
+
+			std::function<void(size_t, size_t)> _worker_thread = [&](size_t start, size_t end) {
+				for (unsigned int i = start; i < end; i++) {
+					Ogre::Vector3 _ret(0, 0, 0);
+					for (unsigned int j = 0; j < l_indices.size(); j++) {
+						if (l_indices[j].a == i || l_indices[j].b == i || l_indices[j].c == i) {
+							_ret = _ret + l_triangle_normals[j];
+						}
+					}
+					_ret.normalise();
+					l_vertex_normals[i] = _ret;
+				}
+			};
+
+			std::thread _worker_thread1(_worker_thread, _start1, _end1);
+			std::thread _worker_thread2(_worker_thread, _start2, _end2);
+			std::thread _worker_thread3(_worker_thread, _start3, _end3);
+			std::thread _worker_thread4(_worker_thread, _start4, _end4);
+
+			_worker_thread1.join();
+			_worker_thread2.join();
+			_worker_thread3.join();
+			_worker_thread4.join();
+		}
+
+		/*for (unsigned int i = 0; i < l_vertex_normals.size(); i++) {
 			Ogre::Vector3 _ret(0, 0, 0);
 			for (unsigned int j = 0; j < l_indices.size(); j++) {
 				if (l_indices[j].a == i || l_indices[j].b == i || l_indices[j].c == i) {
@@ -547,7 +584,7 @@ namespace EnvironmentCore {
 			}
 			_ret.normalise();
 			l_vertex_normals[i] = _ret;
-		}
+		}*/
 
 		Ogre::ManualObject* terrain_object = m_pSceneManager->createManualObject("");
 

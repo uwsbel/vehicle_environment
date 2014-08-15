@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
 		t->setTextColor(1.0, 1.0, 1.0);
 		t->setColor(0.0, 0.0, 0.0);
 
-		EnvironmentCore::ECBody& hillsyo = app.getScene()->loadHeightMap("example4.png");
+		EnvironmentCore::ECBody& hillsyo = app.getScene()->loadHeightMap("ridge_mesa.png", chrono::ChVector<>(1, 20, 1));
 		hillsyo->SetPos(chrono::ChVector<>(0, 0, 0));
 
 		std::function<int()> Loop = [&]() {
