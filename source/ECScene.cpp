@@ -435,12 +435,13 @@ namespace EnvironmentCore {
 	ECBody& ECScene::loadHeightMap(std::string FilePath, chrono::ChVector<>& Scale) {
 		Ogre::TexturePtr l_tex = Ogre::TextureManager::getSingleton().load(FilePath, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
-		if (l_tex->getFormat() != Ogre::PF_L16 || l_tex->getFormat() != Ogre::PF_L8) {
+		if (l_tex->getFormat() != Ogre::PF_L16 && l_tex->getFormat() != Ogre::PF_L8) {
 			l_tex->unload();
 			l_tex = Ogre::TextureManager::getSingleton().load(FilePath, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::TEX_TYPE_2D, -1, 1.0f, false, Ogre::PF_L8);
 		}
 
 		Ogre::HardwarePixelBufferSharedPtr l_pixels = l_tex->getBuffer();
+		size_t l_byte_size = l_pixels->getSizeInBytes();
 		Ogre::PixelFormat l_format = l_tex->getFormat();
 
 		assert(l_format == Ogre::PF_L16 || l_format == Ogre::PF_L8); // Garuntee grayscale
@@ -451,26 +452,33 @@ namespace EnvironmentCore {
 		void* l_pPixels = nullptr;
 		bool catfish = l_tex->isLoaded();
 
-		l_pixels->lock(l_temp_pixel_buffer, Ogre::HardwareBuffer::HBL_NORMAL);
+		
+		l_pPixels = new unsigned char[l_byte_size];
 
-		Ogre::PixelBox const &pixel_box = l_pixels->getCurrentLock();
 
-		l_pixels->blitToMemory(pixel_box);
+		//l_pixels->lock(l_temp_pixel_buffer, Ogre::HardwareBuffer::HBL_NORMAL);
 
-		l_pixels->unlock();
+		//Ogre::PixelBox const &pixel_box = l_pixels->getCurrentLock();
+		//l_pixels->blitToMemory(pixel_box);
+		//l_pixels->unlock();
+		//l_pPixels = pixel_box.data;
 
-		l_pPixels = pixel_box.data;
+		
+
+		memcpy(l_pPixels, l_pixels->lock(Ogre::HardwareBuffer::HBL_NORMAL), l_byte_size);
 
 		double l_height_w = l_format == Ogre::PF_L16 ? (double)USHRT_MAX : (double)UCHAR_MAX;
 
 		for (unsigned int i = 0; i < l_vertex_count; i++) { // Fill vector with normalized heights
 			if (l_format == Ogre::PF_L8) {
-				l_vertex_heights.push_back(((double)((char*)l_pPixels)[i]) / l_height_w);
+				l_vertex_heights.push_back( (Ogre::Real) ( ( (double)( (unsigned char*)l_pPixels )[i] ) / l_height_w ) );
 			}
 			else {
 				l_vertex_heights.push_back( (Ogre::Real) ( ( (double)( (unsigned short*)l_pPixels )[i] ) / l_height_w ) );
 			}
 		}
+
+		delete[] l_pPixels;
 
 		std::vector<Ogre::Vector3> l_vertices;
 		l_vertices.resize(l_vertex_count);
@@ -495,10 +503,13 @@ namespace EnvironmentCore {
 
 		for (unsigned int i = 0; i < l_vertex_count; i++) { // Fill vertices
 
-			unsigned int l_w = i % l_pixels->getWidth();
-			unsigned int l_h = i / l_pixels->getWidth();
+			unsigned int l_w = (i % l_pixels->getWidth());
+			unsigned int l_h = (i / l_pixels->getWidth());
 
-			l_vertices[i] = Ogre::Vector3((Ogre::Real)l_w, std::abs(l_vertex_heights[i]), (Ogre::Real)l_h);
+			Ogre::Real l_wa = (Ogre::Real)l_w - (Ogre::Real)(l_pixels->getWidth()) / 2.0;
+			Ogre::Real l_ha = (Ogre::Real)l_h - (Ogre::Real)(l_pixels->getHeight()) / 2.0;
+
+			l_vertices[i] = Ogre::Vector3(l_wa, std::abs(l_vertex_heights[i]), l_ha);
 		}
 
 		for (unsigned int i = 0; i < l_square_count * 2; i += 2) { // Fill indices
