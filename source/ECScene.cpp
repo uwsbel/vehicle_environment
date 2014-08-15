@@ -552,8 +552,8 @@ namespace EnvironmentCore {
 			_end4 = l_vertex_count;
 
 			std::function<void(size_t, size_t)> _worker_thread = [&](size_t start, size_t end) {
+				Ogre::Vector3 _ret(0, 0, 0);
 				for (unsigned int i = start; i < end; i++) {
-					Ogre::Vector3 _ret(0, 0, 0);
 					for (unsigned int j = 0; j < l_indices.size(); j++) {
 						if (l_indices[j].a == i || l_indices[j].b == i || l_indices[j].c == i) {
 							_ret = _ret + l_triangle_normals[j];
