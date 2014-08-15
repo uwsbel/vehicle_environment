@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0)),
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0))));*/
 
-		EnvironmentCore::ECBody& Ninja = app.getScene()->spawnMesh("ninja", 10, chrono::ChVector<>(20, -10, 10), chrono::ChVector<>(1, 1, 1) * 0.5, chrono::ChQuaternion<>(1, 0, 0, 0),
+		EnvironmentCore::ECBody& Ninja = app.getScene()->spawnMesh("ninja", 10, chrono::ChVector<>(20, -9, 10), chrono::ChVector<>(1, 1, 1), chrono::ChQuaternion<>(1, 0, 0, 0),
 			"hodor.mesh", true); 
 
 		EnvironmentCore::ECBody& Gamma = app.getScene()->spawnBox("Platform", 1.0, chrono::ChVector<>(0, -10, 0), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
@@ -202,13 +202,21 @@ int main(int argc, char *argv[])
 		p3->setFont(0.04);
 		p3->setText("");
 
+		EnvironmentCore::ECGUIText* p4 = app.getGUIManager()->createText("text");
+		p4->setPosition(0, 0.18);
+		p4->setColor(1.0, 1.0, 1.0);
+		p4->setFont(0.04);
+		p4->setText("");
+
 		EnvironmentCore::ECGUIButton* t = app.getGUIManager()->createButton("Yo");
-		t->setPosition(0, 0.18);
+		t->setPosition(0, 0.24);
 		t->setText("Button");
 		t->setFont(0.04);
 		t->setTextColor(1.0, 1.0, 1.0);
 		t->setColor(0.0, 0.0, 0.0);
 
+		EnvironmentCore::ECBody& hillsyo = app.getScene()->loadHeightMap("example4.png");
+		hillsyo->SetPos(chrono::ChVector<>(0, 0, 0));
 
 		std::function<int()> Loop = [&]() {
 
@@ -231,7 +239,7 @@ int main(int argc, char *argv[])
 			}
 
 			if (app.getInputManager()->getWheelState().red1.down && db3) {
-				car.reset(chrono::ChVector<>(5, -7, 5));
+				car.reset(chrono::ChVector<>(4, 2, 4));
 				db3 = false;
 			}
 
@@ -339,6 +347,7 @@ int main(int argc, char *argv[])
 			}
 			p2->setText("Gear: " + l_gear);
 			p3->setText("Throttle: " + std::to_string(throttle));
+			p4->setText("FPS: " + std::to_string(app.getWindow()->getAverageFPS()));
 
 			follow.setDiffuseColour(1.0f, 1.0f, 1.0f);
 			follow.setSpecularColour(1.0f, 1.0f, 1.0f);

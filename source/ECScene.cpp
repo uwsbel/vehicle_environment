@@ -8,9 +8,6 @@ Contains the definitions for ECScene
 
 namespace EnvironmentCore {
 
-
-
-
 	void getMeshInformation(const Ogre::Mesh* const mesh,
 		size_t &vertex_count,
 		Ogre::Vector3* &vertices,
@@ -115,9 +112,6 @@ namespace EnvironmentCore {
 			current_offset = next_offset;
 		}
 	}
-
-
-
 
 	unsigned int ECScene::m_LightCount = 0;
 
@@ -394,7 +388,7 @@ namespace EnvironmentCore {
 					) * size,
 				chrono::ChVector<>(									// Vertex 1
 					(double) l_pvertices[l_pindices[i+1]].x,			// Index I+1.x
-					(double )l_pvertices[l_pindices[i+1]].y,			// Index I+1.y
+					(double) l_pvertices[l_pindices[i+1]].y,			// Index I+1.y
 					(double) l_pvertices[l_pindices[i+1]].z				// Index I+1.z
 					) * size,
 				chrono::ChVector<>(									// Vertex 2
@@ -436,6 +430,172 @@ namespace EnvironmentCore {
 
 	void ECScene::disableSkyBox() {
 		m_pSceneManager->setSkyBoxEnabled(false);
+	}
+
+	ECBody& ECScene::loadHeightMap(std::string FilePath, chrono::ChVector<>& Scale) {
+		Ogre::TexturePtr l_tex = Ogre::TextureManager::getSingleton().load(FilePath, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+
+		if (l_tex->getFormat() != Ogre::PF_L16 || l_tex->getFormat() != Ogre::PF_L8) {
+			l_tex->unload();
+			l_tex = Ogre::TextureManager::getSingleton().load(FilePath, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::TEX_TYPE_2D, -1, 1.0f, false, Ogre::PF_L8);
+		}
+
+		Ogre::HardwarePixelBufferSharedPtr l_pixels = l_tex->getBuffer();
+		Ogre::PixelFormat l_format = l_tex->getFormat();
+
+		assert(l_format == Ogre::PF_L16 || l_format == Ogre::PF_L8); // Garuntee grayscale
+
+		size_t l_vertex_count = l_pixels->getHeight() * l_pixels->getWidth();
+		std::vector<Ogre::Real> l_vertex_heights;
+		Ogre::PixelBox l_temp_pixel_buffer(l_tex->getWidth(), l_tex->getHeight(), l_tex->getDepth(), l_format);
+		void* l_pPixels = nullptr;
+		bool catfish = l_tex->isLoaded();
+
+		l_pixels->lock(l_temp_pixel_buffer, Ogre::HardwareBuffer::HBL_NORMAL);
+
+		Ogre::PixelBox const &pixel_box = l_pixels->getCurrentLock();
+
+		l_pixels->blitToMemory(pixel_box);
+
+		l_pixels->unlock();
+
+		l_pPixels = pixel_box.data;
+
+		double l_height_w = l_format == Ogre::PF_L16 ? (double)USHRT_MAX : (double)UCHAR_MAX;
+
+		for (unsigned int i = 0; i < l_vertex_count; i++) { // Fill vector with normalized heights
+			if (l_format == Ogre::PF_L8) {
+				l_vertex_heights.push_back(((double)((char*)l_pPixels)[i]) / l_height_w);
+			}
+			else {
+				l_vertex_heights.push_back( (Ogre::Real) ( ( (double)( (unsigned short*)l_pPixels )[i] ) / l_height_w ) );
+			}
+		}
+
+		std::vector<Ogre::Vector3> l_vertices;
+		l_vertices.resize(l_vertex_count);
+
+		typedef struct {
+			unsigned int a;
+			unsigned int b;
+			unsigned int c;
+		} triangle_index_set;
+
+		std::vector<triangle_index_set> l_indices;
+		unsigned int l_square_width = l_pixels->getWidth() - 1;
+		unsigned int l_square_height = l_pixels->getHeight() - 1;
+		unsigned int l_square_count = l_square_width * l_square_height;
+		l_indices.resize(l_square_count * 2);
+
+		std::vector<Ogre::Vector3> l_triangle_normals;
+		l_triangle_normals.resize(l_square_count * 2);
+
+		std::vector<Ogre::Vector3> l_vertex_normals;
+		l_vertex_normals.resize(l_vertex_count);
+
+		for (unsigned int i = 0; i < l_vertex_count; i++) { // Fill vertices
+
+			unsigned int l_w = i % l_pixels->getWidth();
+			unsigned int l_h = i / l_pixels->getWidth();
+
+			l_vertices[i] = Ogre::Vector3((Ogre::Real)l_w, std::abs(l_vertex_heights[i]), (Ogre::Real)l_h);
+		}
+
+		for (unsigned int i = 0; i < l_square_count * 2; i += 2) { // Fill indices
+			unsigned int l_triangle_width = l_square_width * 2;
+			unsigned int l_iteration_y_position = i / l_triangle_width;
+			unsigned int l_triangle_to_pixel = (i + (2 * l_iteration_y_position)) / 2;
+
+			l_indices[i + 0].a = l_triangle_to_pixel;
+			l_indices[i + 0].b = l_triangle_to_pixel + l_pixels->getWidth();
+			l_indices[i + 0].c = l_triangle_to_pixel + 1;
+			l_indices[i + 1].a = l_triangle_to_pixel + 1;
+			l_indices[i + 1].b = l_triangle_to_pixel + l_pixels->getWidth();
+			l_indices[i + 1].c = l_triangle_to_pixel + l_pixels->getWidth() + 1;
+		}
+
+		for (unsigned int i = 0; i < l_triangle_normals.size(); i++) { // Calculate normals of all triangles
+			Ogre::Vector3 _t1(l_vertices[l_indices[i].a]);
+			Ogre::Vector3 _t2(l_vertices[l_indices[i].b]);
+			Ogre::Vector3 _t3(l_vertices[l_indices[i].c]);
+			Ogre::Vector3 _ret = (_t1 - _t2).crossProduct(_t1 - _t3);
+			_ret.normalise();
+			l_triangle_normals[i] = _ret;
+		}
+
+		//!!!!
+		//	This algorithm takes ungodly long single-threaded in larger heightmaps.
+		//!!!!
+
+		for (unsigned int i = 0; i < l_vertex_normals.size(); i++) { // Calculate normals of all vertices
+			Ogre::Vector3 _ret(0, 0, 0);
+			for (unsigned int j = 0; j < l_indices.size(); j++) {
+				if (l_indices[j].a == i || l_indices[j].b == i || l_indices[j].c == i) {
+					_ret = _ret + l_triangle_normals[j];
+				}
+			}
+			_ret.normalise();
+			l_vertex_normals[i] = _ret;
+		}
+
+		Ogre::ManualObject* terrain_object = m_pSceneManager->createManualObject("");
+
+		terrain_object->begin("lambert1", Ogre::RenderOperation::OT_TRIANGLE_LIST);
+
+		for (unsigned int i = 0; i < l_vertex_count; i++) {
+			Ogre::Real _x = (Ogre::Real)(i % l_tex->getWidth());
+			Ogre::Real _y = (Ogre::Real)(i / l_tex->getWidth());
+
+			terrain_object->position(l_vertices[i]);
+			terrain_object->normal(l_vertex_normals[i]);
+			terrain_object->colour(Ogre::ColourValue(0.5, 0.5, 0.5));
+			terrain_object->textureCoord(_x/(Ogre::Real)l_tex->getWidth(), _y/(Ogre::Real)l_tex->getHeight());
+		}
+
+		for (unsigned int i = 0; i < l_indices.size(); i++) {
+			terrain_object->index(l_indices[i].a);
+			terrain_object->index(l_indices[i].b);
+			terrain_object->index(l_indices[i].c);
+		}
+
+		terrain_object->end();
+
+		//terrain_object->getSection(0)->getMaterial()->getTechnique(0)->getPass(0)->createTextureUnitState("white.png");
+		//terrain_object->getSection(0)->getMaterial()->getTechnique(0)->getPass(0)->setLightingEnabled(true);
+
+		ECBody& _ret = createBody();
+
+		_ret.setMesh(terrain_object, Scale);
+
+		chrono::geometry::ChTriangleMeshConnected l_triangle_mesh;
+
+		for (unsigned int i = 0; i < l_indices.size(); i++) {
+			l_triangle_mesh.addTriangle(
+				chrono::ChVector<>(									// Vertex 0
+				(double)l_vertices[l_indices[i].a].x,					// Index a.x
+				(double)l_vertices[l_indices[i].a].y,					// Index a.y
+				(double)l_vertices[l_indices[i].a].z					// Index a.z
+				) * Scale,
+				chrono::ChVector<>(									// Vertex 1
+				(double)l_vertices[l_indices[i].b].x,					// Index b.x
+				(double)l_vertices[l_indices[i].b].y,					// Index b.y
+				(double)l_vertices[l_indices[i].b].z					// Index b.z
+				) * Scale,
+				chrono::ChVector<>(									// Vertex 2
+				(double)l_vertices[l_indices[i].c].x,					// Index c.x
+				(double)l_vertices[l_indices[i].c].y,					// Index c.y
+				(double)l_vertices[l_indices[i].c].z					// Index c.z
+				) * Scale
+				);
+		}
+
+		_ret->GetCollisionModel()->ClearModel();
+		_ret->GetCollisionModel()->AddTriangleMesh(l_triangle_mesh, true, false, chrono::ChVector<>(), chrono::QUNIT);
+		_ret->GetCollisionModel()->BuildModel();
+		_ret->SetCollide(true);
+		_ret->SetBodyFixed(true);
+
+		return _ret;
 	}
 
 }

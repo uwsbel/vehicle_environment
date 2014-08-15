@@ -109,6 +109,8 @@ namespace EnvironmentCore {
 		virtual void setSkyBox(std::string FilePath);
 		virtual void disableSkyBox();
 
+		virtual ECBody& loadHeightMap(std::string FilePath, chrono::ChVector<>& Scale = chrono::ChVector<>(1, 1, 1));
+
 	protected:
 
 		Ogre::SceneManager* m_pSceneManager;

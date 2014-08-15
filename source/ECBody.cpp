@@ -31,25 +31,39 @@ namespace EnvironmentCore {
 	}
 
 	void ECBody::update() {
-		std::vector<chrono::ChSharedPtr<chrono::ChAsset> > l_pAssetList = m_pBody->GetAssets();
-		for (int i = 0; i < l_pAssetList.size(); i++) {
-			if (l_pAssetList[i].IsType<chrono::ChVisualization>()) {
-				chrono::ChVector<> _pos = ((chrono::ChVisualization*)l_pAssetList[i].get_ptr())->Pos;
-				m_SceneNodes[i]->setPosition((_pos.x + m_pBody->GetPos().x), (_pos.y + m_pBody->GetPos().y), (_pos.z) + m_pBody->GetPos().z);
+		if (!isStaticMesh) {
+			std::vector<chrono::ChSharedPtr<chrono::ChAsset> > l_pAssetList = m_pBody->GetAssets();
+			for (int i = 0; i < l_pAssetList.size(); i++) {
+				if (l_pAssetList[i].IsType<chrono::ChVisualization>()) {
+					chrono::ChVector<> _pos = ((chrono::ChVisualization*)l_pAssetList[i].get_ptr())->Pos;
+					m_SceneNodes[i]->setPosition((_pos.x + m_pBody->GetPos().x), (_pos.y + m_pBody->GetPos().y), (_pos.z) + m_pBody->GetPos().z);
 
 
-				chrono::ChQuaternion<> l_q;
+					chrono::ChQuaternion<> l_q;
 
-				chrono::ChBoxShape* shape = (chrono::ChBoxShape*)l_pAssetList[i].get_ptr();
-				l_q = m_pBody->GetRot() % shape->Rot.Get_A_quaternion();
-				l_q.Normalize();
+					chrono::ChBoxShape* shape = (chrono::ChBoxShape*)l_pAssetList[i].get_ptr();
+					l_q = m_pBody->GetRot() % shape->Rot.Get_A_quaternion();
+					l_q.Normalize();
 
-				double __w = l_q.e0;
-				double __x = l_q.e1;
-				double __y = l_q.e2;
-				double __z = l_q.e3;
-				m_SceneNodes[i]->setOrientation(__w, __x, __y, __z);
+					double __w = l_q.e0;
+					double __x = l_q.e1;
+					double __y = l_q.e2;
+					double __z = l_q.e3;
+					m_SceneNodes[i]->setOrientation(__w, __x, __y, __z);
+				}
 			}
+		}
+		else {
+			m_SceneNodes[0]->setPosition(m_pBody->GetPos().x, m_pBody->GetPos().y, m_pBody->GetPos().z);
+			chrono::ChQuaternion<> l_q;
+			l_q = m_pBody->GetRot();
+			l_q.Normalize();
+
+			double __w = l_q.e0;
+			double __x = l_q.e1;
+			double __y = l_q.e2;
+			double __z = l_q.e3;
+			m_SceneNodes[0]->setOrientation(__w, __x, __y, __z);
 		}
 	}
 
@@ -57,6 +71,7 @@ namespace EnvironmentCore {
 		for (int i = 0; i < m_SceneNodes.size(); i++) {
 			if (m_SceneNodes[i]) {
 				m_pSceneManager->getRootSceneNode()->removeChild(m_SceneNodes[i]);
+				m_SceneNodes.clear();
 			}
 		}
 		for (int i = 0; i < m_pBody->GetAssets().size(); i++) {
@@ -120,6 +135,27 @@ namespace EnvironmentCore {
 			l_pNode->attachObject(l_pEntity);
 			m_SceneNodes.push_back(l_pNode);
 		}
+		isStaticMesh = false;
+	}
+
+	void ECBody::setMesh(Ogre::ManualObject* Mesh, chrono::ChVector<>& Scale) {
+		for (int i = 0; i < m_SceneNodes.size(); i++) {
+			if (m_SceneNodes[i]) {
+				m_pSceneManager->getRootSceneNode()->removeChild(m_SceneNodes[i]);
+				m_SceneNodes.clear();
+			}
+		}
+
+		Ogre::SceneNode* l_pNode = m_pSceneManager->getRootSceneNode()->createChildSceneNode();
+		
+		//l_pEntity->setMaterialName("BaseWhite");
+		//l_pEntity->getSubEntity(0)->getMaterial()->getTechnique(0)->getPass(0)->createTextureUnitState("white.png");
+
+		l_pNode->setScale((Ogre::Real)Scale.x, (Ogre::Real)Scale.y, (Ogre::Real)Scale.z);
+
+		l_pNode->attachObject(Mesh);
+		m_SceneNodes.push_back(l_pNode);
+		isStaticMesh = true;
 	}
 
 	chrono::ChSharedBodyPtr ECBody::getChBody() {

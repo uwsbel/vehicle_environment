@@ -36,6 +36,7 @@ namespace EnvironmentCore {
 
 		virtual void update();
 		virtual void refresh();
+		virtual void setMesh(Ogre::ManualObject* Mesh, chrono::ChVector<>& Scale = chrono::ChVector<>(1, 1, 1));
 
 		virtual chrono::ChSharedBodyPtr getChBody();
 
@@ -43,6 +44,7 @@ namespace EnvironmentCore {
 
 		std::string name;
 		bool deletable;
+		bool isStaticMesh;
 
 	protected:
 

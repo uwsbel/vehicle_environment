@@ -76,6 +76,7 @@ namespace EnvironmentCore {
 			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/materials/textures/nvidia", "FileSystem");
 			Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/models", "FileSystem");
 			Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/skyboxes/sky", "FileSystem");
+			Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/heightmaps", "FileSystem");
 			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/particle", "FileSystem");
 			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/DeferredShadingMedia", "FileSystem");
 			//Ogre::ResourceGroupManager::getSingleton().addResourceLocation("assets/RTShaderLib", "FileSystem");
