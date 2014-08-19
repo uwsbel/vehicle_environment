@@ -539,17 +539,13 @@ namespace EnvironmentCore {
 		//	This algorithm takes ungodly long single-threaded in larger heightmaps.
 		//!!!!
 		{ // Calculate normals of all vertices
-			size_t _start1, _start2, _start3, _start4;
-			size_t _end1, _end2, _end3, _end4;
+			typedef struct __thread_set_t {
+				size_t _start;
+				size_t _end;
+				std::thread _thread;
+			} __thread_set;
 
-			_start1 = 0;
-			_end1 = l_vertex_count / 4;
-			_start2 = _end1 + 1;
-			_end2 = (l_vertex_count / 4) * 2;
-			_start3 = _end2 + 1;
-			_end3 = (l_vertex_count / 4) * 3;
-			_start4 = _end3 + 1;
-			_end4 = l_vertex_count;
+			size_t _thread_count = std::thread::hardware_concurrency();
 
 			std::function<void(size_t, size_t)> _worker_thread = [&](size_t start, size_t end) {
 				Ogre::Vector3 _ret(0, 0, 0);
@@ -564,15 +560,34 @@ namespace EnvironmentCore {
 				}
 			};
 
-			std::thread _worker_thread1(_worker_thread, _start1, _end1);
-			std::thread _worker_thread2(_worker_thread, _start2, _end2);
-			std::thread _worker_thread3(_worker_thread, _start3, _end3);
-			std::thread _worker_thread4(_worker_thread, _start4, _end4);
+			std::vector<__thread_set*> threads;
 
-			_worker_thread1.join();
-			_worker_thread2.join();
-			_worker_thread3.join();
-			_worker_thread4.join();
+			for (unsigned int i = 0; i < _thread_count; i++) {
+				__thread_set* pthread = new __thread_set;
+
+				if (i == 0) {
+					pthread->_start = 0;
+					pthread->_end = l_vertex_count / _thread_count;
+				}
+				else {
+					pthread->_start = threads[i - 1]->_end + 1;
+					pthread->_end = (l_vertex_count / _thread_count) * (i + 1);
+				}
+
+				if (i == _thread_count) {
+					pthread->_end = l_vertex_count;
+				}
+
+				pthread->_thread = std::thread(_worker_thread, pthread->_start, pthread->_end);
+				threads.push_back(pthread);
+			}
+
+			for (unsigned int i = 0; i < threads.size(); i++) {
+				threads[i]->_thread.join();
+				delete threads[i];
+				threads[i] = nullptr;
+			}
+
 		}
 
 		/*for (unsigned int i = 0; i < l_vertex_normals.size(); i++) {

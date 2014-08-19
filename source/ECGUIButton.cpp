@@ -78,7 +78,7 @@ namespace EnvironmentCore {
 
 	void ECGUIButton::_resizePanel() {
 		double _font_a_r = m_Font->getGlyphAspectRatio(0x0042);
-		m_pPanel->setWidth((m_pText->getCaption().asUTF8().length() * ( m_pText->getCharHeight() * _font_a_r))/2.0);
+		m_pPanel->setWidth(m_pText->getCaption().asUTF8().length() * ( ( _font_a_r * m_pText->getCharHeight() ) / 1.9 ) );
 		m_pPanel->setHeight(m_pText->getCharHeight());
 	}
 

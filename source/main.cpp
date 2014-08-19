@@ -72,25 +72,6 @@ int main(int argc, char *argv[])
 		EnvironmentCore::ECBody& Ninja = app.getScene()->spawnMesh("ninja", 10, chrono::ChVector<>(20, -9, 10), chrono::ChVector<>(1, 1, 1), chrono::ChQuaternion<>(1, 0, 0, 0),
 			"hodor.mesh", true); 
 
-		EnvironmentCore::ECBody& Gamma = app.getScene()->spawnBox("Platform", 1.0, chrono::ChVector<>(0, -10, 0), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
-		Gamma->SetFriction(.9);
-		EnvironmentCore::ECBody& Gamma1 = app.getScene()->spawnBox("Platform1", 1.0, chrono::ChVector<>(1000, -10, 0), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
-		Gamma1->SetFriction(.9);
-		EnvironmentCore::ECBody& Gamma2 = app.getScene()->spawnBox("Platform2", 1.0, chrono::ChVector<>(-1000, -10, 0), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
-		Gamma2->SetFriction(.9);
-		EnvironmentCore::ECBody& Gamma3 = app.getScene()->spawnBox("Platform3", 1.0, chrono::ChVector<>(0, -10, 1000), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
-		Gamma3->SetFriction(.9);
-		EnvironmentCore::ECBody& Gamma4 = app.getScene()->spawnBox("Platform4", 1.0, chrono::ChVector<>(0, -10, -1000), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
-		Gamma4->SetFriction(.9);
-		EnvironmentCore::ECBody& Gamma5 = app.getScene()->spawnBox("Platform5", 1.0, chrono::ChVector<>(1000, -10, 1000), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
-		Gamma5->SetFriction(.9);
-		EnvironmentCore::ECBody& Gamma6 = app.getScene()->spawnBox("Platform6", 1.0, chrono::ChVector<>(-1000, -10, 1000), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
-		Gamma6->SetFriction(.9);
-		EnvironmentCore::ECBody& Gamma7 = app.getScene()->spawnBox("Platform7", 1.0, chrono::ChVector<>(-1000, -10, -1000), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
-		Gamma7->SetFriction(.9);
-		EnvironmentCore::ECBody& Gamma8 = app.getScene()->spawnBox("Platform8", 1.0, chrono::ChVector<>(1000, -10, -1000), chrono::ChVector<>(500, 0.5, 500), chrono::ChQuaternion<>(1, 0, 0, 0), true);
-		Gamma8->SetFriction(.9);
-
 		EnvironmentCore::ECBody& Building = app.getScene()->spawnBox("Building1", 50000, chrono::ChVector<>(0, 490, 100), chrono::ChVector<>(20, 500, 20), chrono::ChQuaternion<>(1, 0, 0, 0), true);
 
 		/*EnvironmentCore::ECBody& Theta = app.getScene()->spawnEllipsoid("Theta", 1.0, chrono::ChVector<>(0, 30, 0), chrono::ChVector<>(2, 5, 2));
@@ -215,8 +196,9 @@ int main(int argc, char *argv[])
 		t->setTextColor(1.0, 1.0, 1.0);
 		t->setColor(0.0, 0.0, 0.0);
 
-		EnvironmentCore::ECBody& hillsyo = app.getScene()->loadHeightMap("ridge_mesa.png", chrono::ChVector<>(1, 20, 1));
+		EnvironmentCore::ECBody& hillsyo = app.getScene()->loadHeightMap("test_city_scape.png", chrono::ChVector<>(10, 20, 10));
 		hillsyo->SetPos(chrono::ChVector<>(0, 0, 0));
+		hillsyo->SetFriction(0.9);
 
 		std::function<int()> Loop = [&]() {
 
