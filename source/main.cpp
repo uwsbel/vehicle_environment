@@ -196,9 +196,16 @@ int main(int argc, char *argv[])
 		t->setTextColor(1.0, 1.0, 1.0);
 		t->setColor(0.0, 0.0, 0.0);
 
-		EnvironmentCore::ECBody& hillsyo = app.getScene()->loadHeightMap("test_city_scape.png", chrono::ChVector<>(10, 20, 10));
+		std::chrono::high_resolution_clock l_clock;
+		auto start = l_clock.now();
+
+		EnvironmentCore::ECBody& hillsyo = app.getScene()->loadHeightMap("han-solo.png", chrono::ChVector<>(10, 20, 10));
 		hillsyo->SetPos(chrono::ChVector<>(0, 0, 0));
 		hillsyo->SetFriction(0.9);
+
+		std::chrono::duration<double> end = std::chrono::duration_cast<std::chrono::duration<double>>(l_clock.now() - start);
+
+		app.logMessage("\n\n Loaded heightmap in " + std::to_string(end.count()) + " seconds \n\n");
 
 		std::function<int()> Loop = [&]() {
 

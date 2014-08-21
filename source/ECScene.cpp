@@ -437,7 +437,8 @@ namespace EnvironmentCore {
 		Ogre::TexturePtr l_tex = Ogre::TextureManager::getSingleton().load(FilePath, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
 		if (l_tex->getFormat() != Ogre::PF_L16 && l_tex->getFormat() != Ogre::PF_L8) {
-			l_tex->unload();
+			Ogre::TextureManager::getSingleton().remove((Ogre::ResourcePtr)l_tex);
+			l_tex.setNull();
 			l_tex = Ogre::TextureManager::getSingleton().load(FilePath, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::TEX_TYPE_2D, -1, 1.0f, false, Ogre::PF_L8);
 		}
 
@@ -547,14 +548,75 @@ namespace EnvironmentCore {
 
 			size_t _thread_count = std::thread::hardware_concurrency();
 
+			std::function<Ogre::Vector3(unsigned int i)> _find_vertex_normal = [&](unsigned int i) {
+				Ogre::Vector3 _ret(0, 0, 0);
+
+				bool is_not_top = !(i < l_pixels->getWidth());
+				bool is_not_left = !((i % l_pixels->getWidth()) == 0);
+				bool is_not_right = !(((i + 1) % l_pixels->getWidth()) == 0);
+				bool is_not_bottom = !(i > (l_vertex_count - l_pixels->getWidth()));
+
+				unsigned int iter_x_pos = i % l_pixels->getWidth();
+				unsigned int iter_y_pos = i / l_pixels->getHeight();
+
+				if (i == 1) {
+					_ret += l_triangle_normals[0];
+					_ret += l_triangle_normals[1];
+					_ret += l_triangle_normals[2];
+					return _ret;
+				}
+
+				//		____
+				//	   /| / | 
+				//	  / |/	|
+				//	  | /| / 
+				//	  |/_|/
+				//
+
+				unsigned int lower_right = i + (iter_y_pos * (l_pixels->getWidth() - 2)) + iter_x_pos;
+				unsigned int lower_middle = lower_right - 1;
+				unsigned int lower_left = lower_middle - 1;
+
+				unsigned int upper_right = lower_right - ((l_pixels->getWidth() * 2) - 3);
+				unsigned int upper_middle = upper_right - 1;
+				unsigned int upper_left = upper_middle - 1;
+
+				// Upper-left slice
+				if (is_not_top && is_not_left) {
+					_ret += l_triangle_normals[upper_left];
+				}
+
+				// Upper-middle slice && Upper-right slice
+				else if (is_not_top && is_not_right) {
+					_ret += l_triangle_normals[upper_middle];
+					_ret += l_triangle_normals[upper_right];
+				}
+
+				// Lower-left slice && Lower-middle slice
+				else if (is_not_left && is_not_bottom) {
+					_ret += l_triangle_normals[lower_left];
+					_ret += l_triangle_normals[lower_middle];
+				}
+
+				// Lower-right slice
+				else if (is_not_right && is_not_bottom) {
+					_ret += l_triangle_normals[lower_right];
+				}
+
+				_ret.normalise();
+
+				return _ret;
+			};
+
 			std::function<void(size_t, size_t)> _worker_thread = [&](size_t start, size_t end) {
 				Ogre::Vector3 _ret(0, 0, 0);
 				for (unsigned int i = start; i < end; i++) {
-					for (unsigned int j = 0; j < l_indices.size(); j++) {
+					/*for (unsigned int j = 0; j < l_indices.size(); j++) {
 						if (l_indices[j].a == i || l_indices[j].b == i || l_indices[j].c == i) {
-							_ret = _ret + l_triangle_normals[j];
+							_ret += l_triangle_normals[j];
 						}
-					}
+					}*/
+					_ret = _find_vertex_normal(i);
 					_ret.normalise();
 					l_vertex_normals[i] = _ret;
 				}
