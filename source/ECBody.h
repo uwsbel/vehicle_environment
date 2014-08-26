@@ -55,6 +55,8 @@ namespace EnvironmentCore {
 		Ogre::SceneManager* m_pSceneManager;
 		chrono::ChSystem* m_pChSystem;
 
+		static unsigned int m_MeshCount;
+
 	private:
 
 

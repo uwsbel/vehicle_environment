@@ -96,6 +96,7 @@ namespace EnvironmentCore {
 									chrono::ChVector<>& size = chrono::ChVector<>(1, 1, 1),
 									chrono::ChQuaternion<>& rotation = chrono::ChQuaternion<>(1, 0, 0, 0),
 									std::string FileName = "",
+									std::string Path = "",
 									bool fixed = false);
 
 		////////
@@ -127,6 +128,7 @@ namespace EnvironmentCore {
 		double m_LowerLimit;
 
 		static unsigned int m_LightCount;
+		static unsigned int m_TerrainMeshCount;
 
 	private:
 

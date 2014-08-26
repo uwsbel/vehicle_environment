@@ -6,8 +6,11 @@ Contains the definitions for ECBody
 
 
 #include "ECBody.h"
+#include "tinyobjloader/tiny_obj_loader.h"
 
 namespace EnvironmentCore {
+
+	unsigned int ECBody::m_MeshCount = 0;
 
 	ECBody::ECBody(Ogre::SceneManager* SceneManager, chrono::ChSystem* System) {
 		m_pSceneManager = SceneManager;
@@ -123,7 +126,68 @@ namespace EnvironmentCore {
 				l_pNode->setScale((Ogre::Real)_r, (Ogre::Real)_r, (Ogre::Real)_r);
 			}
 			else if (temp_asset.IsType<chrono::ChTriangleMeshShape>()) {
-				l_pEntity = m_pSceneManager->createEntity(chrono::static_cast_chshared<chrono::ChTriangleMeshShape>(temp_asset)->GetName());
+
+				std::string filepath = chrono::static_cast_chshared<chrono::ChTriangleMeshShape>(temp_asset)->GetName();
+
+				std::string _base;
+				std::string _ext;
+				std::string _path;
+
+				Ogre::StringUtil::splitFullFilename(filepath, _base, _ext, _path);
+
+				if (_ext == "mesh") {
+					l_pEntity = m_pSceneManager->createEntity(filepath);
+				}
+				else if (_ext == "obj") {
+					std::vector<tinyobj::shape_t> _shapes;
+					std::string error = tinyobj::LoadObj(_shapes, filepath.c_str());
+					if (!error.empty()) {
+						Ogre::LogManager::getSingleton().logMessage(Ogre::LML_CRITICAL, "! Could not load OBJ file: " + filepath + " !");
+						return;
+					}
+
+					for (unsigned int i = 0; i < _shapes.size(); i++) {
+						Ogre::ManualObject* _manual_object = m_pSceneManager->createManualObject("Terrain Mesh " + std::to_string(m_MeshCount));
+
+						_manual_object->begin("lambert1", Ogre::RenderOperation::OT_TRIANGLE_LIST);
+
+						for (unsigned int j = 0; j < _shapes[i].mesh.positions.size(); j += 3) {
+							_manual_object->position(Ogre::Vector3(_shapes[i].mesh.positions[j + 0], _shapes[i].mesh.positions[j + 1], _shapes[i].mesh.positions[j + 2]));
+							_manual_object->normal(Ogre::Vector3(_shapes[i].mesh.normals[j + 0], _shapes[i].mesh.normals[j + 1], _shapes[i].mesh.normals[j + 2]));
+							_manual_object->colour(Ogre::ColourValue(0.5, 0.5, 0.5));
+
+							_manual_object->textureCoord(Ogre::Vector2(_shapes[i].mesh.texcoords[((j / 3) * 2) + 0], _shapes[i].mesh.texcoords[((j / 3) * 2) + 1]));
+						}
+
+						for (unsigned j = 0; j < _shapes[i].mesh.texcoords.size(); j += 2) {
+						}
+
+						for (unsigned j = 0; j < _shapes[i].mesh.indices.size(); j++) {
+							_manual_object->index(_shapes[i].mesh.indices[j]);
+						}
+
+						_manual_object->end();
+
+						l_pNode->attachObject(_manual_object);
+					}
+				
+
+					m_SceneNodes.push_back(l_pNode);
+
+					chrono::ChTriangleMeshShape* shape = (chrono::ChTriangleMeshShape*)temp_asset.get_ptr();
+
+					double _sx = shape->GetScale().x;
+					double _sy = shape->GetScale().y;
+					double _sz = shape->GetScale().z;
+					l_pNode->setScale((Ogre::Real)_sx, (Ogre::Real)_sy, (Ogre::Real)_sz);
+
+					m_MeshCount++;
+					return;
+				}
+				else {
+					return;
+				}
+
 				chrono::ChTriangleMeshShape* shape = (chrono::ChTriangleMeshShape*)temp_asset.get_ptr();
 
 				double _sx = shape->GetScale().x;

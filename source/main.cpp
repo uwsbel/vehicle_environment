@@ -69,8 +69,8 @@ int main(int argc, char *argv[])
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0)),
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0))));*/
 
-		EnvironmentCore::ECBody& Ninja = app.getScene()->spawnMesh("ninja", 10, chrono::ChVector<>(20, -9, 10), chrono::ChVector<>(1, 1, 1), chrono::ChQuaternion<>(1, 0, 0, 0),
-			"hodor.mesh", true); 
+		EnvironmentCore::ECBody& Ninja = app.getScene()->spawnMesh("ninja", 10, chrono::ChVector<>(0, 3, 10), chrono::ChVector<>(1, 1, 1) * 3, chrono::ChQuaternion<>(1, 0, 0, 0),
+			"humvee4_scaled_rotated_decimated_centered.obj", "assets/models/", true);
 
 		EnvironmentCore::ECBody& Building = app.getScene()->spawnBox("Building1", 50000, chrono::ChVector<>(0, 490, 100), chrono::ChVector<>(20, 500, 20), chrono::ChQuaternion<>(1, 0, 0, 0), true);
 
@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
 		std::chrono::high_resolution_clock l_clock;
 		auto start = l_clock.now();
 
-		EnvironmentCore::ECBody& hillsyo = app.getScene()->loadHeightMap("han-solo.png", chrono::ChVector<>(10, 20, 10));
+		EnvironmentCore::ECBody& hillsyo = app.getScene()->loadHeightMap("ridge_mesa.png", chrono::ChVector<>(10, 20, 10));
 		hillsyo->SetPos(chrono::ChVector<>(0, 0, 0));
 		hillsyo->SetFriction(0.9);
 

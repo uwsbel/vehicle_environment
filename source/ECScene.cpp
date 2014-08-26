@@ -5,9 +5,12 @@ Contains the definitions for ECScene
 */
 
 #include "ECScene.h"
+#include "tinyobjloader/tiny_obj_loader.h"
 #include <thread>
 
 namespace EnvironmentCore {
+
+	unsigned int ECScene::m_TerrainMeshCount = 0;
 
 	void getMeshInformation(const Ogre::Mesh* const mesh,
 		size_t &vertex_count,
@@ -358,7 +361,7 @@ namespace EnvironmentCore {
 		return _ret;
 	}
 
-	ECBody& ECScene::spawnMesh(std::string Name, double mass, chrono::ChVector<>& position, chrono::ChVector<>& size, chrono::ChQuaternion<>& rotation, std::string FileName, bool fixed) {
+	ECBody& ECScene::spawnMesh(std::string Name, double mass, chrono::ChVector<>& position, chrono::ChVector<>& size, chrono::ChQuaternion<>& rotation, std::string FileName, std::string Path, bool fixed) {
 		ECBody& _ret = createBody(Name);
 
 		chrono::ChSharedPtr<chrono::ChTriangleMeshShape> _mesh(new chrono::ChTriangleMeshShape);
@@ -368,51 +371,107 @@ namespace EnvironmentCore {
 		_ret->SetRot(rotation);
 		_ret->SetPos(position);
 		_ret->SetMass(mass);
-		_ret->GetAssets().push_back(_mesh);
+		
 
-		Ogre::Entity* l_pEntity = m_pSceneManager->createEntity(FileName);
-		Ogre::MeshPtr l_pMesh = l_pEntity->getMesh();
+		std::string _base;
+		std::string _ext;
+		std::string _path;
 
-		size_t l_vertex_count, l_index_count;
-		Ogre::Vector3* l_pvertices;
-		unsigned long* l_pindices;
-		chrono::geometry::ChTriangleMeshConnected l_triangle_mesh;
+		Ogre::StringUtil::splitFullFilename(FileName, _base, _ext, _path);
 
-		getMeshInformation(l_pMesh.getPointer(), l_vertex_count, l_pvertices, l_index_count, l_pindices, Ogre::Vector3::ZERO, Ogre::Quaternion::IDENTITY, Ogre::Vector3::UNIT_SCALE);
-
-		for (unsigned int i = 0; i < l_index_count; i+=3) {
-			l_triangle_mesh.addTriangle(
-				chrono::ChVector<>(									// Vertex 0
-					(double) l_pvertices[l_pindices[i]].x,				// Index I.x
-					(double) l_pvertices[l_pindices[i]].y,				// Index I.y
-					(double) l_pvertices[l_pindices[i]].z				// Index I.z
-					) * size,
-				chrono::ChVector<>(									// Vertex 1
-					(double) l_pvertices[l_pindices[i+1]].x,			// Index I+1.x
-					(double) l_pvertices[l_pindices[i+1]].y,			// Index I+1.y
-					(double) l_pvertices[l_pindices[i+1]].z				// Index I+1.z
-					) * size,
-				chrono::ChVector<>(									// Vertex 2
-					(double) l_pvertices[l_pindices[i+2]].x,			// Index I+2.x
-					(double) l_pvertices[l_pindices[i+2]].y,			// Index I+2.y
-					(double) l_pvertices[l_pindices[i+2]].z				// Index I+2.z
-					) * size
-				);
-		}
-
-		m_pSceneManager->destroyEntity(l_pEntity);
-		delete[] l_pvertices;
-		delete[] l_pindices;
-
+		std::vector<Ogre::MeshPtr> l_Meshes;
+		Ogre::Entity* l_pEntity = nullptr;
 
 		_ret->GetCollisionModel()->ClearModel();
-		_ret->GetCollisionModel()->AddTriangleMesh(l_triangle_mesh, true, false, chrono::ChVector<>(), chrono::QUNIT);
+
+		if (_ext == "mesh") {
+			l_pEntity = m_pSceneManager->createEntity(FileName);
+			l_Meshes.push_back(l_pEntity->getMesh());
+		}
+		else if (_ext == "obj") {
+			std::string l_path = _path != "" ? _path : Path;
+			l_path = l_path + _base + "." + _ext;
+
+			_mesh->SetName(l_path.c_str());
+
+			std::vector<tinyobj::shape_t> _shapes;
+			std::string error = tinyobj::LoadObj(_shapes, l_path.c_str());
+			if (!error.empty()) {
+				Ogre::LogManager::getSingleton().logMessage(Ogre::LML_CRITICAL, "! Could not load OBJ file: " + l_path + " !");
+				return _ret;
+			}
+
+			for (unsigned int i = 0; i < _shapes.size(); i++) {
+				Ogre::ManualObject* _manual_object = m_pSceneManager->createManualObject("temp Mesh " + std::to_string(m_TerrainMeshCount * m_LightCount * 3));
+
+				_manual_object->begin("lambert1", Ogre::RenderOperation::OT_TRIANGLE_LIST);
+
+				for (unsigned int j = 0; j < _shapes[i].mesh.positions.size(); j += 3) {
+					_manual_object->position(Ogre::Vector3(_shapes[i].mesh.positions[j + 0], _shapes[i].mesh.positions[j + 1], _shapes[i].mesh.positions[j + 2]));
+					_manual_object->normal(Ogre::Vector3(_shapes[i].mesh.normals[j + 0], _shapes[i].mesh.normals[j + 1], _shapes[i].mesh.normals[j + 2]));
+					_manual_object->colour(Ogre::ColourValue(0.5, 0.5, 0.5));
+
+					_manual_object->textureCoord(Ogre::Vector2(_shapes[i].mesh.texcoords[((j / 3) * 2) + 0], _shapes[i].mesh.texcoords[((j / 3) * 2) + 1]));
+				}
+
+				for (unsigned j = 0; j < _shapes[i].mesh.texcoords.size(); j += 2) {
+				}
+
+				for (unsigned j = 0; j < _shapes[i].mesh.indices.size(); j++) {
+					_manual_object->index(_shapes[i].mesh.indices[j]);
+				}
+
+				_manual_object->end();
+				l_Meshes.push_back(_manual_object->convertToMesh("temp mesh 2 " + std::to_string(m_TerrainMeshCount * m_LightCount * 3)));
+			}
+		}
+
+		for (unsigned int i = 0; i < l_Meshes.size(); i++) {
+
+			size_t l_vertex_count, l_index_count;
+			Ogre::Vector3* l_pvertices;
+			unsigned long* l_pindices;
+			chrono::geometry::ChTriangleMeshConnected l_triangle_mesh;
+
+			getMeshInformation(l_Meshes[i].getPointer(), l_vertex_count, l_pvertices, l_index_count, l_pindices, Ogre::Vector3::ZERO, Ogre::Quaternion::IDENTITY, Ogre::Vector3::UNIT_SCALE);
+
+			for (unsigned int i = 0; i < l_index_count; i += 3) {
+				l_triangle_mesh.addTriangle(
+					chrono::ChVector<>(									// Vertex 0
+					(double)l_pvertices[l_pindices[i]].x,				// Index I.x
+					(double)l_pvertices[l_pindices[i]].y,				// Index I.y
+					(double)l_pvertices[l_pindices[i]].z				// Index I.z
+					) * size,
+					chrono::ChVector<>(									// Vertex 1
+					(double)l_pvertices[l_pindices[i + 1]].x,			// Index I+1.x
+					(double)l_pvertices[l_pindices[i + 1]].y,			// Index I+1.y
+					(double)l_pvertices[l_pindices[i + 1]].z				// Index I+1.z
+					) * size,
+					chrono::ChVector<>(									// Vertex 2
+					(double)l_pvertices[l_pindices[i + 2]].x,			// Index I+2.x
+					(double)l_pvertices[l_pindices[i + 2]].y,			// Index I+2.y
+					(double)l_pvertices[l_pindices[i + 2]].z				// Index I+2.z
+					) * size
+					);
+			}
+
+			delete[] l_pvertices;
+			delete[] l_pindices;
+
+			_ret->GetCollisionModel()->AddTriangleMesh(l_triangle_mesh, true, false, chrono::ChVector<>(), chrono::QUNIT);
+		}
+		
+		_ret->GetAssets().push_back(_mesh);
 		_ret->GetCollisionModel()->BuildModel();
 		_ret->SetCollide(true);
 		_ret->SetBodyFixed(fixed);
 
 		_ret.refresh();
-		
+
+		if (_ext == "mesh") {
+			m_pSceneManager->destroyEntity(l_pEntity);
+		}
+
 		return _ret;
 	}
 
@@ -663,7 +722,8 @@ namespace EnvironmentCore {
 			l_vertex_normals[i] = _ret;
 		}*/
 
-		Ogre::ManualObject* terrain_object = m_pSceneManager->createManualObject("");
+		Ogre::ManualObject* terrain_object = m_pSceneManager->createManualObject(std::to_string(m_TerrainMeshCount));
+		m_TerrainMeshCount++;
 
 		terrain_object->begin("lambert1", Ogre::RenderOperation::OT_TRIANGLE_LIST);
 
