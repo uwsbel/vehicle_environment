@@ -4,6 +4,7 @@
 
 #include "ECApplication.h"
 #include "VESuspensionDemo.h"
+#include "VEHumvee.h"
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -34,9 +35,9 @@ int main(int argc, char *argv[])
 
 		app.getScene()->setSkyBox("sky");
 
-		VehicleEnvironment::VESuspensionDemo car;
+		VehicleEnvironment::VEHumvee car;
 		car.setApp(&app);
-		car.build(chrono::ChVector<>(0, 0, 0));
+		car.build(chrono::ChVector<>(0, 5, 0));
 
 
 		EnvironmentCore::ECBody& Epsilon = app.getScene()->spawnSphere("Spheere", 1, chrono::ChVector<>(10, 10, 20), 4);
@@ -68,9 +69,6 @@ int main(int argc, char *argv[])
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0)),
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0)),
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0))));*/
-
-		EnvironmentCore::ECBody& Ninja = app.getScene()->spawnMesh("ninja", 10, chrono::ChVector<>(0, 3, 10), chrono::ChVector<>(1, 1, 1) * 3, chrono::ChQuaternion<>(1, 0, 0, 0),
-			"humvee4_scaled_rotated_decimated_centered.obj", "assets/models/", true);
 
 		EnvironmentCore::ECBody& Building = app.getScene()->spawnBox("Building1", 50000, chrono::ChVector<>(0, 490, 100), chrono::ChVector<>(20, 500, 20), chrono::ChQuaternion<>(1, 0, 0, 0), true);
 
@@ -133,7 +131,7 @@ int main(int argc, char *argv[])
 
 
 		chrono::ChVector<> direction = chrono::ChVector<>(0, 0, 5);
-		chrono::ChQuaternion<> dirRot = car.getRot();
+		chrono::ChQuaternion<> dirRot = car.getChassis()->GetRot();
 		dirRot.Normalize();
 		direction = dirRot.Rotate(chrono::ChVector<>(0, 0, 5));
 
@@ -210,13 +208,13 @@ int main(int argc, char *argv[])
 		std::function<int()> Loop = [&]() {
 
 			if ((app.getInputManager()->getWheelState().rwheelb1.down) && db) {
-				EnvironmentCore::ECBody& Alpha = app.getScene()->spawnSphere("Boox", 50, chrono::ChVector<>(car.getPos().x, car.getPos().y + 3, car.getPos().z), 0.1);
+				EnvironmentCore::ECBody& Alpha = app.getScene()->spawnSphere("Boox", 50, chrono::ChVector<>(car.getChassis()->GetPos().x, car.getChassis()->GetPos().y + 3, car.getChassis()->GetPos().z), 0.1);
 				Alpha->SetInertiaXX(chrono::ChVector<>(
 					((2.0 / 5.0)*Alpha->GetMass() * 0.3 * 0.3),
 					((2.0 / 5.0)*Alpha->GetMass() * 0.3 * 0.3),
 					((2.0 / 5.0)*Alpha->GetMass() * 0.3 * 0.3)));
 
-				auto dir = car.getRot().Rotate(chrono::ChVector<>(0, 0, 1));
+				auto dir = car.getChassis()->GetRot().Rotate(chrono::ChVector<>(0, 0, 1));
 
 				Alpha->SetPos_dt(dir * 125);
 
@@ -322,10 +320,10 @@ int main(int argc, char *argv[])
 			car.update();
 
 			if (t->isPressed()) {
-				car.getBody()->SetPos_dt(chrono::ChVector<>(0, 10, 0));
+				car.getChassis()->SetPos_dt(chrono::ChVector<>(0, 10, 0));
 			}
 
-			double speed = car.getBody()->GetPos_dt().Length();
+			double speed = car.getChassis()->GetPos_dt().Length();
 
 			speed = speed * (3600.0 / 1000.0);
 
@@ -342,12 +340,12 @@ int main(int argc, char *argv[])
 			follow.setSpecularColour(1.0f, 1.0f, 1.0f);
 
 
-			dirRot = car.getRot();
+			dirRot = car.getChassis()->GetRot();
 			dirRot.Normalize();
 			direction = dirRot.Rotate(chrono::ChVector<>(0, 10, -20));
 
-			look_at = car.getPos();
-			camera_tpos = (car.getPos() + direction);
+			look_at = car.getChassis()->GetPos();
+			camera_tpos = (car.getChassis()->GetPos() + direction);
 
 			auto camera_dpos = camera_tpos - camera_pos;
 
@@ -363,7 +361,7 @@ int main(int argc, char *argv[])
 			DebugCamera->orient(camera_pos.x, camera_pos.y, camera_pos.z, look_at.x, look_at.y+6, look_at.z);
 			app.setCamera(DebugCamera);
 
-			follow.setPosition(car.getPos().x, car.getPos().y + 10, car.getPos().z + 14);
+			follow.setPosition(car.getChassis()->GetPos().x, car.getChassis()->GetPos().y + 10, car.getChassis()->GetPos().z + 14);
 
 
 			return 0;

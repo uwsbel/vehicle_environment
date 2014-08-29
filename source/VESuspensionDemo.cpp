@@ -11,6 +11,8 @@ namespace VehicleEnvironment {
 		wheelLF = nullptr;
 		spindleRB = nullptr;
 		wheelRB = nullptr;
+		spindleLB = nullptr;
+		wheelLB = nullptr;
 
 		//Right front wheel
 
@@ -71,6 +73,8 @@ namespace VehicleEnvironment {
 		wheelLF = nullptr;
 		spindleRB = nullptr;
 		wheelRB = nullptr;
+		spindleLB = nullptr;
+		wheelLB = nullptr;
 
 		//Right front wheel
 
@@ -404,8 +408,8 @@ namespace VehicleEnvironment {
 		wheelLB->getChBody()->SetRot_dt(chrono::QUNIT);
 	}
 
-	chrono::ChBody* VESuspensionDemo::getBody() {
-		return truss->getChBody().get_ptr();
+	chrono::ChSharedBodyPtr VESuspensionDemo::getChassis() {
+		return truss->getChBody();
 	}
 
 	chrono::ChVector<> VESuspensionDemo::getPos() {
