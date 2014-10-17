@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 
 		app.getScene()->setSkyBox("sky");
 
-		VehicleEnvironment::VEHumvee car;
+		VehicleEnvironment::VESuspensionDemo car;
 		car.setApp(&app);
 		car.build(chrono::ChVector<>(0, 5, 0));
 
@@ -205,9 +205,66 @@ int main(int argc, char *argv[])
 
 		app.logMessage("\n\n Loaded heightmap in " + std::to_string(end.count()) + " seconds \n\n");
 
+
+		bool fire_button = false;
+		bool reset_button = false;
+		bool rumble_button = false;
+		double steer = 0.0;
+		double clutch = 0.0;
+		double accelerator = 0.0;
+		double brake = 0.0;
+		bool shift_up = false;
+		bool shift_down = false;
+		bool quit_button = false;
+		bool toggle_realtime = false;
+		bool tr_db = true;
+
+
 		std::function<int()> Loop = [&]() {
 
-			if ((app.getInputManager()->getWheelState().rwheelb1.down) && db) {
+			if (app.getInputManager()->getWheelState().active) {
+				fire_button = app.getInputManager()->getWheelState().rwheelb1.down;
+				reset_button = app.getInputManager()->getWheelState().red1.down;
+				rumble_button = app.getInputManager()->getWheelState().rwheelb2.down;
+				steer = 0.07*((double)(-1.0 * app.getInputManager()->getWheelState().wheel.value));
+				clutch = app.getInputManager()->getWheelState().clutch.value;
+				accelerator = app.getInputManager()->getWheelState().accelerator.value;
+				brake = app.getInputManager()->getWheelState().brake.value;
+				shift_up = app.getInputManager()->getWheelState().rpaddle.down;
+				shift_down = app.getInputManager()->getWheelState().lpaddle.down;
+				quit_button = app.getInputManager()->getWheelState().red2.down;
+				toggle_realtime = app.getInputManager()->getWheelState().red3.down;
+			}
+			else {
+				fire_button = app.getInputManager()->getControllerState().x.down;
+				reset_button = app.getInputManager()->getControllerState().y.down;
+				rumble_button = app.getInputManager()->getControllerState().lbumper.down;
+				steer = 0.07*((double)(-1.0 * app.getInputManager()->getControllerState().lstickx.value));
+				clutch = 0.0;
+				accelerator = (app.getInputManager()->getControllerState().rtrigger.value + 1.0000015) / 2;
+				brake = (app.getInputManager()->getControllerState().ltrigger.value + 1.0000015) / 2;
+				shift_up = app.getInputManager()->getControllerState().d_up.down;
+				shift_down = app.getInputManager()->getControllerState().d_down.down;
+				quit_button = app.getInputManager()->getControllerState().back.down;
+				toggle_realtime = app.getInputManager()->getControllerState().rbumper.down;
+			}
+
+			if (abs(brake) < 0.5) {
+				brake = 0.0;
+			}
+
+
+			if (toggle_realtime && tr_db) {
+				app.isRealTime = app.isRealTime ? false : true;
+				tr_db = false;
+			}
+			
+			if (!toggle_realtime) {
+				tr_db = true;
+			}
+
+
+			if (fire_button && db) {
 				EnvironmentCore::ECBody& Alpha = app.getScene()->spawnSphere("Boox", 50, chrono::ChVector<>(car.getChassis()->GetPos().x, car.getChassis()->GetPos().y + 3, car.getChassis()->GetPos().z), 0.1);
 				Alpha->SetInertiaXX(chrono::ChVector<>(
 					((2.0 / 5.0)*Alpha->GetMass() * 0.3 * 0.3),
@@ -221,16 +278,16 @@ int main(int argc, char *argv[])
 				db = false;
 			}
 
-			if (!app.getInputManager()->getWheelState().rwheelb1.down) {
+			if (!fire_button) {
 				db = true;
 			}
 
-			if (app.getInputManager()->getWheelState().red1.down && db3) {
+			if (reset_button && db3) {
 				car.reset(chrono::ChVector<>(4, 2, 4));
 				db3 = false;
 			}
 
-			if (!app.getInputManager()->getWheelState().red1.down) {
+			if (!reset_button) {
 				db3 = true;
 			}
 
@@ -242,15 +299,14 @@ int main(int argc, char *argv[])
 			}
 
 
-			if (app.getInputManager()->getWheelState().rwheelb2.down && db2) {
+			if (rumble_button && db2) {
 				app.getInputManager()->runHapticRumble(1.0f, 1);
 				db2 = false;
 			}
-			if (!app.getInputManager()->getWheelState().rwheelb2.down) {
+			if (!rumble_button) {
 				db2 = true;
 			}
 
-			double steer = 0.07*((double)(-1.0 * app.getInputManager()->getWheelState().wheel.value));
 
 			if (steer > 0.1) {
 				steer = 0.1;
@@ -261,7 +317,8 @@ int main(int argc, char *argv[])
 
 			car.steer = steer;
 
-			if (app.getInputManager()->getWheelState().clutch.value > 0.7) {
+
+			if (clutch > 0.7) {
 				throttle = 0;
 				if (app.getInputManager()->getWheelState().gear1.down) {
 					car.shift(1);
@@ -286,32 +343,32 @@ int main(int argc, char *argv[])
 				}
 			}
 
-			if (app.getInputManager()->getWheelState().lpaddle.down && pshiftdb && (car.gear > 0)) {
+			if (shift_down && pshiftdb && (car.gear > 0)) {
 				car.shift(car.gear-1);
 				pshiftdb = false;
 			}
 
-			if (app.getInputManager()->getWheelState().rpaddle.down && pshiftdb && (car.gear < 6)) {
+			if (shift_up && pshiftdb && (car.gear < 6)) {
 				car.shift(car.gear+1);
 				pshiftdb = false;
 			}
 
-			if (!app.getInputManager()->getWheelState().lpaddle.down && !app.getInputManager()->getWheelState().rpaddle.down) {
+			if (!shift_down && !shift_up) {
 				pshiftdb = true;
 			}
 
-			if ((app.getInputManager()->getWheelState().accelerator.value)) {
-				throttle = ((app.getInputManager()->getWheelState().accelerator.value) - (app.getInputManager()->getWheelState().brake.value));
+			if (accelerator) {
+				throttle = accelerator;
 				if (app.getInputManager()->getWheelState().reverse.down) {
 					//throttle *= -1;
 				}
 			}
 
-			if (app.getInputManager()->getWheelState().brake.value) {
+			if (brake) {
 				car.brake();
 			}
 
-			if (app.getInputManager()->getKeyState(SDL_SCANCODE_ESCAPE).down || app.getInputManager()->getWheelState().red2.down) {
+			if (app.getInputManager()->getKeyState(SDL_SCANCODE_ESCAPE).down || quit_button) {
 				return 1;
 			}
 
