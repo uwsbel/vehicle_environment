@@ -7,6 +7,14 @@ include(cmake/SBELUtils.cmake)
 #find_package(OGRE REQUIRED)
 find_package(CHRONOENGINE REQUIRED)
 find_package(SDL REQUIRED)
+
+SET(Boost_USE_STATIC_LIBS ON)
+SET(Boost_USE_MULTITHREADED ON)
+SET(Boost_USE_STATIC_RUNTIME OFF)
+find_package(BOOST COMPONENTS thread REQUIRED)
+
+
+
 # User specified path to ChronoEngine
 #SET(CHRONO_INC           ""    CACHE   PATH    "Where is ChronoEngine Source located")
 # User specified path to ChronoEngine Libraries
@@ -18,6 +26,57 @@ SET(OGRE_INCLUDEDIR "OGRE_INCLUDEDIR-NOT_FOUND" CACHE PATH "Path to Ogre include
 SET(OGRE_LIBDIR_DEBUG "OGRE_LIBDIR_DEBUG-NOT_FOUND" CACHE PATH "Path to Ogre debug libs")
 SET(OGRE_LIBDIR_RELEASE "OGRE_LIBDIR_RELEASE-NOT_FOUND" CACHE PATH "Path to Ogre release libs")
 
+SET(Boost_THREAD_LIBDIR "Boost_THREAD_LIBDIR-NOT_FOUND" CACHE PATH "Path to Boost thread lib dir")
+SET(Boost_SYSTEM_LIBDIR "Boost_SYSTEM_LIBDIR-NOT_FOUND" CACHE PATH "Path to Boost system lib dir")
+SET(Boost_DATE_TIME_LIBDIR "Boost_DATE_TIME_LIBDIR-NOT_FOUND" CACHE PATH "Path to Boost date_time lib dir")
+SET(Boost_CHRONO_LIBDIR "Boost_CHRONO_LIBDIR-NOT_FOUND" CACHE PATH "Path to Boost chrono lib dir")
+
+FIND_LIBRARY(Boost_THREADLIB_DEBUG
+	NAMES libboost_thread-vc120-mt-gd-1_55
+	PATHS "${Boost_THREAD_LIBDIR}/debug/link-static/threading-multi"
+	)
+	
+FIND_LIBRARY(Boost_THREADLIB_RELEASE
+	NAMES libboost_thread-vc120-mt-1_55
+	PATHS "${Boost_THREAD_LIBDIR}/release/link-static/threading-multi"
+	)
+
+FIND_LIBRARY(Boost_SYSTEMLIB_DEBUG
+	NAMES libboost_system-vc120-mt-gd-1_55
+	PATHS "${Boost_SYSTEM_LIBDIR}/debug/link-static/threading-multi"
+	)
+	
+FIND_LIBRARY(Boost_SYSTEMLIB_RELEASE
+	NAMES libboost_system-vc120-mt-1_55
+	PATHS "${Boost_SYSTEM_LIBDIR}/release/link-static/threading-multi"
+	)
+	
+FIND_LIBRARY(Boost_DATE_TIMELIB_DEBUG
+	NAMES libboost_date_time-vc120-mt-gd-1_55
+	PATHS "${Boost_DATE_TIME_LIBDIR}/debug/link-static/threading-multi"
+	)
+	
+FIND_LIBRARY(Boost_DATE_TIMELIB_RELEASE
+	NAMES libboost_date_time-vc120-mt-1_55
+	PATHS "${Boost_DATE_TIME_LIBDIR}/release/link-static/threading-multi"
+	)
+	
+FIND_LIBRARY(Boost_CHRONOLIB_DEBUG
+	NAMES libboost_chrono-vc120-mt-gd-1_55
+	PATHS "${Boost_CHRONO_LIBDIR}/debug/link-static/threading-multi"
+	)
+	
+FIND_LIBRARY(Boost_CHRONOLIB_RELEASE
+	NAMES libboost_chrono-vc120-mt-1_55
+	PATHS "${Boost_CHRONO_LIBDIR}/release/link-static/threading-multi"
+	)
+	
+SET(Boost_threadlib optimized ${Boost_THREADLIB_RELEASE} debug ${Boost_THREADLIB_DEBUG})
+SET(Boost_systemlib optimized ${Boost_SYSTEMLIB_RELEASE} debug ${Boost_SYSTEMLIB_DEBUG})
+SET(Boost_date_timelib optimized ${Boost_DATE_TIMELIB_RELEASE} debug ${Boost_DATE_TIMELIB_DEBUG})
+SET(Boost_chronolib optimized ${Boost_CHRONOLIB_RELEASE} debug ${Boost_CHRONOLIB_DEBUG})
+	
+	
 IF(EXISTS "${OGRE_INCLUDEDIR}/OGRE/Ogre.h")
 	include_directories(${OGRE_INCLUDEDIR})
 ELSE()
@@ -69,14 +128,26 @@ SET(OGRE_LIBRARIES optimized ${OGRE_MAINLIB_RELEASE} optimized ${OGRE_PAGINGLIB_
 	)
 
 
-SET(LIBRARIES ${CHRONOENGINE_LIBRARIES} ${SDL_LIBRARY} ${OGRE_LIBRARIES})
+SET(LIBRARIES ${CHRONOENGINE_LIBRARIES} 
+	${SDL_LIBRARY} 
+	${Boost_threadlib}
+	${Boost_systemlib}
+	${Boost_date_timelib}
+	${Boost_chronolib}
+	${Boost_LIBRARIES} 
+	${OGRE_LIBRARIES})
 
 include_directories(
     ${CHRONOENGINE_INCLUDES}
 	#${OGRE_INCLUDE_DIRS}
+	${Boost_INCLUDE_DIR}
 	${SDL_INCLUDE_DIR}
     "${CHRONOENGINE_INCLUDES}/collision" 
     "${CHRONOENGINE_INCLUDES}/collision/bullet" 
     )
+
+
+
+
 	
 ADD_SUBDIRECTORY(source/ChOgre)
