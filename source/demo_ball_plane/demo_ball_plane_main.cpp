@@ -1,13 +1,13 @@
 #include <ChOgre/Core/ChOgreApplication.h>
 
-using namespace EnvironmentCore;
+using namespace ChOgre;
 
 int main(int argc, char** args) {
-	EnvironmentCoreApplication app;
+	ChOgreApplication app;
 	
 	app.createWindow("Test", 1280, 720, 0, false, false);
 
-	EnvironmentCore::ECCamera* DebugCamera = app.getCameraManager()->createCamera("DebugCamera");
+	ChOgreCamera* DebugCamera = app.getCameraManager()->createCamera("DebugCamera");
 
 	DebugCamera->orient(50.0f, 20.0f, -50.0f, 0.0f, 0.0f, 0.0f);
 
@@ -20,16 +20,16 @@ int main(int argc, char** args) {
 
 	app.getScene()->setSkyBox("sky");
 
-	EnvironmentCore::ECBody& Epsilon = app.getScene()->spawnSphere("Spheere", 1, chrono::ChVector<>(0, 20, 0), 3, false);
+	ChOgreBody& Epsilon = app.getScene()->spawnSphere("Spheere", 1, chrono::ChVector<>(0, 20, 0), 3, false);
 	Epsilon->SetInertiaXX(chrono::ChVector<>(
 		((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
 		((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
 		((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0)));
 
-	EnvironmentCore::ECBody& Alpha = app.getScene()->spawnBox("Boox", 1, chrono::ChVector<>(0, 0, 0), chrono::ChVector<>(10, 0.5, 10), chrono::ChQuaternion<>(), true);
+	ChOgreBody& Alpha = app.getScene()->spawnBox("Boox", 1, chrono::ChVector<>(0, 0, 0), chrono::ChVector<>(10, 0.5, 10), chrono::ChQuaternion<>(), true);
 
-	EnvironmentCore::ECLight& yeh = app.getScene()->createLight("Swag");
-	yeh.setType(EnvironmentCore::ECLightTypes::LT_POINT);
+	ChOgreLight& yeh = app.getScene()->createLight("Swag");
+	yeh.setType(ChOgreLightTypes::LT_POINT);
 	yeh.setPosition(0.0f, 100.0f, 0.0f);
 	yeh.setDiffuseColour(1.0f, 1.0f, 1.0f);
 	yeh.setSpecularColour(1.0f, 1.0f, 1.0f);
