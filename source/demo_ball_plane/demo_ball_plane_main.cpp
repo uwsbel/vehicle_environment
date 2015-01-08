@@ -39,7 +39,7 @@ int main(int argc, char** args) {
 	bool spacebar_state = false;
 
 
-	std::function<int()> Loop = [&]() {
+	ChOgreApplication::ChOgreLoopCallFunc Loop = ChOgreFunc(void) {
 		spacebar_state = app.getInputManager()->getKeyState(SDLK_SPACE).down;
 
 		if (spacebar_state == true) {
