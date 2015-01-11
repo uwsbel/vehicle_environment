@@ -2,6 +2,30 @@
 
 using namespace ChOgre;
 
+class SpacebarCallback : public ChOgreKeyboardCallback {
+
+public:
+	SpacebarCallback(ChOgreBody& c) { m_Object = &c; }
+	~SpacebarCallback() {}
+
+	void call(keycode_t KeyCode, const ChOgreKeyState& KeyState) override {
+		if (KeyCode == SDLK_SPACE) {
+			if (KeyState.down) {
+				(*m_Object)->SetPos(chrono::ChVector<>(0, 20, 0));
+			}
+			else if (!KeyState.down) {
+				(*m_Object)->SetPos_dt(chrono::ChVector<>(0, 4, 0));
+			}
+		}
+	}
+
+protected:
+
+	ChOgreBody* m_Object;
+
+};
+
+
 int main(int argc, char** args) {
 	ChOgreApplication app;
 	
@@ -36,15 +60,13 @@ int main(int argc, char** args) {
 	yeh.setDirection(0.0f, 0.0f, 0.0f);
 	yeh.setPowerScale(400.0f);
 
-	bool spacebar_state = false;
+	
+	SpacebarCallback EpsilonCallback(Epsilon);
+
+	app.getInputManager()->addCallback(EpsilonCallback);
 
 
 	ChOgreApplication::ChOgreLoopCallFunc Loop = ChOgreFunc(void) {
-		spacebar_state = app.getInputManager()->getKeyState(SDLK_SPACE).down;
-
-		if (spacebar_state == true) {
-			Epsilon->SetPos(chrono::ChVector<>(0, 20, 0));
-		}
 
 		return 0;
 	};
