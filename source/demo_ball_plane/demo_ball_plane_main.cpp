@@ -42,7 +42,6 @@ int main(int argc, char** args) {
 
 	std::random_device l_rand;
 
-	app.getScene()->setSkyBox("sky");
 
 	ChOgreBody& Epsilon = app.getScene()->spawnSphere("Spheere", 1, chrono::ChVector<>(0, 20, 0), 3, false);
 	Epsilon->SetInertiaXX(chrono::ChVector<>(
@@ -60,6 +59,7 @@ int main(int argc, char** args) {
 	yeh.setDirection(0.0f, 0.0f, 0.0f);
 	yeh.setPowerScale(400.0f);
 
+	app.getScene()->setSkyBox("sky");
 	
 	SpacebarCallback EpsilonCallback(Epsilon);
 
