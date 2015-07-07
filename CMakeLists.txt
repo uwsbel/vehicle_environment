@@ -152,3 +152,4 @@ include_directories(
 	
 ADD_SUBDIRECTORY(source/ChOgre)
 ADD_SUBDIRECTORY(source/demo_ball_plane)
+ADD_SUBDIRECTORY(source/demo_wheel)

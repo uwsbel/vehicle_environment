@@ -14,7 +14,30 @@ public:
 				(*m_Object)->SetPos(chrono::ChVector<>(0, 20, 0));
 			}
 			else if (!KeyState.down) {
-				(*m_Object)->SetPos_dt(chrono::ChVector<>(0, 4, 0));
+				(*m_Object)->SetPos_dt(chrono::ChVector<>(0, 40, 0));
+			}
+		}
+	}
+
+protected:
+
+	ChOgreBody* m_Object;
+
+};
+
+class WCallback : public ChOgreKeyboardCallback {
+	
+public:
+	WCallback(ChOgreBody& c) { m_Object = &c; }
+	~WCallback() {}
+
+	void call(keycode_t KeyCode, const ChOgreKeyState& KeyState) override {
+		if (KeyCode == SDLK_w) {
+			if (KeyState.down) {
+				(*m_Object)->SetPos_dt(chrono::ChVector<>(10, 0, 0));
+			}
+			else if (!KeyState.down) {
+				(*m_Object)->SetPos_dt(chrono::ChVector<>(-10, 0, 0));
 			}
 		}
 	}
@@ -62,8 +85,10 @@ int main(int argc, char** args) {
 	app.getScene()->setSkyBox("sky");
 	
 	SpacebarCallback EpsilonCallback(Epsilon);
+	WCallback EpsilonCallback2(Epsilon);
 
 	app.getInputManager()->addCallback(EpsilonCallback);
+	app.getInputManager()->addCallback(EpsilonCallback2);
 
 
 	ChOgreApplication::ChOgreLoopCallFunc Loop = ChOgreFunc(void) {
