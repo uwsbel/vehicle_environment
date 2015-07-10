@@ -8,7 +8,7 @@ public:
 	SpacebarCallback(ChOgreBody& c) { m_Object = &c; }
 	~SpacebarCallback() {}
 
-	void call(keycode_t KeyCode, const ChOgreKeyState& KeyState) override {
+	void call(scancode_t ScanCode, keycode_t KeyCode, const ChOgreKeyState& KeyState) override {
 		if (KeyCode == SDLK_SPACE) {
 			if (KeyState.down) {
 				(*m_Object)->SetPos(chrono::ChVector<>(0, 20, 0));
@@ -31,7 +31,7 @@ public:
 	WCallback(ChOgreBody& c) { m_Object = &c; }
 	~WCallback() {}
 
-	void call(keycode_t KeyCode, const ChOgreKeyState& KeyState) override {
+	void call(scancode_t ScanCode, keycode_t KeyCode, const ChOgreKeyState& KeyState) override {
 		if (KeyCode == SDLK_w) {
 			if (KeyState.down) {
 				(*m_Object)->SetPos_dt(chrono::ChVector<>(10, 0, 0));

@@ -31,6 +31,42 @@ SET(Boost_SYSTEM_LIBDIR "Boost_SYSTEM_LIBDIR-NOT_FOUND" CACHE PATH "Path to Boos
 SET(Boost_DATE_TIME_LIBDIR "Boost_DATE_TIME_LIBDIR-NOT_FOUND" CACHE PATH "Path to Boost date_time lib dir")
 SET(Boost_CHRONO_LIBDIR "Boost_CHRONO_LIBDIR-NOT_FOUND" CACHE PATH "Path to Boost chrono lib dir")
 
+SET(MyGUI_LIBDIR_DEBUG "MyGUI_LIBDIR_DEBUG-NOT_FOUND" CACHE PATH "Path to MyGUI debug lib dir")
+SET(MyGUI_LIBDIR_RELEASE "MyGUI_LIBDIR_RELEASE-NOT_FOUND" CACHE PATH "Path to MyGUI release lib dir")
+SET(MyGUI_INCLUDEDIR "MyGUI_INCLUDEDIR-NOT_FOUND" CACHE PATH "Path to MyGUI include dir")
+
+IF (EXISTS "${MyGUI_INCLUDEDIR}/MYGUI/MyGUI.h")
+	include_directories(${MyGUI_INCLUDEDIR})
+ELSE()
+	SET(MyGUI_INCLUDEDIR "MyGUI_INCLUDEDIR-NOT_FOUND")
+ENDIF()
+
+FIND_LIBRARY(MyGUI_LIB_DEBUG
+	NAMES MyGUIEngine_d
+	PATHS "${MyGUI_LIBDIR_DEBUG}/"
+	)
+	
+FIND_LIBRARY(MyGUI_LIB_RELEASE
+	NAMES MyGUIEngine
+	PATHS "${MyGUI_LIBDIR_RELEASE}/"
+	)
+	
+SET(MyGUI_lib optimized ${MyGUI_LIB_RELEASE} debug ${MyGUI_LIB_DEBUG})
+	
+FIND_LIBRARY(MyGUI_LIBOGRE_DEBUG
+	NAMES MyGUI.OgrePlatform_d
+	PATHS "${MyGUI_LIBDIR_DEBUG}/"
+	)
+	
+FIND_LIBRARY(MyGUI_LIBOGRE_RELEASE
+	NAMES MyGUI.OgrePlatform
+	PATHS "${MyGUI_LIBDIR_RELEASE}/"
+	)
+	
+SET(MyGUI_ogrelib optimized ${MyGUI_LIBOGRE_RELEASE} debug ${MyGUI_LIBOGRE_DEBUG})
+	
+
+
 FIND_LIBRARY(Boost_THREADLIB_DEBUG
 	NAMES libboost_thread-vc120-mt-gd-1_55
 	PATHS "${Boost_THREAD_LIBDIR}/debug/link-static/threading-multi"
@@ -40,7 +76,7 @@ FIND_LIBRARY(Boost_THREADLIB_RELEASE
 	NAMES libboost_thread-vc120-mt-1_55
 	PATHS "${Boost_THREAD_LIBDIR}/release/link-static/threading-multi"
 	)
-
+	
 FIND_LIBRARY(Boost_SYSTEMLIB_DEBUG
 	NAMES libboost_system-vc120-mt-gd-1_55
 	PATHS "${Boost_SYSTEM_LIBDIR}/debug/link-static/threading-multi"
@@ -135,13 +171,17 @@ SET(LIBRARIES ${CHRONOENGINE_LIBRARIES}
 	${Boost_date_timelib}
 	${Boost_chronolib}
 	${Boost_LIBRARIES} 
-	${OGRE_LIBRARIES})
+	${OGRE_LIBRARIES}
+	${MyGUI_lib}
+	${MyGUI_ogrelib}
+	)
 
 include_directories(
     ${CHRONOENGINE_INCLUDES}
-	#${OGRE_INCLUDE_DIRS}
+	"${OGRE_INCLUDEDIR}/OGRE"
 	${Boost_INCLUDE_DIR}
 	${SDL_INCLUDE_DIR}
+	${MyGUI_INCLUDEDIR}
     "${CHRONOENGINE_INCLUDES}/collision" 
     "${CHRONOENGINE_INCLUDES}/collision/bullet" 
     )
@@ -153,3 +193,4 @@ include_directories(
 ADD_SUBDIRECTORY(source/ChOgre)
 ADD_SUBDIRECTORY(source/demo_ball_plane)
 ADD_SUBDIRECTORY(source/demo_wheel)
+ADD_SUBDIRECTORY(source/demo_gui)
