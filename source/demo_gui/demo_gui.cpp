@@ -20,7 +20,7 @@ int main(int argc, char** args) {
 
 	std::random_device l_rand;
 
-	auto button = app.getGUIManager()->createWidget<ChOgre::ChOgreGUIButton>(ChInt3(1, 1, 0), ChInt3(100, 20, 0));
+	auto button = app.getGUIManager()->createWidget<ChOgre::ChOgreGUIButton>(ChFloat3(1, 1, 0), ChFloat3(100, 20, 0));
 	button->setColor(1.f, 1.f, 1.f);
 	button->setFont("Arial");
 	button->setText("Button");
@@ -46,6 +46,8 @@ int main(int argc, char** args) {
 	double throttle = 0;
 	double steer = 0;
 	typedef double angle;
+
+	bool mouse = false;
 
 	angle direction = 0;
 
