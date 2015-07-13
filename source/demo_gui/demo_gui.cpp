@@ -1,8 +1,23 @@
 #include <ChOgre/Core/ChOgreApplication.h>
 #include <cmath>
 #include <ChOgre/GUI/ChOgreGUIButton.h>
+#include <ChOgre/GUI/ChOgreGUIText.h>
 
 using namespace ChOgre;
+
+class ButtonCallback : public ChOgreGUICallback {
+
+public:
+
+	ButtonCallback() {};
+	~ButtonCallback() {};
+
+	virtual void call(MyGUI::WidgetPtr Sender) override {
+		((MyGUI::Button*)Sender)->setTextColour(MyGUI::Colour(1.f, 0.f, 0.f));
+		std::cout << "Button Clicked\n";
+	}
+
+};
 
 int main(int argc, char** args) {
 	ChOgreApplication app;
@@ -20,10 +35,17 @@ int main(int argc, char** args) {
 
 	std::random_device l_rand;
 
-	auto button = app.getGUIManager()->createWidget<ChOgre::ChOgreGUIButton>(ChFloat3(0, 0, 0), ChFloat3(100, 20, 0));
+	ButtonCallback bc;
+
+	auto button = app.getGUIManager()->createWidget<ChOgreGUIButton>(ChFloat3(0, 0, 0), ChFloat3(100, 20, 0));
 	button->setColor(1.f, 1.f, 1.f);
 	button->setFont("Arial");
 	button->setText("Button");
+	button->setClickCallback(bc);
+
+	auto text = app.getGUIManager()->createWidget<ChOgreGUIText>(ChFloat3(0, 20, 0), ChFloat3(100, 20, 0));
+	text->setTextColor(1.f, 0.f, 1.f);
+	text->setText("Text");
 
 	ChOgreBody& Epsilon = app.getScene()->spawnSphere("Spheere", 1, chrono::ChVector<>(0, 5, 0), 3, false);
 	Epsilon->SetInertiaXX(chrono::ChVector<>(
