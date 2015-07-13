@@ -20,7 +20,7 @@ int main(int argc, char** args) {
 
 	std::random_device l_rand;
 
-	auto button = app.getGUIManager()->createWidget<ChOgre::ChOgreGUIButton>(ChFloat3(1, 1, 0), ChFloat3(100, 20, 0));
+	auto button = app.getGUIManager()->createWidget<ChOgre::ChOgreGUIButton>(ChFloat3(0, 0, 0), ChFloat3(100, 20, 0));
 	button->setColor(1.f, 1.f, 1.f);
 	button->setFont("Arial");
 	button->setText("Button");
