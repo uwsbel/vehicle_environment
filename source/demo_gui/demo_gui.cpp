@@ -5,14 +5,14 @@
 
 using namespace ChOgre;
 
-class ButtonCallback : public ChOgreGUICallback {
+class ButtonCallback : public ChOgreGUIPressCallback {
 
 public:
 
 	ButtonCallback() {};
 	~ButtonCallback() {};
 
-	virtual void call(MyGUI::WidgetPtr Sender) override {
+	virtual void call(MyGUI::WidgetPtr Sender, int x, int y, MyGUI::MouseButton b) override {
 		((MyGUI::Button*)Sender)->setTextColour(MyGUI::Colour(1.f, 0.f, 0.f));
 		std::cout << "Button Clicked\n";
 	}
@@ -41,7 +41,7 @@ int main(int argc, char** args) {
 	button->setColor(1.f, 1.f, 1.f);
 	button->setFont("Arial");
 	button->setText("Button");
-	button->setClickCallback(bc);
+	button->setPressCallback(bc);
 
 	auto text = app.getGUIManager()->createWidget<ChOgreGUIText>(ChFloat3(0, 20, 0), ChFloat3(100, 20, 0));
 	text->setTextColor(1.f, 0.f, 1.f);
