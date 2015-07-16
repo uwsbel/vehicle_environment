@@ -5,34 +5,6 @@
 
 using namespace ChOgre;
 
-class ButtonCallbackA : public ChOgreGUIPressCallback {
-
-public:
-
-	ButtonCallbackA() {};
-	~ButtonCallbackA() {};
-
-	virtual void call(MyGUI::WidgetPtr Sender, int x, int y, MyGUI::MouseButton b) override {
-		((MyGUI::Button*)Sender)->setTextColour(MyGUI::Colour(1.f, 0.f, 0.f));
-		std::cout << "Button Clicked\n";
-	}
-
-};
-
-class ButtonCallbackB : public ChOgreGUIReleaseCallback {
-
-public:
-
-	ButtonCallbackB() {};
-	~ButtonCallbackB() {};
-
-	virtual void call(MyGUI::WidgetPtr Sender, int x, int y, MyGUI::MouseButton b) override {
-		((MyGUI::Button*)Sender)->setTextColour(MyGUI::Colour(0.f, 0.f, 1.f));
-		std::cout << "Button Clicked\n";
-	}
-
-};
-
 int main(int argc, char** args) {
 	ChOgreApplication app;
 	
@@ -49,17 +21,18 @@ int main(int argc, char** args) {
 
 	std::random_device l_rand;
 
-	ButtonCallbackA bca;
-	ButtonCallbackB bcb;
+	ChOgreGUIPressCallback bca;
+	bca.call = [](MyGUI::WidgetPtr Sender, int x, int y, MyGUI::MouseButton b) -> void {
+		((MyGUI::Button*)Sender)->setTextColour(MyGUI::Colour(1.f, 0.f, 0.f));
+		std::cout << "Button Clicked\n";
+	};
 
-	auto button = app.getGUIManager()->createWidget<ChOgreGUIButton>(ChFloat3(0, 0, 0), ChFloat3(100, 20, 0));
+	auto button = app.getGUIManager()->createWidget<ChOgreGUIButton>(ChFloat3(0, 0, 0), ChFloat3(0.1, 0.05, 0));
 	button->setColor(1.f, 1.f, 1.f);
-	button->setFont("Arial");
 	button->setText("Button");
 	button->setPressCallback(bca);
-	//button->setReleaseCallback(bcb);
 
-	auto text = app.getGUIManager()->createWidget<ChOgreGUIText>(ChFloat3(0, 20, 0), ChFloat3(100, 20, 0));
+	auto text = app.getGUIManager()->createWidget<ChOgreGUIText>(ChFloat3(0, 0.2, 0), ChFloat3(0.2, 0.2, 0));
 	text->setTextColor(1.f, 0.f, 1.f);
 	text->setText("Text");
 
@@ -121,6 +94,7 @@ int main(int argc, char** args) {
 		mod *= throttle;
 
 		Epsilon->SetPos_dt(mod);
+		//Epsilon->SetPos_dtdt(mod);
 		return 0;
 	};
 
