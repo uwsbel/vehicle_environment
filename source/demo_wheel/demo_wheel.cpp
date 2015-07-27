@@ -10,9 +10,9 @@ int main(int argc, char** args) {
 
 	ChOgreCamera* DebugCamera = app.getCameraManager()->createCamera("DebugCamera");
 
-	DebugCamera->orient(50.0f, 20.0f, -50.0f, 0.0f, 0.0f, 0.0f);
-
-	app.setCamera(DebugCamera);
+	DebugCamera->setPosition(50.0f, 20.0f, -50.0f);
+	DebugCamera->lookAt(0.0f, 0.0f, 0.0f);
+	app.getCameraManager()->makeActive(DebugCamera);
 
 	app.timestep_max = 0.01;
 	app.isRealTime = false;
@@ -47,10 +47,21 @@ int main(int argc, char** args) {
 	chrono::ChVector<> mod;
 	const double deg_to_rad = std::_Pi / 180.0;
 
+	ChOgreKeyboardCallback k;
+	k.call = [&DebugCamera](scancode_t s, keycode_t k, const ChOgreKeyState& ks) -> void {
+		if (k = SDLK_SPACE) {
+			DebugCamera->orient(30, 30);
+		}
+		std::cout << ".";
+	};
+
+	app.getInputManager()->addCallback(k);
+
 	ChOgreApplication::ChOgreLoopCallFunc Loop = ChOgreFunc(void) {
 
 		steer = app.getInputManager()->getWheelState().wheel.value * 0.25;
 		throttle = app.getInputManager()->getWheelState().accelerator.value;
+		
 
 		direction += steer;
 		if (direction > 360) {
@@ -63,15 +74,8 @@ int main(int argc, char** args) {
 		mod.x = std::cos(direction * deg_to_rad);
 		mod.z = std::sin(direction * deg_to_rad);
 
-
-		DebugCamera->x = Epsilon->GetPos().x - (mod.x * 40);
-		DebugCamera->y = 20;
-		DebugCamera->z = Epsilon->GetPos().z - (mod.z * 40);
-		DebugCamera->wx = Epsilon->GetPos().x;
-		DebugCamera->wy = Epsilon->GetPos().y;
-		DebugCamera->wz = Epsilon->GetPos().z;
-
-		app.setCamera(DebugCamera);
+		DebugCamera->setPosition(Epsilon->GetPos().x - (mod.x * 40), 20, Epsilon->GetPos().z - (mod.z * 40));
+		DebugCamera->lookAt(Epsilon->GetPos().x, Epsilon->GetPos().y, Epsilon->GetPos().z);
 
 		mod *= throttle;
 
