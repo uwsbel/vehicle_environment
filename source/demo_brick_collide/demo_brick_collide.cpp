@@ -9,7 +9,7 @@ int main(int argc, char** args) {
 
 	ChOgreCamera* DebugCamera = app.getCameraManager()->createCamera("DebugCamera");
 
-	DebugCamera->setPosition(50.0f, 20.0f, -50.0f);
+	DebugCamera->setPosition(100.0f, 20.0f, -100.0f);
 	DebugCamera->lookAt(0.0f, 0.0f, 0.0f);
 	app.getCameraManager()->makeActive(DebugCamera);
 
@@ -19,13 +19,27 @@ int main(int argc, char** args) {
 	std::random_device l_rand;
 
 
-	ChOgreBodyHandle Epsilon = app.getScene()->spawnSphere("Spheere", 1, chrono::ChVector<>(0, 20, 0), 3, false);
+	ChOgreBodyHandle Epsilon = app.getScene()->spawnSphere("Spheere", 10, chrono::ChVector<>(0, 20, -20), 3, false);
 	Epsilon->SetInertiaXX(chrono::ChVector<>(
 		((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
-		((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
+		((2.0 / 5.0)*Epsilon->GetMass()  * 4.0 * 4.0),
 		((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0)));
 
-	ChOgreBodyHandle Alpha = app.getScene()->spawnBox("Boox", 1, chrono::ChVector<>(0, 0, 0), chrono::ChVector<>(10, 0.5, 10), chrono::ChQuaternion<>(), true);
+	Epsilon->SetPos_dt(chrono::ChVector<>(0, 10, 80));
+
+	for (float y = 0.f; y < 10.f; y += 1.f) {
+		for (float x = 0.f; x < 8.f; x += 1.f) {
+			ChOgreBodyHandle Brick = app.getScene()->spawnBox("Brick", 5, chrono::ChVector<>((8.f * x) - 24.f, (4 * y) + 1.25, 5.f), chrono::ChVector<>(4, 2, 2));
+			Brick->SetInertiaXX(chrono::ChVector<>(
+				((1.0 / 12.0)*Epsilon->GetMass() * (16 + 4)),
+				((1.0 / 12.0)*Epsilon->GetMass()  * (4 + 4)),
+				((1.0 / 12.0)*Epsilon->GetMass() * (4 + 16))));
+			Brick->GetMaterialSurface()->SetFriction(1.f);
+			Brick.body().deletable = true;
+		}
+	}
+
+	ChOgreBodyHandle Alpha = app.getScene()->spawnBox("Boox", 1, chrono::ChVector<>(0, 0, 0), chrono::ChVector<>(100, 0.5, 20), chrono::ChQuaternion<>(), true);
 
 	ChOgreLight& yeh = app.getScene()->createLight("Swag");
 	yeh.setType(ChOgreLightTypes::LT_POINT);
@@ -34,6 +48,14 @@ int main(int argc, char** args) {
 	yeh.setSpecularColour(1.0f, 1.0f, 1.0f);
 	yeh.setDirection(0.0f, 0.0f, 0.0f);
 	yeh.setPowerScale(400.0f);
+
+	ChOgreLight& yeh2 = app.getScene()->createLight("Yeh");
+	yeh2.setType(ChOgreLightTypes::LT_POINT);
+	yeh2.setPosition(0.0f, 30.0f, -5.0f);
+	yeh2.setDiffuseColour(1.0f, 1.0f, 1.0f);
+	yeh2.setSpecularColour(1.0f, 1.0f, 1.0f);
+	yeh2.setDirection(0.0f, 0.0f, 0.0f);
+	yeh2.setPowerScale(800.0f);
 
 	app.getScene()->setSkyBox("sky");
 	
@@ -49,20 +71,7 @@ int main(int argc, char** args) {
 		}
 	};
 
-	ChOgreKeyboardCallback EpsilonCallback2;
-	EpsilonCallback2.call = [&Epsilon](scancode_t ScanCode, keycode_t KeyCode, const ChOgreKeyState& KeyState) {
-		if (KeyCode == SDLK_w) {
-			if (KeyState.down) {
-				Epsilon->SetPos_dt(chrono::ChVector<>(10, 0, 0));
-			}
-			else if (!KeyState.down) {
-				Epsilon->SetPos_dt(chrono::ChVector<>(-10, 0, 0));
-			}
-		}
-	};
-
 	app.getInputManager()->addCallback(EpsilonCallback);
-	app.getInputManager()->addCallback(EpsilonCallback2);
 
 
 	ChOgreApplication::ChOgreLoopCallFunc Loop = ChOgreFunc(void) {

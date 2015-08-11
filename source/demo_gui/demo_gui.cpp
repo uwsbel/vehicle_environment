@@ -12,9 +12,9 @@ int main(int argc, char** args) {
 
 	ChOgreCamera* DebugCamera = app.getCameraManager()->createCamera("DebugCamera");
 
-	DebugCamera->orient(50.0f, 20.0f, -50.0f, 0.0f, 0.0f, 0.0f);
-
-	app.setCamera(DebugCamera);
+	DebugCamera->setPosition(50.0f, 20.0f, -50.0f);
+	DebugCamera->lookAt(0.0f, 0.0f, 0.0f);
+	app.getCameraManager()->makeActive(DebugCamera);
 
 	app.timestep_max = 0.01;
 	app.isRealTime = false;
@@ -36,13 +36,13 @@ int main(int argc, char** args) {
 	text->setTextColor(1.f, 0.f, 1.f);
 	text->setText("Text");
 
-	ChOgreBody& Epsilon = app.getScene()->spawnSphere("Spheere", 1, chrono::ChVector<>(0, 5, 0), 3, false);
+	ChOgreBodyHandle Epsilon = app.getScene()->spawnSphere("Spheere", 1, chrono::ChVector<>(0, 5, 0), 3, false);
 	Epsilon->SetInertiaXX(chrono::ChVector<>(
 		((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
 		((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
 		((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0)));
 
-	ChOgreBody& Alpha = app.getScene()->spawnBox("Boox", 1, chrono::ChVector<>(0, 0, 0), chrono::ChVector<>(50, 0.5, 50), chrono::ChQuaternion<>(), true);
+	ChOgreBodyHandle Alpha = app.getScene()->spawnBox("Boox", 1, chrono::ChVector<>(0, 0, 0), chrono::ChVector<>(50, 0.5, 50), chrono::ChQuaternion<>(), true);
 
 	ChOgreLight& yeh = app.getScene()->createLight("Swag");
 	yeh.setType(ChOgreLightTypes::LT_POINT);
@@ -82,14 +82,8 @@ int main(int argc, char** args) {
 		mod.z = std::sin(direction * deg_to_rad);
 
 
-		DebugCamera->x = Epsilon->GetPos().x - (mod.x * 40);
-		DebugCamera->y = 20;
-		DebugCamera->z = Epsilon->GetPos().z - (mod.z * 40);
-		DebugCamera->wx = Epsilon->GetPos().x;
-		DebugCamera->wy = Epsilon->GetPos().y;
-		DebugCamera->wz = Epsilon->GetPos().z;
-
-		app.setCamera(DebugCamera);
+		DebugCamera->setPosition(Epsilon->GetPos().x - (mod.x * 40), 20, Epsilon->GetPos().z - (mod.z * 40));
+		DebugCamera->lookAt(Epsilon->GetPos().x, Epsilon->GetPos().y, Epsilon->GetPos().z);
 
 		mod *= throttle;
 
