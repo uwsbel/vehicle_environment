@@ -20,13 +20,13 @@ int main(int argc, char** args) {
 	std::random_device l_rand;
 
 
-	ChOgreBodySharedPtr Epsilon = app.getScene()->spawnSphere("Spheere", 1, chrono::ChVector<>(0, 5, 0), 3, false);
-	Epsilon->getChBody()->SetInertiaXX(chrono::ChVector<>(
-		((2.0 / 5.0)*Epsilon->getChBody()->GetMass() * 4.0 * 4.0),
-		((2.0 / 5.0)*Epsilon->getChBody()->GetMass() * 4.0 * 4.0),
-		((2.0 / 5.0)*Epsilon->getChBody()->GetMass() * 4.0 * 4.0)));
+	ChOgreBodyHandle Epsilon = app.getScene()->spawnSphere("Spheere", 1, chrono::ChVector<>(0, 5, 0), 3, false);
+	Epsilon->SetInertiaXX(chrono::ChVector<>(
+		((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
+		((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
+		((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0)));
 
-	ChOgreBodySharedPtr Alpha = app.getScene()->spawnBox("Boox", 1, chrono::ChVector<>(0, 0, 0), chrono::ChVector<>(50, 0.5, 50), chrono::ChQuaternion<>(), true);
+	ChOgreBodyHandle Alpha = app.getScene()->spawnBox("Boox", 1, chrono::ChVector<>(0, 0, 0), chrono::ChVector<>(50, 0.5, 50), chrono::ChQuaternion<>(), true);
 
 	ChOgreLight& yeh = app.getScene()->createLight("Swag");
 	yeh.setType(ChOgreLightTypes::LT_POINT);
@@ -73,12 +73,12 @@ int main(int argc, char** args) {
 		mod.x = std::cos(direction * deg_to_rad);
 		mod.z = std::sin(direction * deg_to_rad);
 
-		DebugCamera->setPosition(Epsilon->getChBody()->GetPos().x - (mod.x * 40), 20, Epsilon->getChBody()->GetPos().z - (mod.z * 40));
-		DebugCamera->lookAt(Epsilon->getChBody()->GetPos().x, Epsilon->getChBody()->GetPos().y, Epsilon->getChBody()->GetPos().z);
+		DebugCamera->setPosition(Epsilon->GetPos().x - (mod.x * 40), 20, Epsilon->GetPos().z - (mod.z * 40));
+		DebugCamera->lookAt(Epsilon->GetPos().x, Epsilon->GetPos().y, Epsilon->GetPos().z);
 
 		mod *= throttle;
 
-		Epsilon->getChBody()->SetPos_dt(mod);
+		Epsilon->SetPos_dt(mod);
 		return 0;
 	};
 
