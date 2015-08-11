@@ -15,9 +15,7 @@ int main(int argc, char** args) {
 
 	app.timestep_max = 0.01;
 	app.isRealTime = false;
-
 	app.WriteToFile = true;
-	//app.OutputImageFolder = "demo_brick_collide_images";
 
 	std::random_device l_rand;
 
