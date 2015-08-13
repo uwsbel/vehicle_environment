@@ -15,7 +15,7 @@ namespace VehicleEnvironment {
 	public:
 
 		VESuspensionDemo();
-		VESuspensionDemo(EnvironmentCore::EnvironmentCoreApplication* App);
+		VESuspensionDemo(ChOgre::ChOgreApplication* App);
 		~VESuspensionDemo();
 
 		virtual void build(chrono::ChVector<>& Pos);
@@ -36,10 +36,10 @@ namespace VehicleEnvironment {
 
 	protected:
 
-		EnvironmentCore::ECBody* truss;
+		ChOgre::ChOgreBodyHandle truss;
 
-		EnvironmentCore::ECBody* spindleRF;
-		EnvironmentCore::ECBody* wheelRF;
+		ChOgre::ChOgreBodyHandle spindleRF;
+		ChOgre::ChOgreBodyHandle wheelRF;
 
 		chrono::ChSharedPtr<chrono::ChLinkLockRevolute> link_revoluteRF;
 		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distRFU1;
@@ -49,8 +49,8 @@ namespace VehicleEnvironment {
 		chrono::ChSharedPtr<chrono::ChLinkSpring>   link_springRF;
 		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distRSTEER;
 
-		EnvironmentCore::ECBody* spindleLF;
-		EnvironmentCore::ECBody* wheelLF;
+		ChOgre::ChOgreBodyHandle spindleLF;
+		ChOgre::ChOgreBodyHandle wheelLF;
 
 		chrono::ChSharedPtr<chrono::ChLinkLockRevolute> link_revoluteLF;
 		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distLFU1;
@@ -60,8 +60,8 @@ namespace VehicleEnvironment {
 		chrono::ChSharedPtr<chrono::ChLinkSpring>   link_springLF;
 		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distLSTEER;
 
-		EnvironmentCore::ECBody* spindleRB;
-		EnvironmentCore::ECBody* wheelRB;
+		ChOgre::ChOgreBodyHandle spindleRB;
+		ChOgre::ChOgreBodyHandle wheelRB;
 
 		chrono::ChSharedPtr<chrono::ChLinkLockRevolute> link_revoluteRB;
 		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distRBU1;
@@ -72,8 +72,8 @@ namespace VehicleEnvironment {
 		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distRBlat;
 		chrono::ChSharedPtr<chrono::ChLinkEngine>   link_engineL;
 
-		EnvironmentCore::ECBody* spindleLB;
-		EnvironmentCore::ECBody* wheelLB;
+		ChOgre::ChOgreBodyHandle spindleLB;
+		ChOgre::ChOgreBodyHandle wheelLB;
 
 		chrono::ChSharedPtr<chrono::ChLinkLockRevolute> link_revoluteLB;
 		chrono::ChSharedPtr<chrono::ChLinkDistance> link_distLBU1;

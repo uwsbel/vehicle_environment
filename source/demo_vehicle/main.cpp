@@ -2,31 +2,21 @@
 #include <chrono>
 #include <cmath>
 
-#include "ECApplication.h"
+#include <ChOgre/Core/ChOgreApplication.h>
+#include <ChOgre/GUI/ChOgreGUIManager.h>
+#include <ChOgre/GUI/ChOgreGUIText.h>
+#include <ChOgre/GUI/ChOgreGUIButton.h>
 #include "VESuspensionDemo.h"
-#include "VEHumvee.h"
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-#define WIN32_LEAN_AND_MEAN
-#include "windows.h"
-#endif
-
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
-#else
-int main(int argc, char *argv[])
-#endif
-{
-	try {
-		EnvironmentCore::EnvironmentCoreApplication app;
+int main(int argc, char *argv[]) {
+		ChOgre::ChOgreApplication app;
 		app.createWindow("Test", 1280, 720, 0, false, false);
 
-		EnvironmentCore::ECCamera* DebugCamera = app.getCameraManager()->createCamera("DebugCamera");
+		ChOgre::ChOgreCamera* DebugCamera = app.getCameraManager()->createCamera("DebugCamera");
 		
-		DebugCamera->orient(50.0f, 20.0f, -50.0f, 0.0f, 0.0f, 0.0f);
-
-		app.setCamera(DebugCamera);
+		DebugCamera->setPosition(100.0f, 20.0f, -100.0f);
+		DebugCamera->lookAt(0.0f, 0.0f, 0.0f);
+		app.getCameraManager()->makeActive(DebugCamera);
 
 		app.timestep_max = 0.01;
 		app.isRealTime = false;
@@ -38,21 +28,22 @@ int main(int argc, char *argv[])
 		VehicleEnvironment::VESuspensionDemo car;
 		car.setApp(&app);
 		car.build(chrono::ChVector<>(0, 5, 0));
+		car.reset(chrono::ChVector<>(0, 5, 0));
 
 
-		EnvironmentCore::ECBody& Epsilon = app.getScene()->spawnSphere("Spheere", 1, chrono::ChVector<>(10, 10, 20), 4);
+		ChOgre::ChOgreBodyHandle Epsilon = app.getScene()->spawnSphere("Spheere", 1, chrono::ChVector<>(10, 10, 20), 4);
 		Epsilon->SetInertiaXX(chrono::ChVector<>(
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0)));
 
-		EnvironmentCore::ECBody& Epsilon1 = app.getScene()->spawnSphere("Spheere1", 1, chrono::ChVector<>(30, 10, 20), 4);
+		ChOgre::ChOgreBodyHandle Epsilon1 = app.getScene()->spawnSphere("Spheere1", 1, chrono::ChVector<>(30, 10, 20), 4);
 		Epsilon1->SetInertiaXX(chrono::ChVector<>(
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0)));
 
-		EnvironmentCore::ECBody& Epsilon2 = app.getScene()->spawnSphere("Spheere2", 1, chrono::ChVector<>(0, 10, 20), 4);
+		ChOgre::ChOgreBodyHandle Epsilon2 = app.getScene()->spawnSphere("Spheere2", 1, chrono::ChVector<>(0, 10, 20), 4);
 		Epsilon2->SetInertiaXX(chrono::ChVector<>(
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
 			((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
@@ -70,7 +61,12 @@ int main(int argc, char *argv[])
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0)),
 			((1.0 / 12.0)*Epsilon->GetMass() * (16.0 + 16.0))));*/
 
-		EnvironmentCore::ECBody& Building = app.getScene()->spawnBox("Building1", 50000, chrono::ChVector<>(0, 490, 100), chrono::ChVector<>(20, 500, 20), chrono::ChQuaternion<>(1, 0, 0, 0), true);
+		ChOgre::ChOgreBodyHandle Building = app.getScene()->spawnBox("Building1", 50000, chrono::ChVector<>(0, 490, 100), chrono::ChVector<>(20, 500, 20), chrono::ChQuaternion<>(1, 0, 0, 0), true);
+
+		//ChOgre::ChOgreBodyHandle hillsyo = app.getScene()->loadHeightMap("assets/heightmaps/example3.bmp", chrono::ChVector<>(10, 20, 10));
+		//hillsyo->SetPos(chrono::ChVector<>(0, 0, 0));
+		//hillsyo->GetMaterialSurface()->SetFriction(0.9);
+		ChOgre::ChOgreBodyHandle Alpha = app.getScene()->spawnBox("Boox", 1, chrono::ChVector<>(0, 0, 0), chrono::ChVector<>(20, 0.5, 20), chrono::ChQuaternion<>(), true);
 
 		/*EnvironmentCore::ECBody& Theta = app.getScene()->spawnEllipsoid("Theta", 1.0, chrono::ChVector<>(0, 30, 0), chrono::ChVector<>(2, 5, 2));
 		Theta->SetInertiaXX(chrono::ChVector<>(
@@ -100,32 +96,32 @@ int main(int argc, char *argv[])
 
 		
 
-		EnvironmentCore::ECLight& yeh = app.getScene()->createLight("Swag");
-		yeh.setType(EnvironmentCore::ECLightTypes::LT_POINT);
+		ChOgre::ChOgreLight& yeh = app.getScene()->createLight("Swag");
+		yeh.setType(ChOgre::ChOgreLightTypes::LT_POINT);
 		yeh.setPosition(0.0f, 100.0f, 0.0f);
 		yeh.setDiffuseColour(1.0f, 1.0f, 0.0f);
 		yeh.setSpecularColour(1.0f, 1.0f, 0.0f);
 		yeh.setDirection(0.0f, 0.0f, 0.0f);
 		yeh.setPowerScale(400.0f);
 
-		EnvironmentCore::ECLight& yeh2 = app.getScene()->createLight("Que");
-		yeh2.setType(EnvironmentCore::ECLightTypes::LT_POINT);
+		ChOgre::ChOgreLight& yeh2 = app.getScene()->createLight("Que");
+		yeh2.setType(ChOgre::ChOgreLightTypes::LT_POINT);
 		yeh2.setPosition(500.0f, 500.0f, 500.0f);
 		yeh2.setDiffuseColour(1.0f, 0.0f, 1.0f);
 		yeh2.setSpecularColour(1.0f, 0.0f, 1.0f);
 		yeh2.setDirection(0.0f, 0.0f, 0.0f);
 		yeh2.setPowerScale(400.0f);
 
-		EnvironmentCore::ECLight& yeh3 = app.getScene()->createLight("Holo");
-		yeh3.setType(EnvironmentCore::ECLightTypes::LT_POINT);
+		ChOgre::ChOgreLight& yeh3 = app.getScene()->createLight("Holo");
+		yeh3.setType(ChOgre::ChOgreLightTypes::LT_POINT);
 		yeh3.setPosition(500.0f, 800.0f, -800.0f);
 		yeh3.setDiffuseColour(0.0f, 1.0f, 1.0f);
 		yeh3.setSpecularColour(0.0f, 1.0f, 1.0f);
 		yeh3.setDirection(0.0f, 0.0f, 0.0f);
 		yeh3.setPowerScale(400.0f);
 
-		EnvironmentCore::ECLight& follow = app.getScene()->createLight("Follow");
-		follow.setType(EnvironmentCore::ECLightTypes::LT_POINT);
+		ChOgre::ChOgreLight& follow = app.getScene()->createLight("Follow");
+		follow.setType(ChOgre::ChOgreLightTypes::LT_POINT);
 		follow.setDiffuseColour(1.0f, 1.0f, 1.0f);
 		follow.setSpecularColour(1.0f, 1.0f, 1.0f);
 
@@ -163,43 +159,41 @@ int main(int argc, char *argv[])
 		app.getInputManager()->AxisThreshold = 0.1;
 
 
-		EnvironmentCore::ECGUIText* p = app.getGUIManager()->createText("text");
-		p->setPosition(0, 0);
+		ChOgre::ChOgreGUITextPtr p = app.getGUIManager()->createWidget<ChOgre::ChOgreGUIText>(ChOgre::ChFloat3(), ChOgre::ChFloat3());
+		p->setPosition(ChOgre::ChFloat3(0, 0, 0));
 		p->setColor(1.0, 1.0, 1.0);
-		p->setFont(0.04);
 		p->setText("");
 
-		EnvironmentCore::ECGUIText* p2 = app.getGUIManager()->createText("text");
-		p2->setPosition(0, 0.06);
+		ChOgre::ChOgreGUITextPtr p2 = app.getGUIManager()->createWidget<ChOgre::ChOgreGUIText>(ChOgre::ChFloat3(), ChOgre::ChFloat3());
+		p2->setPosition(ChOgre::ChFloat3(0, 0.06, 0));
 		p2->setColor(1.0, 1.0, 1.0);
-		p2->setFont(0.04);
 		p2->setText("");
 
-		EnvironmentCore::ECGUIText* p3 = app.getGUIManager()->createText("text");
-		p3->setPosition(0, 0.12);
+		ChOgre::ChOgreGUITextPtr p3 = app.getGUIManager()->createWidget<ChOgre::ChOgreGUIText>(ChOgre::ChFloat3(), ChOgre::ChFloat3());
+		p3->setPosition(ChOgre::ChFloat3(0, 0.12, 0));
 		p3->setColor(1.0, 1.0, 1.0);
-		p3->setFont(0.04);
 		p3->setText("");
 
-		EnvironmentCore::ECGUIText* p4 = app.getGUIManager()->createText("text");
-		p4->setPosition(0, 0.18);
+		ChOgre::ChOgreGUITextPtr p4 = app.getGUIManager()->createWidget<ChOgre::ChOgreGUIText>(ChOgre::ChFloat3(), ChOgre::ChFloat3());
+		p4->setPosition(ChOgre::ChFloat3(0, 0.18, 0));
 		p4->setColor(1.0, 1.0, 1.0);
-		p4->setFont(0.04);
 		p4->setText("");
 
-		EnvironmentCore::ECGUIButton* t = app.getGUIManager()->createButton("Yo");
-		t->setPosition(0, 0.24);
+		ChOgre::ChOgreGUIButtonPtr t = app.getGUIManager()->createWidget<ChOgre::ChOgreGUIButton>(ChOgre::ChFloat3(), ChOgre::ChFloat3());
+		t->setPosition(ChOgre::ChFloat3(0, 0.24, 0));
 		t->setText("Button");
-		t->setFont(0.04);
 		t->setTextColor(1.0, 1.0, 1.0);
 		t->setColor(0.0, 0.0, 0.0);
+
+		ChOgre::ChOgreGUIClickCallback t_c;
+		t_c.call = [&car](MyGUI::WidgetPtr) {
+			car.reset(chrono::ChVector<>(0, 0, 0));
+		};
 
 		std::chrono::high_resolution_clock l_clock;
 		auto start = l_clock.now();
 
-		EnvironmentCore::ECBody& hillsyo = app.getScene()->loadHeightMap("ridge_mesa.png", chrono::ChVector<>(10, 20, 10));
-		hillsyo->SetPos(chrono::ChVector<>(0, 0, 0));
-		hillsyo->SetFriction(0.9);
+		
 
 		std::chrono::duration<double> end = std::chrono::duration_cast<std::chrono::duration<double>>(l_clock.now() - start);
 
@@ -220,7 +214,7 @@ int main(int argc, char *argv[])
 		bool tr_db = true;
 
 
-		std::function<int()> Loop = [&]() {
+		ChOgre::ChOgreApplication::ChOgreLoopCallFunc Loop = ChOgreFunc(void) {
 
 			if (app.getInputManager()->getWheelState().active) {
 				fire_button = app.getInputManager()->getWheelState().rwheelb1.down;
@@ -263,9 +257,8 @@ int main(int argc, char *argv[])
 				tr_db = true;
 			}
 
-
 			if (fire_button && db) {
-				EnvironmentCore::ECBody& Alpha = app.getScene()->spawnSphere("Boox", 50, chrono::ChVector<>(car.getChassis()->GetPos().x, car.getChassis()->GetPos().y + 3, car.getChassis()->GetPos().z), 0.1);
+				ChOgre::ChOgreBodyHandle Alpha = app.getScene()->spawnSphere("Boox", 50, chrono::ChVector<>(car.getChassis()->GetPos().x, car.getChassis()->GetPos().y + 3, car.getChassis()->GetPos().z), 0.1);
 				Alpha->SetInertiaXX(chrono::ChVector<>(
 					((2.0 / 5.0)*Alpha->GetMass() * 0.3 * 0.3),
 					((2.0 / 5.0)*Alpha->GetMass() * 0.3 * 0.3),
@@ -306,7 +299,6 @@ int main(int argc, char *argv[])
 			if (!rumble_button) {
 				db2 = true;
 			}
-
 
 			if (steer > 0.1) {
 				steer = 0.1;
@@ -369,16 +361,14 @@ int main(int argc, char *argv[])
 			}
 
 			if (app.getInputManager()->getKeyState(SDL_SCANCODE_ESCAPE).down || quit_button) {
-				return 1;
+				//return 1;
 			}
 
 			car.throttle = throttle;
 
 			car.update();
 
-			if (t->isPressed()) {
-				car.getChassis()->SetPos_dt(chrono::ChVector<>(0, 10, 0));
-			}
+			
 
 			double speed = car.getChassis()->GetPos_dt().Length();
 
@@ -395,7 +385,6 @@ int main(int argc, char *argv[])
 
 			follow.setDiffuseColour(1.0f, 1.0f, 1.0f);
 			follow.setSpecularColour(1.0f, 1.0f, 1.0f);
-
 
 			dirRot = car.getChassis()->GetRot();
 			dirRot.Normalize();
@@ -414,12 +403,11 @@ int main(int argc, char *argv[])
 
 			camera_pos = camera_pos + camera_vel * app.timestep + 0.5 * cam_accel * app.timestep * app.timestep;
 			
-
-			DebugCamera->orient(camera_pos.x, camera_pos.y, camera_pos.z, look_at.x, look_at.y+6, look_at.z);
-			app.setCamera(DebugCamera);
+			//DebugCamera->orient(camera_pos.x, camera_pos.y, camera_pos.z, look_at.x, look_at.y+6, look_at.z);
+			DebugCamera->setPosition(camera_pos);
+			DebugCamera->lookAt(look_at);
 
 			follow.setPosition(car.getChassis()->GetPos().x, car.getChassis()->GetPos().y + 10, car.getChassis()->GetPos().z + 14);
-
 
 			return 0;
 		};
@@ -428,14 +416,6 @@ int main(int argc, char *argv[])
 
 		app.startLoop(Loop);
 		app.logMessage("end of the program");
-	}
-	catch (Ogre::Exception &e) {
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-		MessageBox(NULL, e.getFullDescription().c_str(), "An exception has occured!", MB_OK | MB_ICONERROR | MB_TASKMODAL);
-#else
-		std::cerr << "An exception has occured: " <<
-		e.getFullDescription().c_str() << std::endl;
-#endif
-	}
+	
 	return 0;
 }

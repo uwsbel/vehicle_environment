@@ -16,7 +16,7 @@ int main(int argc, char** args) {
 	app.timestep_max = 0.01;
 	app.isRealTime = false;
 
-	app.WriteToFile = true;
+	//app.WriteToFile = true;
 	//app.OutputImageFolder = "demo_brick_collide_images";
 
 	std::random_device l_rand;
@@ -34,9 +34,9 @@ int main(int argc, char** args) {
 		for (float x = 0.f; x < 8.f; x += 1.f) {
 			ChOgreBodyHandle Brick = app.getScene()->spawnBox("Brick", 5, chrono::ChVector<>((8.f * x) - 24.f, (4 * y) + 1.25, 5.f), chrono::ChVector<>(4, 2, 2));
 			Brick->SetInertiaXX(chrono::ChVector<>(
-				((1.0 / 12.0)*Epsilon->GetMass() * (16 + 4)),
-				((1.0 / 12.0)*Epsilon->GetMass()  * (4 + 4)),
-				((1.0 / 12.0)*Epsilon->GetMass() * (4 + 16))));
+				((1.0 / 12.0)*Brick->GetMass() * (16 + 4)),
+				((1.0 / 12.0)*Brick->GetMass()  * (4 + 4)),
+				((1.0 / 12.0)*Brick->GetMass() * (4 + 16))));
 			Brick->GetMaterialSurface()->SetFriction(1.f);
 			Brick.body().deletable = true;
 		}

@@ -6,8 +6,8 @@ This is the basic vehicle class, which all vehicles should inherit from
 
 #pragma once
 
-#include "ECApplication.h"
-#include "ECBody.h"
+#include <ChOgre/Core/ChOgreApplication.h>
+#include <ChOgre/Graphics/ChOgreBody.h>
 
 namespace VehicleEnvironment {
 
@@ -16,10 +16,10 @@ namespace VehicleEnvironment {
 	public:
 
 		VEVehicle();
-		VEVehicle(EnvironmentCore::EnvironmentCoreApplication* App);
+		VEVehicle(ChOgre::ChOgreApplication* App);
 		~VEVehicle();
 
-		virtual void setApp(EnvironmentCore::EnvironmentCoreApplication* App);
+		virtual void setApp(ChOgre::ChOgreApplication* App);
 		virtual void build(chrono::ChVector<>& Pos) =0;
 		virtual void update() = 0;
 		virtual void reset(chrono::ChVector<>& Pos) =0;
@@ -33,7 +33,7 @@ namespace VehicleEnvironment {
 
 	protected:
 
-		EnvironmentCore::EnvironmentCoreApplication* m_pApp;
+		ChOgre::ChOgreApplication* m_pApp;
 
 	private:
 

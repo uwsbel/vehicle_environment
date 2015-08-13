@@ -7,7 +7,7 @@ namespace VehicleEnvironment {
 		steer = 0;
 	}
 
-	VEVehicle::VEVehicle(EnvironmentCore::EnvironmentCoreApplication* App) {
+	VEVehicle::VEVehicle(ChOgre::ChOgreApplication* App) {
 		setApp(App);
 		throttle = 0;
 		steer = 0;
@@ -17,7 +17,7 @@ namespace VehicleEnvironment {
 
 	}
 
-	void VEVehicle::setApp(EnvironmentCore::EnvironmentCoreApplication* App) {
+	void VEVehicle::setApp(ChOgre::ChOgreApplication* App) {
 		m_pApp = App;
 	}
 
