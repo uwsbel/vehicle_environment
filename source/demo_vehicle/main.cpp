@@ -63,10 +63,10 @@ int main(int argc, char *argv[]) {
 
 		ChOgre::ChOgreBodyHandle Building = app.getScene()->spawnBox("Building1", 50000, chrono::ChVector<>(0, 490, 100), chrono::ChVector<>(20, 500, 20), chrono::ChQuaternion<>(1, 0, 0, 0), true);
 
-		//ChOgre::ChOgreBodyHandle hillsyo = app.getScene()->loadHeightMap("assets/heightmaps/example3.bmp", chrono::ChVector<>(10, 20, 10));
+		//ChOgre::ChOgreBodyHandle hillsyo = app.getScene()->loadHeightMap("example3.bmp", chrono::ChVector<>(10, 20, 10));
 		//hillsyo->SetPos(chrono::ChVector<>(0, 0, 0));
 		//hillsyo->GetMaterialSurface()->SetFriction(0.9);
-		ChOgre::ChOgreBodyHandle Alpha = app.getScene()->spawnBox("Boox", 1, chrono::ChVector<>(0, 0, 0), chrono::ChVector<>(20, 0.5, 20), chrono::ChQuaternion<>(), true);
+		ChOgre::ChOgreBodyHandle Alpha = app.getScene()->spawnBox("Boox", 1, chrono::ChVector<>(0, 0, 0), chrono::ChVector<>(50, 0.5, 50), chrono::ChQuaternion<>(), true);
 
 		/*EnvironmentCore::ECBody& Theta = app.getScene()->spawnEllipsoid("Theta", 1.0, chrono::ChVector<>(0, 30, 0), chrono::ChVector<>(2, 5, 2));
 		Theta->SetInertiaXX(chrono::ChVector<>(
