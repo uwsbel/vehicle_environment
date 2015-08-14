@@ -28,7 +28,7 @@ int main(int argc, char** args) {
 		((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
 		((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0)));
 
-	ChOgreBodyHandle Alpha = app.getScene()->loadHeightMap("example2.bmp", chrono::ChVector<>(20, 5, 20));
+	ChOgreBodyHandle Alpha = app.getScene()->loadHeightMap("example3.png", chrono::ChVector<>(20, 5, 20));
 
 	ChOgreLight& yeh = app.getScene()->createLight("Swag");
 	yeh.setType(ChOgreLightTypes::LT_POINT);
