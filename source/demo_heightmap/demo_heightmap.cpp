@@ -9,7 +9,7 @@ int main(int argc, char** args) {
 
 	ChOgreCamera* DebugCamera = app.getCameraManager()->createCamera("DebugCamera");
 
-	DebugCamera->setPosition(80.0f, 15.0f, -80.0f);
+	DebugCamera->setPosition(80.0f, 70.0f, -80.0f);
 	DebugCamera->lookAt(0.0f, 0.0f, 0.0f);
 	app.getCameraManager()->makeActive(DebugCamera);
 
@@ -28,15 +28,15 @@ int main(int argc, char** args) {
 		((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0),
 		((2.0 / 5.0)*Epsilon->GetMass() * 4.0 * 4.0)));
 
-	ChOgreBodyHandle Alpha = app.getScene()->loadHeightMap("example3.png", chrono::ChVector<>(20, 5, 20));
+	ChOgreBodyHandle Alpha = app.getScene()->loadHeightMap("example_mound.png", chrono::ChVector<>(20, 5, 20));
 
-	ChOgreLight& yeh = app.getScene()->createLight("Swag");
-	yeh.setType(ChOgreLightTypes::LT_POINT);
-	yeh.setPosition(0.0f, 100.0f, 0.0f);
-	yeh.setDiffuseColour(1.0f, 1.0f, 1.0f);
-	yeh.setSpecularColour(1.0f, 1.0f, 1.0f);
-	yeh.setDirection(0.0f, 0.0f, 0.0f);
-	yeh.setPowerScale(400.0f);
+	ChOgreLightHandle yeh = app.getScene()->createLight("Swag");
+	yeh->setType(ChOgreLight::POINT);
+	yeh->setPosition(0.0f, 100.0f, 0.0f);
+	yeh->setDiffuse(1.0f, 1.0f, 1.0f);
+	yeh->setSpecular(1.0f, 1.0f, 1.0f);
+	yeh->setDirection(0.0f, 0.0f, 0.0f);
+	yeh->setIntensity(400.0f);
 
 	app.getScene()->setSkyBox("sky");
 	
@@ -69,6 +69,8 @@ int main(int argc, char** args) {
 
 
 	ChOgreApplication::ChOgreLoopCallFunc Loop = ChOgreFunc(void) {
+
+		DebugCamera->lookAt(Epsilon->GetPos());
 
 		return 0;
 	};
