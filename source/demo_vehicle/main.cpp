@@ -95,34 +95,34 @@ int main(int argc, char *argv[]) {
 
 		
 
-		ChOgre::ChOgreLight& yeh = app.getScene()->createLight("Swag");
-		yeh.setType(ChOgre::ChOgreLightTypes::LT_POINT);
-		yeh.setPosition(0.0f, 100.0f, 0.0f);
-		yeh.setDiffuseColour(1.0f, 1.0f, 0.0f);
-		yeh.setSpecularColour(1.0f, 1.0f, 0.0f);
-		yeh.setDirection(0.0f, 0.0f, 0.0f);
-		yeh.setPowerScale(400.0f);
+		ChOgre::ChOgreLightHandle yeh = app.getScene()->createLight("Swag");
+		yeh->setType(ChOgre::ChOgreLight::POINT);
+		yeh->setPosition(0.0f, 100.0f, 0.0f);
+		yeh->setDiffuse(1.0f, 1.0f, 0.0f);
+		yeh->setSpecular(1.0f, 1.0f, 0.0f);
+		yeh->setDirection(0.0f, 0.0f, 0.0f);
+		yeh->setIntensity(400.0f);
 
-		ChOgre::ChOgreLight& yeh2 = app.getScene()->createLight("Que");
-		yeh2.setType(ChOgre::ChOgreLightTypes::LT_POINT);
-		yeh2.setPosition(500.0f, 500.0f, 500.0f);
-		yeh2.setDiffuseColour(1.0f, 0.0f, 1.0f);
-		yeh2.setSpecularColour(1.0f, 0.0f, 1.0f);
-		yeh2.setDirection(0.0f, 0.0f, 0.0f);
-		yeh2.setPowerScale(400.0f);
+		ChOgre::ChOgreLightHandle yeh2 = app.getScene()->createLight("Que");
+		yeh2->setType(ChOgre::ChOgreLight::POINT);
+		yeh2->setPosition(500.0f, 500.0f, 500.0f);
+		yeh2->setDiffuse(1.0f, 0.0f, 1.0f);
+		yeh2->setSpecular(1.0f, 0.0f, 1.0f);
+		yeh2->setDirection(0.0f, 0.0f, 0.0f);
+		yeh2->setIntensity(400.0f);
 
-		ChOgre::ChOgreLight& yeh3 = app.getScene()->createLight("Holo");
-		yeh3.setType(ChOgre::ChOgreLightTypes::LT_POINT);
-		yeh3.setPosition(500.0f, 800.0f, -800.0f);
-		yeh3.setDiffuseColour(0.0f, 1.0f, 1.0f);
-		yeh3.setSpecularColour(0.0f, 1.0f, 1.0f);
-		yeh3.setDirection(0.0f, 0.0f, 0.0f);
-		yeh3.setPowerScale(400.0f);
+		ChOgre::ChOgreLightHandle yeh3 = app.getScene()->createLight("Holo");
+		yeh3->setType(ChOgre::ChOgreLight::POINT);
+		yeh3->setPosition(500.0f, 800.0f, -800.0f);
+		yeh3->setDiffuse(0.0f, 1.0f, 1.0f);
+		yeh3->setSpecular(0.0f, 1.0f, 1.0f);
+		yeh3->setDirection(0.0f, 0.0f, 0.0f);
+		yeh3->setIntensity(400.0f);
 
-		ChOgre::ChOgreLight& follow = app.getScene()->createLight("Follow");
-		follow.setType(ChOgre::ChOgreLightTypes::LT_POINT);
-		follow.setDiffuseColour(1.0f, 1.0f, 1.0f);
-		follow.setSpecularColour(1.0f, 1.0f, 1.0f);
+		ChOgre::ChOgreLightHandle follow = app.getScene()->createLight("Follow");
+		follow->setType(ChOgre::ChOgreLight::POINT);
+		follow->setPosition(1.0f, 1.0f, 1.0f);
+		follow->setSpecular(1.0f, 1.0f, 1.0f);
 
 
 		chrono::ChVector<> direction = chrono::ChVector<>(0, 0, 5);
@@ -382,8 +382,8 @@ int main(int argc, char *argv[]) {
 			p3->setText("Throttle: " + std::to_string(throttle));
 			p4->setText("FPS: " + std::to_string(app.getWindow()->getAverageFPS()));
 
-			follow.setDiffuseColour(1.0f, 1.0f, 1.0f);
-			follow.setSpecularColour(1.0f, 1.0f, 1.0f);
+			follow->setDiffuse(1.0f, 1.0f, 1.0f);
+			follow->setSpecular(1.0f, 1.0f, 1.0f);
 
 			dirRot = car.getChassis()->GetRot();
 			dirRot.Normalize();
@@ -406,7 +406,7 @@ int main(int argc, char *argv[]) {
 			DebugCamera->setPosition(camera_pos);
 			DebugCamera->lookAt(look_at);
 
-			follow.setPosition(car.getChassis()->GetPos().x, car.getChassis()->GetPos().y + 10, car.getChassis()->GetPos().z + 14);
+			follow->setPosition(car.getChassis()->GetPos().x, car.getChassis()->GetPos().y + 10, car.getChassis()->GetPos().z + 14);
 
 			return 0;
 		};

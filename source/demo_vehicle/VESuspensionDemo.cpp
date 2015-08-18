@@ -311,12 +311,12 @@ namespace VehicleEnvironment {
 		// it is half of the shaft torque  (multiplied the conic gear transmission ratio)
 		double singlewheeltorque = 0.5 * shafttorque * (1.0 / conic_tau);
 		// Set the wheel torque in both 'engine' links, connecting the wheels to the truss;
-		//if (chrono::ChFunction_Const* mfun = dynamic_cast<chrono::ChFunction_Const*>(link_engineL->Get_tor_funct().get_ptr()))
-			//mfun->Set_yconst(singlewheeltorque);
-		dynamic_cast<chrono::ChFunction_Const*>(link_engineL->Get_tor_funct().get_ptr())->Set_yconst(singlewheeltorque);
-		dynamic_cast<chrono::ChFunction_Const*>(link_engineR->Get_tor_funct().get_ptr())->Set_yconst(singlewheeltorque);
-		//if (chrono::ChFunction_Const* mfun = dynamic_cast<chrono::ChFunction_Const*>(link_engineR->Get_tor_funct().get_ptr()))
-			//mfun->Set_yconst(singlewheeltorque);
+		if (chrono::ChSharedPtr<chrono::ChFunction_Const> mfun = link_engineL->Get_tor_funct().DynamicCastTo<chrono::ChFunction_Const>())
+			mfun->Set_yconst(singlewheeltorque);
+		//dynamic_cast<chrono::ChFunction_Const*>(link_engineL->Get_tor_funct().get_ptr())->Set_yconst(singlewheeltorque);
+		//dynamic_cast<chrono::ChFunction_Const*>(link_engineR->Get_tor_funct().get_ptr())->Set_yconst(singlewheeltorque);
+		if (chrono::ChSharedPtr<chrono::ChFunction_Const> mfun = link_engineR->Get_tor_funct().DynamicCastTo<chrono::ChFunction_Const>())
+			mfun->Set_yconst(singlewheeltorque);
 		//debug:print infos on screen:
 		//GetLog() << "motor torque="<< motortorque<< "  speed=" << motorspeed << "  wheel torqe=" << singlewheeltorque <<"\n";
 		// If needed, return also the value of wheel torque:
